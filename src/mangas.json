@@ -1,12 +1,12 @@
 [
     {
         "name": "one-piece",
-        "chapitre": "1092",
+        "chapitre": 1092,
         "pages": true
     },
     {
         "name":"ombre-et-lumiere",
-        "chapitre":"220",
+        "chapitre": 220,
         "pages":false
     }
 ]

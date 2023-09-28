@@ -4,18 +4,16 @@ import mangas from './mangas.json';
 
 const app = express();
 
-// console.log(mangas)
+console.log(mangas)
 
 function findManga(){
     mangas.forEach(manga => {
-        finder(manga.name, parseInt(manga.chapitre), manga.pages).then((value) => {
-            console.log(manga.name + " " + manga.chapitre + " " + value);
+        finder(manga.name, manga.chapitre, manga.pages).then((value) => {
+            //console.log(manga.name + " " + manga.chapitre + " " + value);
             if(value){
-                console.log("Le chapitre " + manga.chapitre + " de " + manga.name + " est sorti !");
+                //console.log("Le chapitre " + manga.chapitre + " de " + manga.name + " est sorti !");
                 manga.chapitre += 1;
             }
-        }).catch((err) => {
-            console.log(err);
         });
     });
 }
@@ -23,7 +21,7 @@ function findManga(){
 const idFinder = setInterval(findManga, 10000)
 
 
-
+//findManga();
 
 
 app.get('/', (req:Request, res:Response) => {
