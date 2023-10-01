@@ -25,6 +25,6 @@ export async function finder(manga: string, chapitre: number, page: boolean): Pr
 }
 
 
-// finder("one-piece", 1093, true).then((value) => {
+// finder("ombres-et-lumieres", 219, false).then((value) => {
 //     console.log(value);
 // });
