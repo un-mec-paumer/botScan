@@ -21,7 +21,7 @@ export const SupManga: Command = {
 
         //console.log(interaction.options);
         let nom = interaction.options.get("name")?.value;
-        nom = nom?.toString().replace(" ", "-").toLowerCase();
+        nom = nom?.toString().replaceAll(" ", "-").toLowerCase();
         let manga = mangas.find(manga => manga.name === nom);
         if (manga) {
             mangas.splice(mangas.indexOf(manga), 1);

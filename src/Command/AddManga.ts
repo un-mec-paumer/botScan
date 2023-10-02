@@ -35,11 +35,12 @@ export const AddManga: Command = {
 
         //console.log(interaction.options);
         let nom = interaction.options.get("name")?.value;
-        nom = nom?.toString().replace(" ", "-").toLowerCase();
+        nom = nom?.toString().toLowerCase().replaceAll(" ", "-");
+        //console.log(nom);
         let page = interaction.options.get("page")?.value;
         page = page?.toString().toLowerCase();
         mangas.push({
-            name: interaction.options.get("name")?.value as string,
+            name: nom as string,
             chapitre: interaction.options.get("chapitre")?.value as number,
             pages: page === "oui" || page === "yes" || page === "o" || page === "y" ? true : false as boolean
         });

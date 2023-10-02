@@ -9,6 +9,7 @@ import { writeFile } from "fs";
 const userID = "452370867758956554";
 
 function finderAll(client:Client) {
+    console.log("finderAll");
     mangas.forEach(manga => {
         finder(manga.name, manga.chapitre, manga.pages).then((value) => {
             if(value){
@@ -38,7 +39,10 @@ const client = new Client({
 //console.log(token.token);
 ready(client);
 interactionCreate(client);
+
+// console.log(client);
+
 client.login(token.token);
 
 //console.log(client);
-const interval = setInterval(finderAll, 1000 , client);
+const interval = setInterval(finderAll, 1000 * 60, client);
