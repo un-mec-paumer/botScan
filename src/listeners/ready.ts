@@ -8,8 +8,13 @@ export default (client: Client): void => {
         }
 
         await client.application.commands.set(Commands);
+
         // await client.application.commands.fetch().then((commands) => {
-        //     console.log(commands);
+        //     //console.log(commands);
+        //     commands.forEach((command) => {
+        //         console.log(command);
+        //         //console.log(command.options);
+        //     });
         // });
         console.log(`${client.user.username} is online`);
     });
