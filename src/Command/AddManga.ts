@@ -34,6 +34,8 @@ export const AddManga: Command = {
         // console.log("Hello world!");
 
         //console.log(interaction.options);
+        let nom = interaction.options.get("name")?.value;
+        nom = nom?.toString().replace(" ", "-").toLowerCase();
         let page = interaction.options.get("page")?.value;
         page = page?.toString().toLowerCase();
         mangas.push({

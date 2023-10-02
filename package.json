@@ -4,7 +4,8 @@
   "description": "bot qui va scrap des site de scan pour envoyer le scan sur discord",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec ts-node src/bot.ts"
+    "dev": "nodemon --exec ts-node src/bot.ts",
+    "start": "npx ts-node src/bot.ts"
   },
   "author": "Antoine Ciric",
   "license": "ISC",
