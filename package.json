@@ -1,6 +1,6 @@
 {
   "name": "botscan",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "bot qui va scrap des site de scan pour envoyer le scan sur discord",
   "main": "index.js",
   "scripts": {
