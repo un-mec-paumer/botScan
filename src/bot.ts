@@ -1,48 +1,42 @@
-import { Client, User } from "discord.js";
+import { Client, User, GatewayIntentBits as Intents} from "discord.js";
 import token from "./data/token.json";
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
-import { finder } from "./chercheur";
-import mangas from "./data/mangas.json";
-import { writeFile } from "fs";
-
-const userID = "452370867758956554";
-
-function finderAll(client:Client) {
-    console.log("finderAll");
-    mangas.forEach(manga => {
-        finder(manga.name, manga.chapitre, manga.pages).then((value) => {
-            if(value){
-                manga.chapitre++;
-                client.users.fetch(userID).then((user:User) => {
-                    user.send("Nouveau chapitre de " + manga.name + " : " + "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/");
-                });
-                //console.log( __dirname + "/data/mangas.json " + existsSync( __dirname + "/data/mangas.json"));
-
-                writeFile( __dirname + "/data/mangas.json", JSON.stringify(mangas), (err) => {
-                    if(err){
-                        console.log(err);
-                    }
-                });
-            }
-        });
-    });
-}
-
+import messageCreate from "./listeners/messageCreate";
+import { finderAll } from "./chercheur";
 
 
 console.log("Bot is starting...");
 
 const client = new Client({
-    intents: []
+    intents: [
+        Intents.Guilds,
+        Intents.GuildMessages,
+        Intents.DirectMessages,
+        // Intents.GuildMembers,
+        Intents.MessageContent,
+    ]
 });
 //console.log(token.token);
+
 ready(client);
 interactionCreate(client);
+messageCreate(client);
 
-// console.log(client);
+// client.addListener("messageCreate", (message) => {
+//     console.log(message);
+// });
+
+
 
 client.login(token.token);
 
+// client.on("ready", () => {
+//     console.log("Bot is ready");
+//     // finderAll(client);
+// });
+
+
+
 //console.log(client);
-const interval = setInterval(finderAll, 1000 * 60, client);
+//const interval = setInterval(finderAll, 1000 * 60, client);
