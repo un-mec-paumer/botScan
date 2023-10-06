@@ -6,9 +6,10 @@ export default (client: Client): void => {
         // console.log(message);
         // console.log("message est ", message.content);
         if(message.author.bot) return;
-        if (message.content.toLowerCase().includes("quoi")) {
+        if (message.content.toLowerCase().trim().endsWith("quoi")) {
             message.reply("feur");
         }
+        
         
     });
 

@@ -48,22 +48,27 @@ export const AddManga: Command = {
                 pages: page === "oui" || page === "yes" || page === "o" || page === "y" ? true : false as boolean,
                 discordUsers: [interaction.user.id]
             });
-
-            writeFile("./src/data/mangas.json", JSON.stringify(mangas), (err) => {
-                if (err) {
-                    console.log(err);
-                    interaction.followUp({
-                        ephemeral: true,
-                        content: "Erreur lors de l'ajout du manga"
-                    });
-                }
-                else {
-                    interaction.followUp({
-                        ephemeral: true,
-                        content: "Manga ajouté avec succès"
-                    });
-                }
+            console.log(mangas);
+            interaction.followUp({
+                ephemeral: true,
+                content: "Manga ajouté avec succès"
             });
+
+            // writeFile("./src/data/mangas.json", JSON.stringify(mangas), (err) => {
+            //     if (err) {
+            //         console.log(err);
+            //         interaction.followUp({
+            //             ephemeral: true,
+            //             content: "Erreur lors de l'ajout du manga"
+            //         });
+            //     }
+            //     else {
+            //         interaction.followUp({
+            //             ephemeral: true,
+            //             content: "Manga ajouté avec succès"
+            //         });
+            //     }
+            // });
         }
         else{
             if(mangas.find(manga => manga.name === nom)?.discordUsers.includes(interaction.user.id)){
@@ -77,22 +82,7 @@ export const AddManga: Command = {
                 interaction.followUp({
                     ephemeral: true,
                     content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
-                });
-                writeFile("./src/data/mangas.json", JSON.stringify(mangas), (err) => {
-                    if (err) {
-                        console.log(err);
-                        interaction.followUp({
-                            ephemeral: true,
-                            content: "Erreur lors de l'ajout dans la liste des personnes à prévenir"
-                        });
-                    }
-                    else {
-                        interaction.followUp({
-                            ephemeral: true,
-                            content: "vous avez été ajoute avec succès à la liste des personnes à prévenir"
-                        });
-                    }
-                });   
+                }); 
             }
         }
     }

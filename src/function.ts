@@ -1,5 +1,5 @@
 import { Client, User } from "discord.js";
-import { writeFile } from "fs";
+import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import mangas from "./data/mangas.json";
 
 async function finder(manga: string, chapitre: number, page: boolean): Promise<boolean> {
@@ -44,16 +44,22 @@ export async function finderAll(client:Client) {
                 });
                 //console.log( __dirname + "/data/mangas.json " + existsSync( __dirname + "/data/mangas.json"));
 
-                writeFile( __dirname + "/data/mangas.json", JSON.stringify(mangas), (err) => {
-                    if(err){
-                        console.log(err);
-                    }
-                });
+                // writeFile( __dirname + "/data/mangas.json", JSON.stringify(mangas), (err) => {
+                //     if(err){
+                //         console.log(err);
+                //     }
+                // });
             }
         });
     });
 }
 
+export function sauvegarder(data:string, path:PathOrFileDescriptor):boolean {
+    //console.log("data ", data);
+    //let str = JSON.stringify(data);
+    writeFileSync(path, data, "utf-8");
+    return true;
+}
 
 // finder("ombres-et-lumieres", 219, false).then((value) => {
 //     console.log(value);

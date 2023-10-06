@@ -3,7 +3,9 @@ import token from "./data/token.json";
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
-import { finderAll } from "./chercheur";
+import { sauvegarder, finderAll } from "./function";
+import mangas from "./data/mangas.json";
+//import { finderAll } from "./chercheur";
 
 
 console.log("Bot is starting...");
@@ -17,26 +19,21 @@ const client = new Client({
         Intents.MessageContent,
     ]
 });
-//console.log(token.token);
 
 ready(client);
 interactionCreate(client);
 messageCreate(client);
 
-// client.addListener("messageCreate", (message) => {
-//     console.log(message);
-// });
+process.on("SIGINT", () => {
+    console.log("saving data...");
+    sauvegarder(JSON.stringify(mangas), "./src/data/mangas.json");
+    console.log("Bot is stopping...");
+    client.destroy();
+    console.log("Bot is stopped");
+    process.exit(0);
+});
 
 
 
 client.login(token.token);
-
-// client.on("ready", () => {
-//     console.log("Bot is ready");
-//     // finderAll(client);
-// });
-
-
-
-//console.log(client);
 //const interval = setInterval(finderAll, 1000 * 60, client);
