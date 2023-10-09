@@ -4,11 +4,13 @@ import mangas from "./data/mangas.json";
 
 async function finder(manga: string, chapitre: number, page: boolean): Promise<boolean> {
     let url: string;
-    if (page) {
-        url = "https://fr-scan.cc/manga/" + manga + "/chapitre-" + chapitre + "-vf/p/10000/";
-    } else {
-        url = "https://fr-scan.cc/manga/" + manga + "/chapitre-" + chapitre + "-vf/";
-    }
+    // if (page) {
+    //     url = "https://fr-scan.cc/manga/" + manga + "/chapitre-" + chapitre + "-vf/p/10000/";
+    // } else {
+    //     url = "https://fr-scan.cc/manga/" + manga + "/chapitre-" + chapitre + "-vf/";
+    // }
+
+    url = "https://phenixscans.fr/nano-machine-chapitre-173/";
 
     try {
         const response = await fetch(url, {
@@ -22,11 +24,16 @@ async function finder(manga: string, chapitre: number, page: boolean): Promise<b
         const text = await response.text();
         // console.log(text);
         return text.includes('https://fr-scan.cc/manga/' + manga + '/chapitre-' + chapitre + '-vf/');
+        //return text.includes('https://phenixscans.fr/wp-content/themes/mangastream/assets/images/404.png')
     } catch (error) {
         console.error('Error:', error);
         return false;
     }
 }
+
+finder("", 0, true).then((value) => {
+    console.log(value);
+});
 
 
 export async function finderAll(client:Client) {

@@ -36,7 +36,7 @@ export const AddManga: Command = {
         let nom = interaction.options.get("name")?.value;
         nom = nom?.toString().toLowerCase().replaceAll(" ", "-");
 
-        console.log(mangas.find(manga => manga.name === nom));
+        //console.log(mangas.find(manga => manga.name === nom));
 
         if(mangas.find(manga => manga.name === nom) === undefined){
             //console.log(nom);
