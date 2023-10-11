@@ -1,12 +1,12 @@
 import { Client, User, GatewayIntentBits as Intents} from "discord.js";
-import token from "./data/token.json";
+import * as dotenv from 'dotenv'
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
 import { sauvegarder, finderAll } from "./function";
 import mangas from "./data/mangas.json";
-//import { finderAll } from "./chercheur";
 
+dotenv.config()
 
 console.log("Bot is starting...");
 
@@ -34,6 +34,6 @@ process.on("SIGINT", () => {
 });
 
 
-
-client.login(token.token);
+console.log(process.env.TOKEN);
+client.login(process.env.TOKEN);
 //const interval = setInterval(finderAll, 1000 * 60 * 60, client);
