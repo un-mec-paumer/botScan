@@ -34,7 +34,8 @@ async function finder(manga:Manga): Promise<boolean> {
 
         //manga.chapitre++;
         const text = await response.text();
-        console.log(text.includes(url2));
+        // console.log(url);
+        // console.log(text.includes(url2));
         return text.includes(url2)
 
         
@@ -63,10 +64,9 @@ export async function finderAll(client:Client) {
                         user.send("Nouveau chapitre de " + manga.name + " : " + "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/");
                     });
                 });
-
+                sauvegarder(JSON.stringify(mangas));
             }
         });
-        sauvegarder(JSON.stringify(mangas));
     });
 }
 // finderAll();
