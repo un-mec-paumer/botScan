@@ -63,10 +63,11 @@ export async function finderAll(client:Client) {
 }
 // finderAll();
 
-export function sauvegarder(data:string, path:PathOrFileDescriptor):boolean {
+export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/):boolean {
     //console.log("data ", data);
     //let str = JSON.stringify(data);
-    writeFileSync(path, data, "utf-8");
+    let path2:PathOrFileDescriptor = "./src/data/mangas.json";
+    writeFileSync(path2, data, "utf-8");
     return true;
 }
 

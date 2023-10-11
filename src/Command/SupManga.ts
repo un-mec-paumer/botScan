@@ -1,7 +1,7 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import mangas from "../data/mangas.json";
-import { writeFile } from "fs";
+import { sauvegarder } from "src/function";
 
 export const SupManga: Command = {
     name: "supmanga",
@@ -25,7 +25,8 @@ export const SupManga: Command = {
         let manga = mangas.find(manga => manga.name === nom);
         if (manga) {
             mangas.splice(mangas.indexOf(manga), 1);
-            console.log(mangas);    
+            // console.log(mangas);
+            sauvegarder(JSON.stringify(mangas));    
             interaction.followUp({
                 ephemeral: true,
                 content: "Manga supprimé"

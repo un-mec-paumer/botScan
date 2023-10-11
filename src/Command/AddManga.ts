@@ -1,7 +1,7 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import mangas from "../data/mangas.json";
-import { writeFile } from "fs";
+import { sauvegarder } from "src/function";
 
 export const AddManga: Command = {
     name: "addmanga",
@@ -49,6 +49,7 @@ export const AddManga: Command = {
                 discordUsers: [interaction.user.id]
             });
             console.log(mangas);
+            sauvegarder(JSON.stringify(mangas));
             interaction.followUp({
                 ephemeral: true,
                 content: "Manga ajouté avec succès"

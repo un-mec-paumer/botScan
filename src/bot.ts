@@ -26,7 +26,7 @@ messageCreate(client);
 
 process.on("SIGINT", () => {
     console.log("saving data...");
-    sauvegarder(JSON.stringify(mangas), "./src/data/mangas.json");
+    sauvegarder(JSON.stringify(mangas));
     console.log("Bot is stopping...");
     client.destroy();
     console.log("Bot is stopped");
@@ -36,4 +36,4 @@ process.on("SIGINT", () => {
 
 console.log(process.env.TOKEN);
 client.login(process.env.TOKEN);
-//const interval = setInterval(finderAll, 1000 * 60 * 60, client);
+const interval = setInterval(finderAll, 1000 * 60 * 60, client);

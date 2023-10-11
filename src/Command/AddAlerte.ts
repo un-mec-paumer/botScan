@@ -1,7 +1,7 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import mangas from "../data/mangas.json";
-import { writeFile } from "fs";
+import { sauvegarder } from "src/function";
 
 export const AddAlerte: Command = {
     name: "addalerte",
@@ -30,13 +30,14 @@ export const AddAlerte: Command = {
         else{
             if(manga.discordUsers.find(user => user === interaction.user.id) === undefined){
                 manga.discordUsers.push(interaction.user.id);
-                console.log(mangas);
+                // console.log(mangas);
                 interaction.followUp({
                     ephemeral: true,
                     content: "Vous êtes maintenant abonné à ce manga"
                 });
             }
             else{
+                sauvegarder(JSON.stringify(mangas));
                 interaction.followUp({
                     ephemeral: true,
                     content: "Vous êtes déjà abonné à ce manga"

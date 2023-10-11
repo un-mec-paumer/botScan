@@ -1,7 +1,7 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import mangas from "../data/mangas.json";
-import { writeFile } from "fs";
+import { sauvegarder } from "src/function";
 
 export const SupAlerte: Command = {
     name: "supalerte",
@@ -37,7 +37,8 @@ export const SupAlerte: Command = {
             }
             else{
                 manga.discordUsers = manga.discordUsers.filter(user => user !== interaction.user.id);
-                console.log(mangas);
+                // console.log(mangas);
+                sauvegarder(JSON.stringify(mangas));
                 interaction.followUp({
                     ephemeral: true,
                     content: "Vous n'êtes plus abonné à ce manga"
