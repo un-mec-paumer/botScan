@@ -1,7 +1,7 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import mangas from "../data/mangas.json";
-import { sauvegarder } from "src/function";
+import { sauvegarder } from "../function";
 
 export const AddManga: Command = {
     name: "addmanga",
