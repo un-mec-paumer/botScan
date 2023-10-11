@@ -66,6 +66,7 @@ export async function finderAll(client:Client) {
 
             }
         });
+        sauvegarder(JSON.stringify(mangas));
     });
 }
 // finderAll();
