@@ -7,15 +7,22 @@ async function finder(manga:Manga): Promise<boolean> {
     let url: string = "";
     let url2: string = "";
     if(manga.pages){
-        url = "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/p/1";
-        url2 = "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre++ + "-vf/p/100000";
+        url = "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/p/1000000";
+        manga.chapitre++;
+        url2 = "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/";
     }
     else{
         url = "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/";
-        url2 = "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre++ + "-vf/";
+        manga.chapitre++;
+        url2 = "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/";
     }
 
+    // console.log(url);
+    // console.log(url2);
+
     manga.chapitre--;
+
+    // console.log(manga.chapitre);
 
     try {
         const response = await fetch(url, {
@@ -27,7 +34,7 @@ async function finder(manga:Manga): Promise<boolean> {
 
         //manga.chapitre++;
         const text = await response.text();
-        // console.log(text);
+        console.log(text.includes(url2));
         return text.includes(url2)
 
         
