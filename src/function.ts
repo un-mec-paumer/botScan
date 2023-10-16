@@ -61,7 +61,7 @@ async function finder(manga:Manga): Promise<boolean> {
 
 // finderWebtoon()
 
-export async function finderAll(/*client:Client*/) {
+export async function finderAll(client:Client) {
     console.log("finderAll");
     //const userID = "452370867758956554";
 
@@ -70,17 +70,17 @@ export async function finderAll(/*client:Client*/) {
             //console.log(value);
             if(value){
                 manga.chapitre++;
-                // manga.discordUsers.forEach(userID => {
-                //     client.users.fetch(userID).then((user:User) => {
-                //         user.send("Nouveau chapitre de " + manga.name + " : " + "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/");
-                //     });
-                // });
+                manga.discordUsers.forEach(userID => {
+                    client.users.fetch(userID).then((user:User) => {
+                        user.send("Nouveau chapitre de " + manga.name + " : " + "https://fr-scan.cc/manga/" + manga.name + "/chapitre-" + manga.chapitre + "-vf/");
+                    });
+                });
                 sauvegarder(JSON.stringify(mangas));
             }
         });
     });
 }
-finderAll();
+// finderAll();
 
 export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/):boolean {
     //console.log("data ", data);
