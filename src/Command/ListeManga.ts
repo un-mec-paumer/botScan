@@ -1,6 +1,6 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
-import mangas from "../data/mangas.json";
+import { BDD } from "../supabase";
 
 export const ListeManga: Command = {
     name: "maliste",
@@ -11,10 +11,14 @@ export const ListeManga: Command = {
         // console.log("Hello world!");
         let liste = "";
         let nom = "";
-        mangas.forEach(manga => {
-            nom = manga.name.replaceAll("-", " ");
-            liste += `- le manga ${nom} est au chapitre ${manga.chapitre}\n`;
+
+        BDD.getMangas().then((mangas) => {
+            mangas!.forEach(manga => {
+                nom = manga.name_manga.replaceAll("-", " ");
+                liste += `- le manga ${nom} est au chapitre ${manga.chapitre_manga}\n`;
+            });
         });
+        
         interaction.followUp({
             ephemeral: true,
             content: liste
