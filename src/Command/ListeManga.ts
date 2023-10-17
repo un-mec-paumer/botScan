@@ -13,15 +13,15 @@ export const ListeManga: Command = {
         let nom = "";
 
         BDD.getMangas().then((mangas) => {
+            console.log("mangas", mangas);
             mangas!.forEach(manga => {
                 nom = manga.name_manga.replaceAll("-", " ");
                 liste += `- le manga ${nom} est au chapitre ${manga.chapitre_manga}\n`;
             });
-        });
-        
-        interaction.followUp({
-            ephemeral: true,
-            content: liste
-        });
+            interaction.followUp({
+                ephemeral: true,
+                content: liste
+            });
+        });   
     }
 };

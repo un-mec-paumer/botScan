@@ -38,11 +38,11 @@ class supabase{
         return data
     }
 
-    async ajouterManga(name:string, chap:number){
+    async addManga(name:string, chap:number, page:boolean){
         const { data, error } = await this.client
         .from('mangas')
         .insert([
-            { name_manga: name, chapitre_manga: chap }
+            { name_manga: name, chapitre_manga: chap, page: page}
         ])
         return data
     }
@@ -104,7 +104,7 @@ class supabase{
         return data
     }
 
-    async supprimerLien(id_manga:number, id_user:number){
+async supprimerLien(id_manga:number, id_user:number){
         const { data, error } = await this.client
         .from('lien')
         .delete()

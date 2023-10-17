@@ -34,6 +34,6 @@ process.on("SIGINT", () => {
 });
 
 
-console.log(process.env.TOKEN);
+// console.log(process.env.TOKEN);
 client.login(process.env.TOKEN);
 const interval = setInterval(finderAll, 1000 * 60 * 60, client);

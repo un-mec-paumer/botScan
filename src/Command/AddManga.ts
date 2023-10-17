@@ -1,7 +1,8 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
-import mangas from "../data/mangas.json";
-import { sauvegarder } from "../function";
+import { BDD } from "../supabase";
+// import mangas from "../data/mangas.json";
+// import { sauvegarder } from "../function";
 
 export const AddManga: Command = {
     name: "addmanga",
@@ -38,53 +39,70 @@ export const AddManga: Command = {
 
         //console.log(mangas.find(manga => manga.name === nom));
 
-        if(mangas.find(manga => manga.name === nom) === undefined){
-            //console.log(nom);
-            let page = interaction.options.get("page")?.value;
-            page = page?.toString().toLowerCase();
-            mangas.push({
-                name: nom as string,
-                chapitre: interaction.options.get("chapitre")?.value as number,
-                pages: page === "oui" || page === "yes" || page === "o" || page === "y" ? true : false as boolean,
-                discordUsers: [interaction.user.id]
-            });
-            console.log(mangas);
-            sauvegarder(JSON.stringify(mangas));
-            interaction.followUp({
-                ephemeral: true,
-                content: "Manga ajouté avec succès"
-            });
-
-            // writeFile("./src/data/mangas.json", JSON.stringify(mangas), (err) => {
-            //     if (err) {
-            //         console.log(err);
-            //         interaction.followUp({
-            //             ephemeral: true,
-            //             content: "Erreur lors de l'ajout du manga"
-            //         });
-            //     }
-            //     else {
-            //         interaction.followUp({
-            //             ephemeral: true,
-            //             content: "Manga ajouté avec succès"
-            //         });
-            //     }
-            // });
-        }
-        else{
-            if(mangas.find(manga => manga.name === nom)?.discordUsers.includes(interaction.user.id)){
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "tu est déjà dans la liste des personnes à prévenir"
+        BDD.getManga(nom as string).then((manga) => {
+            if(manga!.length === 1){
+                BDD.getLien(manga![0].id_manga).then((user) => {
+                    if(user!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
+                        interaction.followUp({
+                            ephemeral: true,
+                            content: "tu est déjà dans la liste des personnes à prévenir"
+                        });
+                    }
+                    else{
+                        interaction.followUp({
+                            ephemeral: true,
+                            content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
+                        });
+                        BDD.addLien(manga![0].id_manga, parseInt(interaction.user.id));
+                    }
                 });
             }
             else{
-                mangas.find(manga => manga.name === nom)?.discordUsers.push(interaction.user.id);
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
-                }); 
+                let page = interaction.options.get("page")?.value 
+                BDD.addManga(nom as string, interaction.options.get("chapitre")?.value as number, (page === "oui" || page === "yes" || page === "o" || page === "y") ? true :false as boolean).then(() => {
+                    BDD.getManga(nom as string).then((manga) => {
+                        BDD.addLien(manga![0].id_manga, parseInt(interaction.user.id)).then(() => {
+                            interaction.followUp({
+                                ephemeral: true,
+                                content: "Manga ajouté avec succès"
+                            });
+                        });
+                    });
+                });
             }
-        }
+        });
+
+        // if(mangas.find(manga => manga.name === nom) === undefined){
+        //     //console.log(nom);
+        //     let page = interaction.options.get("page")?.value;
+        //     page = page?.toString().toLowerCase();
+        //     mangas.push({
+        //         name: nom as string,
+        //         chapitre: interaction.options.get("chapitre")?.value as number,
+        //         pages: page === "oui" || page === "yes" || page === "o" || page === "y" ? true : false as boolean,
+        //         discordUsers: [interaction.user.id]
+        //     });
+        //     console.log(mangas);
+        //     sauvegarder(JSON.stringify(mangas));
+        //     interaction.followUp({
+        //         ephemeral: true,
+        //         content: "Manga ajouté avec succès"
+        //     });
+        // }
+        // else{
+        //     if(mangas.find(manga => manga.name === nom)?.discordUsers.includes(interaction.user.id)){
+        //         interaction.followUp({
+        //             ephemeral: true,
+        //             content: "tu est déjà dans la liste des personnes à prévenir"
+        //         });
+        //     }
+        //     else{
+        //         mangas.find(manga => manga.name === nom)?.discordUsers.push(interaction.user.id);
+        //         interaction.followUp({
+        //             ephemeral: true,
+        //             content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
+        //         }); 
+        //     }
+        // }
     }
 };
