@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
+import { get } from 'http';
 class supabase{
     url:string
     key:string
@@ -27,6 +28,14 @@ class supabase{
         .from('mangas')
         .select('*')
         .match({ name_manga: name })
+        return data
+    }
+
+    async getMangaById(id:number){
+        const { data, error } = await this.client
+        .from('mangas')
+        .select('*')
+        .match({ id_manga: id })
         return data
     }
 
@@ -79,6 +88,14 @@ class supabase{
         return data
     }
 
+    async getUser(id_user:string){
+        const { data, error } = await this.client
+        .from('users')
+        .select('*')
+        .match({ id_user: id_user })
+        return data
+    }
+
     async supprimerUser(id:string){
         const { data, error } = await this.client
         .from('users')
@@ -87,26 +104,38 @@ class supabase{
         return data
     }
 
-    async addLien(id_manga:number, id_user:number){
+    async addLien(id_manga:number, id_user:string){
+        // const manga = await this.getMangaById(id_manga)
+        // const user = await this.getUser(id_user)
+        
+        // console.log(manga, user)
+
         const { data, error } = await this.client
-        .from('lien')
+        .from('alerte')
         .insert([
-            { id_manga: id_manga, id_user: id_user }
+            { id_manga: id_manga, id_user: id_user}
         ])
-        return data
+        return {data, error}
     }
 
     async getLien(id_manga:number){
         const { data, error } = await this.client
-        .from('lien')
+        .from('alerte')
         .select('id_user')
         .match({ id_manga: id_manga })
         return data
     }
 
-async supprimerLien(id_manga:number, id_user:number){
+    async getLiens(){
         const { data, error } = await this.client
-        .from('lien')
+        .from('alerte')
+        .select('*')
+        return data
+    }
+
+    async supprimerLien(id_manga:number, id_user:number){
+        const { data, error } = await this.client
+        .from('alerte')
         .delete()
         .match({ id_manga: id_manga, id_user: id_user })
         return data
@@ -118,6 +147,14 @@ async supprimerLien(id_manga:number, id_user:number){
 export const BDD = new supabase()
 
 
-// BDD.getManga("").then((manga) => {
-//     console.log(manga);
-// })
+BDD.addLien(3, "452370867758956554").then((error) => {
+    BDD.getLien(3).then((data) => {
+        console.log(data)
+    }).then(() => {
+        BDD.getLiens().then((data) => {
+            console.log(data)
+        });
+    });
+
+    console.log(error)
+})

@@ -1,7 +1,6 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
-import mangas from "../data/mangas.json";
-import { sauvegarder } from "../function";
+import { BDD } from "../supabase";
 
 export const SupManga: Command = {
     name: "supmanga",
@@ -22,37 +21,23 @@ export const SupManga: Command = {
         //console.log(interaction.options);
         let nom = interaction.options.get("name")?.value;
         nom = nom?.toString().replaceAll(" ", "-").toLowerCase();
-        let manga = mangas.find(manga => manga.name === nom);
-        if (manga) {
-            mangas.splice(mangas.indexOf(manga), 1);
-            // console.log(mangas);
-            sauvegarder(JSON.stringify(mangas));    
-            interaction.followUp({
-                ephemeral: true,
-                content: "Manga supprimé"
-            });
-
-            // writeFile("./src/data/mangas.json", JSON.stringify(mangas), (err) => {
-            //     if (err) {
-            //         console.log(err);
-            //         interaction.followUp({
-            //             ephemeral: true,
-            //             content: "Erreur lors de la suppression du manga"
-            //         });
-            //     }
-            //     else {
-            //         interaction.followUp({
-            //             ephemeral: true,
-            //             content: "Manga supprimé avec succès"
-            //         });
-            //     }
-            // });
-        }
-        else {
-            interaction.followUp({
-                ephemeral: true,
-                content: "Manga non trouvé"
-            });
-        }
+        
+        BDD.getManga(nom as string).then((manga) => {
+            if(manga!.length === 0){
+                interaction.followUp({
+                    ephemeral: true,
+                    content: "Le manga n'existe pas"
+                });
+            }
+            else{
+                BDD.getLien(manga![0].id_manga).then((user) => {
+                    user!.forEach(element => {
+                        BDD.supprimerLien(manga![0].id_manga, element.id_user)
+                    });
+                }).then(() => {
+                    BDD.supprimerManga(manga![0].name_manga);
+                });
+            }
+        });
     }
 };

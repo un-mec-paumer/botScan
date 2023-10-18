@@ -11,6 +11,7 @@ export const ListeManga: Command = {
         // console.log("Hello world!");
         let liste = "";
         let nom = "";
+        console.log(interaction.user.id);
 
         BDD.getMangas().then((mangas) => {
             console.log("mangas", mangas);
