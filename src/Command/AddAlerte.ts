@@ -1,7 +1,6 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
-import mangas from "../data/mangas.json";
-import { sauvegarder } from "../function";
+import { BDD } from "../supabase";
 
 export const AddAlerte: Command = {
     name: "addalerte",
@@ -19,30 +18,32 @@ export const AddAlerte: Command = {
     run: async (client: Client, interaction: CommandInteraction) => {
         let name = interaction.options.get("name")?.value;
         name = name?.toString().toLowerCase().replaceAll(" ", "-");
-        let manga = mangas.find(manga => manga.name === name);
-        if(manga === undefined){
-            interaction.followUp({
-                ephemeral: true,
-                content: "Le manga n'existe pas"
+        BDD.getManga(name!).then((manga) => {
+            // console.log(manga);
+            if (manga!.length == 0) {
+                interaction.followUp({
+                    ephemeral: true,
+                    content: "Manga non trouvé"
+                });
+                return;
+            }
+            BDD.getLien(manga![0].id_manga).then((user) => {
+                // console.log(user, interaction.user.id);
+                if(user!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
+                    interaction.followUp({
+                        ephemeral: true,
+                        content: "tu est déjà dans la liste des personnes à prévenir"
+                    });
+                }
+                else{
+                    BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
+                        interaction.followUp({
+                            ephemeral: true,
+                            content: "vous avez été ajouté à la liste des personnes à prévenir de " + manga![0].name_manga.replaceAll("-", " ")
+                        });
+                    });
+                }
             });
-            return;
-        }
-        else{
-            if(manga.discordUsers.find(user => user === interaction.user.id) === undefined){
-                manga.discordUsers.push(interaction.user.id);
-                // console.log(mangas);
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "Vous êtes maintenant abonné à ce manga"
-                });
-            }
-            else{
-                sauvegarder(JSON.stringify(mangas));
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "Vous êtes déjà abonné à ce manga"
-                });
-            }
-        }
+        })        
     }
 };

@@ -1,7 +1,6 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
-import mangas from "../data/mangas.json";
-import { sauvegarder } from "../function";
+import { BDD } from "../supabase";
 
 export const SupAlerte: Command = {
     name: "supalerte",
@@ -20,30 +19,28 @@ export const SupAlerte: Command = {
         let name = interaction.options.get("name")?.value;
         name = name?.toString().toLowerCase().replaceAll(" ", "-");
 
-        let manga = mangas.find(manga => manga.name === name);
-        if(manga === undefined){
-            interaction.followUp({
-                ephemeral: true,
-                content: "Le manga n'existe pas"
+        BDD.getManga(name!).then((manga) => {
+            if(manga!.length === 0){
+                interaction.followUp({
+                    ephemeral: true,
+                    content: "Manga non trouvé"
+                });
+                return;
+            }
+            BDD.supprimerLien(manga![0].id_manga, interaction.user.id).then((error) => {
+                if(error){
+                    interaction.followUp({
+                        ephemeral: true,
+                        content: "vous n'êtes pas dans la liste des personnes à prévenir de " + manga![0].name_manga.replaceAll("-", " ")
+                    });
+                    return;
+                }
+                interaction.followUp({
+                    ephemeral: true,
+                    content: "vous avez été supprimé de la liste des personnes à prévenir de " + manga![0].name_manga.replaceAll("-", " ")
+                });
             });
-            return;
-        }
-        else{
-            if(manga.discordUsers.find(user => user === interaction.user.id) === undefined){
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "Vous n'êtes pas abonné à ce manga"
-                });
-            }
-            else{
-                manga.discordUsers = manga.discordUsers.filter(user => user !== interaction.user.id);
-                // console.log(mangas);
-                sauvegarder(JSON.stringify(mangas));
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "Vous n'êtes plus abonné à ce manga"
-                });
-            }
-        }
+        });
+        
     }
 };
