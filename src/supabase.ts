@@ -133,7 +133,7 @@ class supabase{
         return data
     }
 
-    async supprimerLien(id_manga:number, id_user:number){
+    async supprimerLien(id_manga:number, id_user:string){
         const { data, error } = await this.client
         .from('alerte')
         .delete()
@@ -147,14 +147,14 @@ class supabase{
 export const BDD = new supabase()
 
 
-BDD.addLien(3, "452370867758956554").then((error) => {
-    BDD.getLien(3).then((data) => {
-        console.log(data)
-    }).then(() => {
-        BDD.getLiens().then((data) => {
-            console.log(data)
-        });
-    });
+// BDD.supprimerLien(3, "452370867758956554").then((error) => {
+//     BDD.getLien(3).then((data) => {
+//         console.log(data)
+//     }).then(() => {
+//         BDD.getLiens().then((data) => {
+//             console.log(data)
+//         });
+//     });
 
-    console.log(error)
-})
+//     console.log(error)
+// })

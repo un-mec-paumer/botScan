@@ -23,6 +23,7 @@ export const SupManga: Command = {
         nom = nom?.toString().replaceAll(" ", "-").toLowerCase();
         
         BDD.getManga(nom as string).then((manga) => {
+            // console.log(manga);
             if(manga!.length === 0){
                 interaction.followUp({
                     ephemeral: true,
@@ -30,13 +31,14 @@ export const SupManga: Command = {
                 });
             }
             else{
-                BDD.getLien(manga![0].id_manga).then((user) => {
-                    user!.forEach(element => {
-                        BDD.supprimerLien(manga![0].id_manga, element.id_user)
+                BDD.getManga(nom as string).then((manga) => {
+                    BDD.supprimerManga(manga![0].name_manga).then(() => {
+                        interaction.followUp({
+                            ephemeral: true,
+                            content: "Manga supprimé"
+                        });
                     });
-                }).then(() => {
-                    BDD.supprimerManga(manga![0].name_manga);
-                });
+                });               
             }
         });
     }

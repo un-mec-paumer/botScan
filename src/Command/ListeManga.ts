@@ -14,7 +14,7 @@ export const ListeManga: Command = {
         console.log(interaction.user.id);
 
         BDD.getMangas().then((mangas) => {
-            console.log("mangas", mangas);
+            // console.log("mangas", mangas);
             mangas!.forEach(manga => {
                 nom = manga.name_manga.replaceAll("-", " ");
                 liste += `- le manga ${nom} est au chapitre ${manga.chapitre_manga}\n`;
