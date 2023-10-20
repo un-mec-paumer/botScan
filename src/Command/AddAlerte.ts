@@ -27,6 +27,19 @@ export const AddAlerte: Command = {
                 });
                 return;
             }
+            BDD.getUser(interaction.user.id).then((user) => {
+                if(user?.length === 0){
+                    BDD.addUser(interaction.user.id, interaction.user.username).then(() => {
+                        BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
+                            interaction.followUp({
+                                ephemeral: true,
+                                content: "vous avez été ajouté à la liste des personnes à prévenir de " + manga![0].name_manga.replaceAll("-", " ")
+                            });
+                        });
+                    });
+                    return;
+                }
+            });
             BDD.getLien(manga![0].id_manga).then((user) => {
                 // console.log(user, interaction.user.id);
                 if(user!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){

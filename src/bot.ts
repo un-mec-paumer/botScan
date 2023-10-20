@@ -1,10 +1,9 @@
-import { Client, User, GatewayIntentBits as Intents} from "discord.js";
+import { Client, GatewayIntentBits as Intents} from "discord.js";
 import * as dotenv from 'dotenv'
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
-import { sauvegarder, finderAll } from "./function";
-import mangas from "./data/mangas.json";
+import { finderAll } from "./function";
 
 dotenv.config()
 
@@ -24,16 +23,6 @@ ready(client);
 interactionCreate(client);
 messageCreate(client);
 
-process.on("SIGINT", () => {
-    console.log("saving data...");
-    sauvegarder(JSON.stringify(mangas));
-    console.log("Bot is stopping...");
-    client.destroy();
-    console.log("Bot is stopped");
-    process.exit(0);
-});
-
-
 // console.log(process.env.TOKEN);
 client.login(process.env.TOKEN);
-const interval = setInterval(finderAll, 1000 * 60 * 60, client);
+const interval = setInterval(finderAll, 1000 * 60 * 10, client);

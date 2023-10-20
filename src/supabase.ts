@@ -72,7 +72,7 @@ class supabase{
         return data
     }
 
-    async addUsers(id:string, name:string){
+    async addUser(id:string, name:string){
         const { data, error } = await this.client
         .from('users')
         .insert([

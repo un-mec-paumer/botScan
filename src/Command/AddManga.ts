@@ -40,19 +40,33 @@ export const AddManga: Command = {
 
         BDD.getManga(nom as string).then((manga) => {
             if(manga!.length === 1){
-                BDD.getLien(manga![0].id_manga).then((user) => {
-                    if(user!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
-                        interaction.followUp({
-                            ephemeral: true,
-                            content: "tu est déjà dans la liste des personnes à prévenir"
+                BDD.getUser(interaction.user.id).then((user) => {
+                    if(user?.length === 1){
+                        BDD.getLien(manga![0].id_manga).then((user) => {
+                            if(user!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
+                                interaction.followUp({
+                                    ephemeral: true,
+                                    content: "tu est déjà dans la liste des personnes à prévenir"
+                                });
+                            }
+                            else{
+                                interaction.followUp({
+                                    ephemeral: true,
+                                    content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
+                                });
+                                BDD.addLien(manga![0].id_manga, interaction.user.id);
+                            }
                         });
                     }
                     else{
-                        interaction.followUp({
-                            ephemeral: true,
-                            content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
+                        BDD.addUser(interaction.user.id, interaction.user.username).then(() => {
+                            BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
+                                interaction.followUp({
+                                    ephemeral: true,
+                                    content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
+                                });
+                            });
                         });
-                        BDD.addLien(manga![0].id_manga, interaction.user.id);
                     }
                 });
             }
@@ -60,10 +74,21 @@ export const AddManga: Command = {
                 let page = interaction.options.get("page")?.value 
                 BDD.addManga(nom as string, interaction.options.get("chapitre")?.value as number, (page === "oui" || page === "yes" || page === "o" || page === "y") ? true :false as boolean).then(() => {
                     BDD.getManga(nom as string).then((manga) => {
-                        BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
-                            interaction.followUp({
-                                ephemeral: true,
-                                content: "Manga ajouté avec succès"
+                        BDD.getUser(interaction.user.id).then((user) => {
+                            if(user?.length === 0){
+                                BDD.addUser(interaction.user.id, interaction.user.username).then(() => {
+                                    interaction.followUp({
+                                        ephemeral: true,
+                                        content: "Manga ajouté avec succès"
+                                    });
+                                    return;
+                                });
+                            }
+                            BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
+                                interaction.followUp({
+                                    ephemeral: true,
+                                    content: "Manga ajouté avec succès"
+                                });
                             });
                         });
                     });
