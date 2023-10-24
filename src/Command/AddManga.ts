@@ -1,6 +1,7 @@
 import { Command } from "src/Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import { BDD } from "../supabase";
+import * as cheerio from 'cheerio';
 // import mangas from "../data/mangas.json";
 // import { sauvegarder } from "../function";
 
@@ -72,22 +73,68 @@ export const AddManga: Command = {
             }
             else{
                 let page = interaction.options.get("page")?.value 
-                BDD.addManga(nom as string, interaction.options.get("chapitre")?.value as number, (page === "oui" || page === "yes" || page === "o" || page === "y") ? true :false as boolean).then(() => {
-                    BDD.getManga(nom as string).then((manga) => {
-                        BDD.getUser(interaction.user.id).then((user) => {
-                            if(user?.length === 0){
-                                BDD.addUser(interaction.user.id, interaction.user.username).then(() => {
+
+                // BDD.getMangas().then((data) => {
+                //     data?.forEach(async (manga) => {
+                //         console.log(manga);
+                //         let url = "https://fr-scan.com/manga/" + manga.name_manga + "/";
+                //         const rep = await fetch(url, {
+                //             method: 'GET',
+                //             headers: {
+                //                 'Content-Type': 'text/html',
+                //             },
+                //         });
+                
+                //         const text = await rep.text();
+                //         const $ = cheerio.load(text);
+                //         const image = $(".summary_image img").attr("data-src");
+                //         // console.log(manga.name_manga.replaceAll("-", " "), image);
+                //         const synopsis = $(".summary__content").text().trim();
+                
+                //         //console.log(manga.name_manga.replaceAll("-", " ") + ":    ", synopsis, "\n");
+                //     });
+                // });
+
+
+                const verif = fetch("https://fr-scan.com/manga/" + nom + "/", {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'text/html',
+                    },
+                }).then(async (rep) => {
+                    const text = await rep.text();
+                    const $ = cheerio.load(text);
+
+                    if($(".summary_image img").attr("data-src") === undefined){
+                        interaction.followUp({
+                            ephemeral: true,
+                            content: "Manga non trouvable sur le site fr-scan.com"
+                        });
+                        return;
+                    }
+                    const image = $(".summary_image img").attr("data-src");
+                    // console.log(image);
+                    const synopsis = $(".summary__content").text().trim();
+                    // console.log(synopsis);
+
+
+                    BDD.addManga(nom as string, interaction.options.get("chapitre")?.value as number, (page === "oui" || page === "yes" || page === "o" || page === "y") ? true :false as boolean, image!, synopsis).then(() => {
+                        BDD.getManga(nom as string).then((manga) => {
+                            BDD.getUser(interaction.user.id).then((user) => {
+                                if(user?.length === 0){
+                                    BDD.addUser(interaction.user.id, interaction.user.username).then(() => {
+                                        interaction.followUp({
+                                            ephemeral: true,
+                                            content: "Manga ajouté avec succès"
+                                        });
+                                        return;
+                                    });
+                                }
+                                BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
                                     interaction.followUp({
                                         ephemeral: true,
                                         content: "Manga ajouté avec succès"
                                     });
-                                    return;
-                                });
-                            }
-                            BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
-                                interaction.followUp({
-                                    ephemeral: true,
-                                    content: "Manga ajouté avec succès"
                                 });
                             });
                         });

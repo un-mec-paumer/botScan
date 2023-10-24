@@ -1,11 +1,25 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
-import { get } from 'http';
-class supabase{
-    url:string
-    key:string
+import { randomInt } from 'crypto'
+import { add } from 'cheerio/lib/api/traversing';
 
-    client:SupabaseClient;
+function randomString() {
+    let result           = '';
+    let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    let random:number;
+    for ( let i = 0; i < 32; i++ ) {
+        random = randomInt(0, charactersLength)
+        result += characters.charAt(random);
+    }
+    return result;
+}
+
+class supabase{
+    private url:string
+    private key:string
+
+    private client:SupabaseClient;
 
     constructor(){
         dotenv.config()
@@ -47,11 +61,11 @@ class supabase{
         return data
     }
 
-    async addManga(name:string, chap:number, page:boolean){
+    async addManga(name:string, chap:number, page:boolean, image:string, synopsis:string){
         const { data, error } = await this.client
         .from('mangas')
         .insert([
-            { name_manga: name, chapitre_manga: chap, page: page}
+            { name_manga: name, chapitre_manga: chap, page: page, img: image, synopsis: synopsis }
         ])
         return data
     }
@@ -105,11 +119,6 @@ class supabase{
     }
 
     async addLien(id_manga:number, id_user:string){
-        // const manga = await this.getMangaById(id_manga)
-        // const user = await this.getUser(id_user)
-        
-        // console.log(manga, user)
-
         const { data, error } = await this.client
         .from('alerte')
         .insert([
@@ -141,11 +150,33 @@ class supabase{
         return data
     }
 
+    async addToken(id_user:string):Promise<string>{
+        const random = randomString()
+        const { data, error } = await this.client
+        .from('token')
+        .insert([
+            { user_id: id_user, token: random }
+        ])
 
+        return random;
+    }
+
+    async getMangasByToken(token:string){
+        const { data, error } = await this.client
+        .rpc('get_mangas_with_token', { token_string: token })
+        return data
+    }
 }
 
 export const BDD = new supabase()
 
+// console.log(randomString())
+// BDD.addToken("452370867758956554").then((data) => {
+//     console.log(data)
+//     BDD.getMangaByToken(data).then((data2) => {
+//         console.log(data2)
+//     })
+// })
 
 // BDD.supprimerLien(3, "452370867758956554").then((error) => {
 //     BDD.getLien(3).then((data) => {
