@@ -89,6 +89,12 @@ app.post("/addSub", (req: Request, res: Response) => {
     });
 })
 
+app.post("/deleteSub", (req: Request, res: Response) => {
+    BDD.supprimerLien(req.body.id_manga, req.body.id_user).then((data) => {
+        res.send(data);
+    });
+})
+
 app.post("/getSub", (req: Request, res: Response) => {
     BDD.getLien(req.body.id).then((data) => {
         res.send(data);

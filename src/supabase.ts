@@ -2,6 +2,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import { randomInt } from 'crypto'
 import { add } from 'cheerio/lib/api/traversing';
+import e from 'express';
 
 function randomString() {
     let result           = '';
@@ -161,31 +162,45 @@ class supabase{
         return random;
     }
 
+    async getUserByToken(token:string){
+        const { data, error } = await this.client
+        .from('token')
+        .select('user_id')
+        .match({ token: token })
+        return data
+    }
     async getMangasByToken(token:string){
         const { data, error } = await this.client
         .rpc('get_mangas_with_token', { token_string: token })
+        return data
+    }
+
+    async addAlerteByToken(id_manga:number, token:string){
+        this.getUserByToken(token).then((data) => {
+            console.log(data)
+            if(data?.length == 0) return;
+            this.addLien(id_manga, data![0].user_id)
+        })
+    }
+
+    async suppAlerteByToken(id_manga:number, token:string){
+        this.getUserByToken(token).then((data) => {
+            console.log(data)
+            if(data?.length == 0) return;
+            this.supprimerLien(id_manga, data![0].user_id)
+        })
+    }
+
+    async verifTokens(){
+        const { data, error } = await this.client
+        .rpc("delete_old_tokens")
+
+        if(error) console.error(error)
         return data
     }
 }
 
 export const BDD = new supabase()
 
-// console.log(randomString())
-// BDD.addToken("452370867758956554").then((data) => {
-//     console.log(data)
-//     BDD.getMangaByToken(data).then((data2) => {
-//         console.log(data2)
-//     })
-// })
-
-// BDD.supprimerLien(3, "452370867758956554").then((error) => {
-//     BDD.getLien(3).then((data) => {
-//         console.log(data)
-//     }).then(() => {
-//         BDD.getLiens().then((data) => {
-//             console.log(data)
-//         });
-//     });
-
-//     console.log(error)
-// })
+// BDD.addToken('452370867758956554').then((data) => { console.log(data) })
+BDD.verifTokens().then((data) => { console.log(data) })
