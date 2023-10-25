@@ -29,6 +29,7 @@ messageCreate(client);
 // console.log(process.env.TOKEN);
 client.login(process.env.TOKEN);
 // const interval = setInterval(finderAll, 1000 * 60 * 10, client);
+// const interval2 = setInterval(BDD.verifTokens, 1000, client);
 
 const app = Express();
 
@@ -84,14 +85,14 @@ app.post("/manga", (req: Request, res: Response) => {
 })
 
 app.post("/addSub", (req: Request, res: Response) => {
-    BDD.addLien(req.body.id, req.body.name).then((data) => {
-        res.send(data);
+    BDD.addAlerteByToken(req.body.id_manga, req.body.token).then((data) => {
+        res.send(true);
     });
 })
 
 app.post("/deleteSub", (req: Request, res: Response) => {
-    BDD.supprimerLien(req.body.id_manga, req.body.id_user).then((data) => {
-        res.send(data);
+    BDD.suppAlerteByToken(req.body.id_manga, req.body.token).then((data) => {
+        res.send(true);
     });
 })
 
@@ -106,10 +107,10 @@ app.post("/connexion", (req: Request, res: Response) => {
         user.send("bonjour quelqu'un veux se connecté sur le site ScanManager et nous voudrions si c'est bien vous (pour accepter la connexion :👍 sinon 👎)").then((message) => {
             // message.react("👍");
             // message.react("👎");
-            client.on("messageReactionAdd", (reaction, user) => {
+            client.on("messageReactionAdd", async (reaction, user) => {
                 if (reaction.emoji.name === "👍") {
                     //console.log("coucou");
-                    res.send(BDD.addToken(req.body.id));
+                    res.send(await BDD.addToken(req.body.id));
                 }
                 else if (reaction.emoji.name === "👎") {
                     res.send("non");

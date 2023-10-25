@@ -1,8 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import { randomInt } from 'crypto'
-import { add } from 'cheerio/lib/api/traversing';
-import e from 'express';
 
 function randomString() {
     let result           = '';
@@ -126,6 +124,7 @@ class supabase{
             { id_manga: id_manga, id_user: id_user}
         ])
         return {data, error}
+
     }
 
     async getLien(id_manga:number){
@@ -177,7 +176,7 @@ class supabase{
 
     async addAlerteByToken(id_manga:number, token:string){
         this.getUserByToken(token).then((data) => {
-            console.log(data)
+            //console.log(data)
             if(data?.length == 0) return;
             this.addLien(id_manga, data![0].user_id)
         })
@@ -185,7 +184,7 @@ class supabase{
 
     async suppAlerteByToken(id_manga:number, token:string){
         this.getUserByToken(token).then((data) => {
-            console.log(data)
+            //console.log(data)
             if(data?.length == 0) return;
             this.supprimerLien(id_manga, data![0].user_id)
         })
@@ -201,6 +200,3 @@ class supabase{
 }
 
 export const BDD = new supabase()
-
-// BDD.addToken('452370867758956554').then((data) => { console.log(data) })
-BDD.verifTokens().then((data) => { console.log(data) })

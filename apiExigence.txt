@@ -1,5 +1,5 @@
 / doit retourner tout les mangas avec sinopite et image
 / doit pourvoir faire une recherche par nom de manga
-- doit pourvoir s'ajoute/se retirer de la liste d'abonnment 
+/ doit pourvoir s'ajoute/se retirer de la liste d'abonnment 
 / doit pourvoir voir la liste d'abonnement
 / doit pourvoir se co (veux faire ca part discordmais pas sur de reussir)
