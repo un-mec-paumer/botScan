@@ -2,7 +2,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import { randomInt } from 'crypto'
 
-function randomString() {
+export function randomString() {
     let result           = '';
     let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let charactersLength = characters.length;
@@ -109,6 +109,14 @@ class supabase{
         return data
     }
 
+    async getUserByName(name_user:string){
+        const { data, error } = await this.client
+        .from('users')
+        .select('*')
+        .match({ name_user: name_user })
+        return data
+    }
+
     async supprimerUser(id:string){
         const { data, error } = await this.client
         .from('users')
@@ -152,11 +160,16 @@ class supabase{
 
     async addToken(id_user:string):Promise<string>{
         const random = randomString()
+
+        //console.log(random, id_user)
+
         const { data, error } = await this.client
         .from('token')
         .insert([
             { user_id: id_user, token: random }
         ])
+
+        //if(error) console.error(error)
 
         return random;
     }
@@ -200,3 +213,11 @@ class supabase{
 }
 
 export const BDD = new supabase()
+
+
+// BDD.addToken("452370867758956554").then((data) => {
+//     BDD.getUserByToken(data).then((data) => {
+//         console.log(data)
+//     })
+// })
+
