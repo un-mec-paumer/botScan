@@ -143,6 +143,14 @@ class supabase{
         return data
     }
 
+    async verfiLien(id_user:string, id_manga:number){
+        const { data, error } = await this.client
+        .from('alerte')
+        .select('*')
+        .match({ id_user: id_user, id_manga: id_manga })
+        return data
+    }
+
     async getLiens(){
         const { data, error } = await this.client
         .from('alerte')
@@ -201,6 +209,18 @@ class supabase{
             if(data?.length == 0) return;
             this.supprimerLien(id_manga, data![0].user_id)
         })
+    }
+
+    async getAlerteByToken(token:string, id_manga:number){
+        const user = await this.getUserByToken(token);
+
+        if(user?.length == 0) return;
+        const { data, error } = await this.client
+        .from('alerte')
+        .select('*')
+        .match({ id_user: user![0].user_id, id_manga: id_manga })
+        if(error) console.error(error)
+        return data
     }
 
     async verifTokens(){

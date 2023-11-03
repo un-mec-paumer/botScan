@@ -31,6 +31,10 @@ client.login(process.env.TOKEN);
 // const interval = setInterval(finderAll, 1000 * 60 * 10, client);
 // const interval2 = setInterval(BDD.verifTokens, 1000, client);
 
+// client.users.fetch("452370867758956554").then((user) => {
+//     console.log(user.avatarURL())
+// });
+
 const pendingConnections = new Map();
 
 async function handleConnectionValidation(user:string, res:Response) {
@@ -108,20 +112,20 @@ app.post("/manga", (req: Request, res: Response) => {
 
 app.post("/addSub", (req: Request, res: Response) => {
     BDD.addAlerteByToken(req.body.id_manga, req.body.token).then((data) => {
-        res.send(true);
+        res.send({res:true});
     });
 })
 
 app.post("/deleteSub", (req: Request, res: Response) => {
     BDD.suppAlerteByToken(req.body.id_manga, req.body.token).then((data) => {
-        res.send(true);
+        res.send({res:true});
     });
 })
 
-app.post("/getSub", (req: Request, res: Response) => {
-    BDD.getLien(req.body.id).then((data) => {
-        res.send(data);
-    });
+app.post("/getSub",async (req: Request, res: Response) => {
+    const data = await BDD.getAlerteByToken(req.body.token, req.body.id_manga);
+    //console.log(data?.length === 0 ? false : true);
+    res.send({sub:data?.length === 0 ? false : true});
 })
 
 app.post("/connexion", (req: Request, res: Response) => {
