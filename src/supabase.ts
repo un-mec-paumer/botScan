@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import { randomInt } from 'crypto'
+import { xml } from 'cheerio';
 
 export function randomString() {
     let result           = '';
@@ -41,6 +42,13 @@ class supabase{
         .from('mangas')
         .select('*')
         .match({ name_manga: name })
+
+        if(error || data.length === 0) console.error(error)
+        console.log(data)
+        // data?.forEach((e) => {
+        //     e.img = this.client.storage.from('mangas').createSignedUrl(e.img, 60 * 60 * 24)
+        // })
+        console.log(data)
         return data
     }
 
@@ -230,11 +238,46 @@ class supabase{
         if(error) console.error(error)
         return data
     }
+
+    async getUserInfo(token:string){
+        const res = await this.getUserByToken(token);
+
+        if(res?.length == 0) return;
+        const { data, error } = await this.client
+        .from('users')
+        .select('*')
+        .match({ id_user: res![0].user_id })
+
+        if(error) console.error(error)
+        return data
+    }
+
+    async getImgFromTest(name:string){
+        const { data, error } = await this.client
+        .storage
+        .from('test')
+        .createSignedUrl(name + '.png', 60 * 60 * 24)
+
+        if(error) console.error(error)
+        return data
+    }
+
+    async addImgToTest(name:string, img:ArrayBuffer){
+        const { data, error } = await this.client
+        .storage
+        .from('test')
+        .upload(name, img, {contentType: 'image/png'})
+
+        if(error) console.error(error)
+        return data
+    }
 }
 
 export const BDD = new supabase()
 
-
+// BDD.getImgFromTest().then((data) => {
+//     console.log(data)
+// })
 // BDD.addToken("452370867758956554").then((data) => {
 //     BDD.getUserByToken(data).then((data) => {
 //         console.log(data)

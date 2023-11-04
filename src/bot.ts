@@ -35,7 +35,6 @@ client.login(process.env.TOKEN);
 //     console.log(user.avatarURL())
 // });
 
-const pendingConnections = new Map();
 
 async function handleConnectionValidation(user:string, res:Response) {
     return new Promise((resolve) => {
@@ -78,6 +77,12 @@ app.get("/mangas", (req: Request, res: Response) => {
         res.send(data);
     });
 })
+
+app.post("/mangaImg", (req: Request, res: Response) => {
+    BDD.getImgFromTest(req.body.name).then((data) => {
+        res.send(data);
+    });
+});
 
 app.post("/mangasByToken", (req: Request, res: Response) => {
     BDD.getMangasByToken(req.body.token).then((data) => {
@@ -148,3 +153,11 @@ app.post("/connexion", (req: Request, res: Response) => {
         });
     });
 })
+
+app.post("/getUser", async (req: Request, res: Response) => {
+    const data = await BDD.getUserInfo(req.body.token);
+
+    //console.log(data);
+
+    res.send(data![0]);
+});

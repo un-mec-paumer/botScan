@@ -74,3 +74,18 @@ export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/):boolean 
     writeFileSync(path2, data, "utf-8");
     return true;
 }
+
+export async function downloadImg() {
+    const mangas = await BDD.getMangas().then((mangas) => mangas)
+
+    mangas!.forEach(async manga => {
+        const response = await fetch(manga.img)
+    
+        const img = await response.arrayBuffer().then((buffer) => buffer);
+        BDD.addImgToTest(manga.name_manga + ".png", img)
+    });
+}
+
+
+
+downloadImg()
