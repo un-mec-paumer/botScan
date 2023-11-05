@@ -44,11 +44,11 @@ class supabase{
         .match({ name_manga: name })
 
         if(error || data.length === 0) console.error(error)
-        console.log(data)
+        //console.log(data)
         // data?.forEach((e) => {
         //     e.img = this.client.storage.from('mangas').createSignedUrl(e.img, 60 * 60 * 24)
         // })
-        console.log(data)
+        //console.log(data)
         return data
     }
 
@@ -93,11 +93,11 @@ class supabase{
         return data
     }
 
-    async addUser(id:string, name:string){
+    async addUser(id:string, name:string, img:string){
         const { data, error } = await this.client
         .from('users')
         .insert([
-            { id_user: id, name_user: name }
+            { id_user: id, name_user: name, pp: img }
         ])
         return data
     }

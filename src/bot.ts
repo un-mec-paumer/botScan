@@ -16,7 +16,6 @@ const client = new Client({
         Intents.Guilds,
         Intents.GuildMessages,
         Intents.DirectMessages,
-        Intents.DirectMessages,
         Intents.MessageContent,
         Intents.DirectMessageReactions,
     ]
@@ -36,14 +35,27 @@ client.login(process.env.TOKEN);
 // });
 
 
-async function handleConnectionValidation(user:string, res:Response) {
+async function handleConnectionValidation() {
     return new Promise((resolve) => {
         // Attendez la réaction de l'utilisateur
         client.on("messageReactionAdd", async (reaction, reactingUser) => {
             if (reaction.emoji.name === "👍") {
-                resolve({ token: await BDD.addToken(user) });
+                resolve(true);
             } else {
-                resolve({token:"non"});
+                resolve(false);
+            }
+        });
+    });
+}
+
+async function handleCreateUser() {
+    return new Promise((resolve) => {
+        // Attendez la réaction de l'utilisateur
+        client.on("messageReactionAdd", async (reaction, reactingUser) => {
+            if (reaction.emoji.name === "👍") {
+                resolve(true);
+            } else {
+                resolve(false);
             }
         });
     });
@@ -136,28 +148,89 @@ app.post("/getSub",async (req: Request, res: Response) => {
 app.post("/connexion", (req: Request, res: Response) => {
     BDD.getUserByName(req.body.name).then((data) => {
         //console.log(data);
+
+        if(data?.length === 0) {
+            res.send({token:"not Exist"});
+            return;
+        }
         client.users.fetch(data![0].id_user).then((user) => {
-            const connectionId = randomString();
+            //const connectionId = randomString();
 
             // Stockez cet identifiant de connexion en attente
             //pendingConnections.set(connectionId, user.id);
 
             user.send("bonjour quelqu'un veut se connecter sur le site ScanManager et nous voudrions savoir si c'est bien vous (pour accepter la connexion :👍 sinon 👎)").then(async (message) => {
-                // Vous n'avez pas besoin de gérer la réaction ici
-
-                let resVal = await handleConnectionValidation(user.id, res); 
+                // Vous n'avez pas besoin de gérer la réaction ici, car vous pouvez le faire dans le gestionnaire de réaction
+                handleConnectionValidation().then((value) => {
+                    if(value) {
+                        BDD.addToken(user.id).then((data) => {
+                            res.send({token:data});
+                        });
+                    }
+                    else {
+                        res.send({token:"not Accept"});
+                    }
+                });
                 
                 //console.log(resVal);
-                res.send(resVal);
+                //res.send(resVal);
             });
-        });
-    });
+        })
+    })
 })
 
 app.post("/getUser", async (req: Request, res: Response) => {
-    const data = await BDD.getUserInfo(req.body.token);
-
+    console.log(req.body.token);
+    const data = await BDD.getUserInfo(req.body.token)
+    // console.log(data);
+    if(data === undefined) {
+        res.send({result:"notExist"});
+        return;
+    }
+    //.catch((err) => {return err});
     //console.log(data);
 
     res.send(data![0]);
+});
+
+app.post("/newUser", async (req: Request, res: Response) => {
+    const idDiscord = req.body.id;
+    //const name = req.body.name;
+
+    client.users.fetch(idDiscord).then(async (user) => {
+        //const verif = await BDD.getUser(idDiscord).then((data) => { return data });
+
+        // if(verif?.length !== 0){
+        //     res.send({result:"alreadyExist"});
+        // }
+        //else{
+            const avatarURL = user.avatarURL();
+            const name = user.username;
+            user.send("bonjour quelqu'un veut crée ajouté votre compte sur se bot si il s'agit de vous reagisser avec 👍 pour accespter sinon 👎").then(async (message) => {
+                handleCreateUser().then((value) => {
+                    if(!value) {
+                        res.send({result:"not Accept"}); 
+                        return;
+                    }
+                    BDD.addUser(idDiscord, name, avatarURL!).then((data) => {
+                        //res.send({res:true});
+    
+                        BDD.addToken(idDiscord).then((data) => {
+                            res.send({result:data});
+                        });
+                    });
+                    // if(user.globalName === "totodu91") {
+                    //     BDD.addToken(idDiscord).then((data) => {
+                    //         res.send({result:data});
+                    //     });
+                    // }
+                });
+            })
+            .catch((err) => {
+                res.send({result:"not Access to DM"});
+            });
+        //}
+    }).catch((err) => {
+        res.send({result:"ID not exist in discord"});
+    });
 });

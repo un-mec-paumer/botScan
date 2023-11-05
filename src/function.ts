@@ -30,7 +30,7 @@ async function finder(manga:Manga): Promise<boolean> {
         //manga.chapitre_manga++;
         const text = await response.text();
         // console.log(url);
-        console.log(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/", text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/"));
+        //console.log(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/", text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/"));
         return text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/");
 
         
@@ -46,7 +46,7 @@ export async function finderAll(client:Client) {
 
     BDD.getMangas().then((mangas) => {
         mangas!.forEach(manga => {
-            console.log(manga);
+            //console.log(manga);
             finder(manga).then((value) => {
                 //console.log(value);
                 if(value){                    
@@ -75,17 +75,17 @@ export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/):boolean 
     return true;
 }
 
-export async function downloadImg() {
-    const mangas = await BDD.getMangas().then((mangas) => mangas)
+// export async function downloadImg() {
+//     const mangas = await BDD.getMangas().then((mangas) => mangas)
 
-    mangas!.forEach(async manga => {
-        const response = await fetch(manga.img)
+//     mangas!.forEach(async manga => {
+//         const response = await fetch(manga.img)
     
-        const img = await response.arrayBuffer().then((buffer) => buffer);
-        BDD.addImgToTest(manga.name_manga + ".png", img)
-    });
-}
+//         const img = await response.arrayBuffer().then((buffer) => buffer);
+//         BDD.addImgToTest(manga.name_manga + ".png", img)
+//     });
+// }
 
 
 
-downloadImg()
+// downloadImg()

@@ -22,7 +22,7 @@ export default (client: Client): void => {
             client.users.fetch(harcele).then((user) => {
                 for(let i = 0; i < 10; i++) user.send("Tu es harcelé par quelqu'un : " + args.join(" "));
             });
-            console.log(harcele);
+            //console.log(harcele);
             //client.user?.fetch("");
         }
         

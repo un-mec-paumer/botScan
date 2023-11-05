@@ -60,7 +60,7 @@ export const AddManga: Command = {
                         });
                     }
                     else{
-                        BDD.addUser(interaction.user.id, interaction.user.username).then(() => {
+                        BDD.addUser(interaction.user.id, interaction.user.username, interaction.user.avatarURL()!).then(() => {
                             BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
                                 interaction.followUp({
                                     ephemeral: true,
@@ -122,7 +122,8 @@ export const AddManga: Command = {
                         BDD.getManga(nom as string).then((manga) => {
                             BDD.getUser(interaction.user.id).then((user) => {
                                 if(user?.length === 0){
-                                    BDD.addUser(interaction.user.id, interaction.user.username).then(() => {
+                                    const useravatar = interaction.user.avatarURL();
+                                    BDD.addUser(interaction.user.id, interaction.user.username, useravatar!).then(() => {
                                         interaction.followUp({
                                             ephemeral: true,
                                             content: "Manga ajouté avec succès"
