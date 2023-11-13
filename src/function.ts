@@ -75,16 +75,14 @@ export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/):boolean 
     return true;
 }
 
-// export async function downloadImg() {
-//     const mangas = await BDD.getMangas().then((mangas) => mangas)
-
-//     mangas!.forEach(async manga => {
-//         const response = await fetch(manga.img)
+export async function downloadImg(imgStr:string, name_manga:string) {
     
-//         const img = await response.arrayBuffer().then((buffer) => buffer);
-//         BDD.addImgToTest(manga.name_manga + ".png", img)
-//     });
-// }
+    const response = await fetch(imgStr)
+
+    const img = await response.arrayBuffer().then((buffer) => buffer);
+    BDD.addImgToTest(name_manga + ".png", img)
+    
+}
 
 
 

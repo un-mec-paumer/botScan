@@ -3,7 +3,7 @@ import { CommandInteraction, Client, ApplicationCommandOptionType } from "discor
 import { BDD } from "../supabase";
 import * as cheerio from 'cheerio';
 // import mangas from "../data/mangas.json";
-// import { sauvegarder } from "../function";
+import { downloadImg } from "../function";
 
 export const AddManga: Command = {
     name: "addmanga",
@@ -72,6 +72,7 @@ export const AddManga: Command = {
                 });
             }
             else{
+                //console.log("verif ");
                 let page = interaction.options.get("page")?.value 
 
                 // BDD.getMangas().then((data) => {
@@ -105,20 +106,22 @@ export const AddManga: Command = {
                     const text = await rep.text();
                     const $ = cheerio.load(text);
 
-                    if($(".summary_image img").attr("data-src") === undefined){
+                    //console.log($(".summary_image img").attr("src"));
+                    if($(".summary_image img").attr("src") === undefined){
                         interaction.followUp({
                             ephemeral: true,
                             content: "Manga non trouvable sur le site fr-scan.com"
                         });
                         return;
                     }
-                    const image = $(".summary_image img").attr("data-src");
+                    const image = $(".summary_image img").attr("src");
                     // console.log(image);
                     const synopsis = $(".summary__content").text().trim();
                     // console.log(synopsis);
 
 
                     BDD.addManga(nom as string, interaction.options.get("chapitre")?.value as number, (page === "oui" || page === "yes" || page === "o" || page === "y") ? true :false as boolean, image!, synopsis).then(() => {
+                        downloadImg(image!, nom as string)
                         BDD.getManga(nom as string).then((manga) => {
                             BDD.getUser(interaction.user.id).then((user) => {
                                 if(user?.length === 0){

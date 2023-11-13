@@ -206,7 +206,7 @@ class supabase{
     async addAlerteByToken(id_manga:number, token:string){
         this.getUserByToken(token).then((data) => {
             //console.log(data)
-            if(data?.length == 0) return;
+            if(data?.length == 0) return false;
             this.addLien(id_manga, data![0].user_id)
         })
     }
@@ -214,7 +214,7 @@ class supabase{
     async suppAlerteByToken(id_manga:number, token:string){
         this.getUserByToken(token).then((data) => {
             //console.log(data)
-            if(data?.length == 0) return;
+            if(data?.length == 0) return false;
             this.supprimerLien(id_manga, data![0].user_id)
         })
     }
@@ -232,10 +232,11 @@ class supabase{
     }
 
     async verifTokens(){
-        const { data, error } = await this.client
-        .rpc("delete_old_tokens")
-
-        if(error) console.error(error)
+        
+        let { data, error } = await this.client
+        .rpc('delete_old_tokens')
+        if (error) console.error(error)
+        //else console.log(data)
         return data
     }
 
@@ -271,6 +272,16 @@ class supabase{
         if(error) console.error(error)
         return data
     }
+
+    async supImgFromTest(name:string){
+        const { data, error } = await this.client
+        .storage
+        .from('test')
+        .remove([name + '.png'])
+
+        if(error) console.error(error)
+        return data
+    }
 }
 
 export const BDD = new supabase()
@@ -282,5 +293,9 @@ export const BDD = new supabase()
 //     BDD.getUserByToken(data).then((data) => {
 //         console.log(data)
 //     })
+// })
+
+// BDD.verifTokens().then((data) => {
+//     //console.log(data)
 // })
 

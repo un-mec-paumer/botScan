@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits as Intents} from "discord.js";
+import { Client, GatewayIntentBits as Intents, User} from "discord.js";
 import * as dotenv from 'dotenv'
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
@@ -6,8 +6,13 @@ import messageCreate from "./listeners/messageCreate";
 import { finderAll } from "./function";
 import Express, { Request, Response } from "express";
 import { BDD, randomString } from "./supabase";
+import { env } from "process";
 
 dotenv.config()
+
+function ntm() {
+    BDD.verifTokens()
+}
 
 console.log("Bot is starting...");
 
@@ -27,8 +32,8 @@ messageCreate(client);
 
 // console.log(process.env.TOKEN);
 client.login(process.env.TOKEN);
-// const interval = setInterval(finderAll, 1000 * 60 * 10, client);
-// const interval2 = setInterval(BDD.verifTokens, 1000, client);
+const interval = setInterval(finderAll, 1000 * 60 * 10, client);
+const interval2 = setInterval(ntm, 1000);
 
 // client.users.fetch("452370867758956554").then((user) => {
 //     console.log(user.avatarURL())
@@ -98,6 +103,10 @@ app.post("/mangaImg", (req: Request, res: Response) => {
 
 app.post("/mangasByToken", (req: Request, res: Response) => {
     BDD.getMangasByToken(req.body.token).then((data) => {
+        if(data === undefined || data!.length === 0) {
+            res.send({result:"notExist"});
+            return;
+        }
         let result:any = [];
         data.forEach((e:any) => {
             result.push({
@@ -121,7 +130,7 @@ app.post("/mangaByid", (req: Request, res: Response) => {
 })
 
 app.post("/manga", (req: Request, res: Response) => {
-    console.log(req.body);
+    //console.log(req.body);
     BDD.getManga(req.body.name).then((data) => {
         res.send(data);
     });
@@ -180,10 +189,10 @@ app.post("/connexion", (req: Request, res: Response) => {
 })
 
 app.post("/getUser", async (req: Request, res: Response) => {
-    console.log(req.body.token);
+    //console.log(req.body.token);
     const data = await BDD.getUserInfo(req.body.token)
     // console.log(data);
-    if(data === undefined) {
+    if(data === undefined || data!.length === 0) {
         res.send({result:"notExist"});
         return;
     }
@@ -233,4 +242,25 @@ app.post("/newUser", async (req: Request, res: Response) => {
     }).catch((err) => {
         res.send({result:"ID not exist in discord"});
     });
+});
+
+app.post("/sendMessage", async (req: Request, res: Response) => {
+    //console.log(req.body.text);
+
+    const User:User|void = await BDD.getUserByToken(req.body.token).then(async (data) => {
+        // console.log(data);
+        const res = await client.users.fetch(data![0].user_id).then((user) => {
+            //console.log("user in: ",user);
+            return user;
+        });
+        return res;
+    });
+
+    //console.log("user out: ",User);
+
+    client.users.fetch(process.env.DEV!).then((user) => {
+        user.send("message de " + User!.username + " : " + req.body.text);
+    }).then(() => {
+        res.send({res:true});
+    })// }).catch((err) => {res.send({res:false})});
 });
