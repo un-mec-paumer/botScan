@@ -4,7 +4,7 @@ import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
 import { finderAll } from "./function";
-import Express, { Request, Response } from "express";
+import Express, { Request, Response, NextFunction  } from "express";
 import { BDD, randomString } from "./supabase";
 import { env } from "process";
 
@@ -70,7 +70,7 @@ const app = Express();
 
 app.use(Express.json());
 
-app.use((req, res, next) => {
+app.use((req:Request, res:Response, next:NextFunction ) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -162,13 +162,13 @@ app.post("/connexion", (req: Request, res: Response) => {
             res.send({token:"not Exist"});
             return;
         }
-        client.users.fetch(data![0].id_user).then((user) => {
+        client.users.fetch(data![0].id_user).then((user:User) => {
             //const connectionId = randomString();
 
             // Stockez cet identifiant de connexion en attente
             //pendingConnections.set(connectionId, user.id);
 
-            user.send("bonjour quelqu'un veut se connecter sur le site ScanManager et nous voudrions savoir si c'est bien vous (pour accepter la connexion :👍 sinon 👎)").then(async (message) => {
+            user.send("bonjour quelqu'un veut se connecter sur le site ScanManager et nous voudrions savoir si c'est bien vous (pour accepter la connexion :👍 sinon 👎)").then(async () => {
                 // Vous n'avez pas besoin de gérer la réaction ici, car vous pouvez le faire dans le gestionnaire de réaction
                 handleConnectionValidation().then((value) => {
                     if(value) {
@@ -206,7 +206,7 @@ app.post("/newUser", async (req: Request, res: Response) => {
     const idDiscord = req.body.id;
     //const name = req.body.name;
 
-    client.users.fetch(idDiscord).then(async (user) => {
+    client.users.fetch(idDiscord).then(async (user:User) => {
         //const verif = await BDD.getUser(idDiscord).then((data) => { return data });
 
         // if(verif?.length !== 0){
@@ -215,7 +215,7 @@ app.post("/newUser", async (req: Request, res: Response) => {
         //else{
             const avatarURL = user.avatarURL();
             const name = user.username;
-            user.send("bonjour quelqu'un veut crée ajouté votre compte sur se bot si il s'agit de vous reagisser avec 👍 pour accespter sinon 👎").then(async (message) => {
+            user.send("bonjour quelqu'un veut crée ajouté votre compte sur se bot si il s'agit de vous reagisser avec 👍 pour accespter sinon 👎").then(async () => {
                 handleCreateUser().then((value) => {
                     if(!value) {
                         res.send({result:"not Accept"}); 
@@ -235,11 +235,11 @@ app.post("/newUser", async (req: Request, res: Response) => {
                     // }
                 });
             })
-            .catch((err) => {
+            .catch(() => {
                 res.send({result:"not Access to DM"});
             });
         //}
-    }).catch((err) => {
+    }).catch(() => {
         res.send({result:"ID not exist in discord"});
     });
 });
@@ -249,7 +249,7 @@ app.post("/sendMessage", async (req: Request, res: Response) => {
 
     const User:User|void = await BDD.getUserByToken(req.body.token).then(async (data) => {
         // console.log(data);
-        const res = await client.users.fetch(data![0].user_id).then((user) => {
+        const res = await client.users.fetch(data![0].user_id).then((user:User) => {
             //console.log("user in: ",user);
             return user;
         });
@@ -258,7 +258,7 @@ app.post("/sendMessage", async (req: Request, res: Response) => {
 
     //console.log("user out: ",User);
 
-    client.users.fetch(process.env.DEV!).then((user) => {
+    client.users.fetch(process.env.DEV!).then((user:User) => {
         user.send("message de " + User!.username + " : " + req.body.text);
     }).then(() => {
         res.send({res:true});

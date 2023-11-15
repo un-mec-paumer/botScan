@@ -1,4 +1,4 @@
-import { Command } from "src/Command";
+import { Command } from "../Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import { BDD } from "../supabase";
 

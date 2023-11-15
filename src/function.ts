@@ -3,6 +3,8 @@ import { writeFileSync, PathOrFileDescriptor } from 'fs';
 // import mangas from "./data/mangas.json";
 import { BDD } from "./supabase";
 
+
+
 type Manga = {name_manga:string, chapitre_manga:number, page:boolean};
 
 const urlBase = "https://fr-scan.com/manga/"
@@ -29,12 +31,13 @@ async function finder(manga:Manga): Promise<boolean> {
 
         //manga.chapitre_manga++;
         const text = await response.text();
-        // console.log(url);
+        console.log(text);
         //console.log(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/", text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/"));
         return text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/");
 
         
     } catch (error) {
+        console.log("veux pas");
         console.error('Error:', error);
         return false;
     }
@@ -77,9 +80,14 @@ export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/):boolean 
 
 export async function downloadImg(imgStr:string, name_manga:string) {
     
-    const response = await fetch(imgStr)
+    const response = await fetch(imgStr, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'image/png',
+        },
+    });
 
-    const img = await response.arrayBuffer().then((buffer) => buffer);
+    const img = await response.arrayBuffer().then((buffer: ArrayBuffer) => buffer);
     BDD.addImgToTest(name_manga + ".png", img)
     
 }
