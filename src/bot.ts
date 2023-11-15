@@ -79,7 +79,9 @@ app.use((req:Request, res:Response, next:NextFunction ) => {
 
 app.use(Express.urlencoded({ extended: true }));
 
-app.listen(3000, () => {
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
     console.log("Server started!");
 });
 
