@@ -22,7 +22,7 @@ const client = new Client({
         Intents.GuildMessages,
         Intents.DirectMessages,
         Intents.MessageContent,
-        Intents.DirectMessageReactions,
+        Intents.DirectMessageReactions
     ]
 });
 
