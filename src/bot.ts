@@ -37,7 +37,7 @@ const interval2 = setInterval(ntm, 1000);
 
 // client.users.fetch("452370867758956554").then((user) => {
 //     console.log(user.avatarURL())
-// });
+//  });
 
 
 async function handleConnectionValidation() {
