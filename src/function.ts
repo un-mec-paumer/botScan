@@ -31,7 +31,7 @@ async function finder(manga:Manga): Promise<boolean> {
 
         //manga.chapitre_manga++;
         const text = await response.text();
-        console.log(text);
+        //console.log(text);
         //console.log(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/", text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/"));
         return text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/");
 
