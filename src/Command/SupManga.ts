@@ -1,6 +1,7 @@
 import { Command } from "../Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import { BDD } from "../supabase";
+import dotenv from "dotenv";
 
 export const SupManga: Command = {
     name: "supmanga",
@@ -21,28 +22,38 @@ export const SupManga: Command = {
         //console.log(interaction.options);
         let nom = interaction.options.get("name")?.value;
         nom = nom?.toString().replaceAll(" ", "-").toLowerCase();
-        
-        BDD.getManga(nom as string).then((manga) => {
-            // console.log(manga);
-            if(manga!.length === 0){
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "Le manga n'existe pas"
-                });
-            }
-            else{
-                BDD.getManga(nom as string).then((manga) => {
-                    BDD.supprimerManga(manga![0].name_manga).then(async () => {
+        dotenv.config();
 
-                        await BDD.supImgFromTest(manga![0].name_manga)
 
-                        interaction.followUp({
-                            ephemeral: true,
-                            content: "Manga supprimé"
-                        });
+        if(interaction.user.id === process.env.DEV!){
+            BDD.getManga(nom as string).then((manga) => {
+                // console.log(manga);
+                if(manga!.length === 0){
+                    interaction.followUp({
+                        ephemeral: true,
+                        content: "Le manga n'existe pas"
                     });
-                });               
-            }
-        });
+                }
+                else{
+                    BDD.getManga(nom as string).then((manga) => {
+                        BDD.supprimerManga(manga![0].name_manga).then(async () => {
+
+                            await BDD.supImgFromTest(manga![0].name_manga)
+
+                            interaction.followUp({
+                                ephemeral: true,
+                                content: "Manga supprimé"
+                            });
+                        });
+                    });               
+                }
+            });
+        }
+        else{
+            interaction.followUp({
+                ephemeral: true,
+                content: "Vous n'avez pas les droits pour cette commande"
+            });
+        }
     }
 };

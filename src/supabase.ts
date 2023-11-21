@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import { randomInt } from 'crypto'
-import { xml } from 'cheerio';
+
 
 export function randomString() {
     let result           = '';
@@ -58,6 +58,27 @@ class supabase{
         .select('*')
         .match({ id_manga: id })
         return data
+    }
+
+    async getMangaBylien(id:string){
+        const res = await this.client
+        .from('alerte')
+        .select('id_manga')
+        .match({ id_user: id })
+
+        if(res.data?.length == 0) return;
+        const { data, error } = await this.client
+        .from('mangas')
+        .select('*')
+
+        let mangas = data?.filter((e) => {
+            return res.data?.find((f) => {
+                return f.id_manga == e.id_manga
+            })
+        })
+
+        // console.log(mangas)
+        return mangas
     }
 
     async supprimerManga(name:string){
@@ -286,16 +307,6 @@ class supabase{
 
 export const BDD = new supabase()
 
-// BDD.getImgFromTest().then((data) => {
+// BDD.getMangaBylien("325756152098848768").then((data) => {
 //     console.log(data)
 // })
-// BDD.addToken("452370867758956554").then((data) => {
-//     BDD.getUserByToken(data).then((data) => {
-//         console.log(data)
-//     })
-// })
-
-// BDD.verifTokens().then((data) => {
-//     //console.log(data)
-// })
-

@@ -13,7 +13,7 @@ export const ListeManga: Command = {
         let nom = "";
         //console.log(interaction.user.id);
 
-        BDD.getMangas().then((mangas) => {
+        BDD.getMangaBylien(interaction.user.id).then((mangas) => {
             // console.log("mangas", mangas);
             mangas!.forEach(manga => {
                 nom = manga.name_manga.replaceAll("-", " ");
