@@ -10,7 +10,7 @@ export const Liste: Command = {
         BDD.getMangas().then((mangas) => {
             let liste = "";
             mangas?.forEach((manga) => {
-                liste += manga.name_manga.replaceAll("-", " ") + "\n";
+                liste += "- " + manga.name_manga.replaceAll("-", " ") + "est au chapitre " + manga.chapitre_manga + "\n";
             });
             interaction.followUp({
                 ephemeral: true,
