@@ -55,6 +55,6 @@ export const ListeManga: Command = {
                 interaction.channel?.send(message);
             });
         // console.log(messageListe);
-        });
+        })
     }
 };
