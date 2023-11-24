@@ -284,6 +284,16 @@ class supabase{
         return data
     }
 
+    async getImgFromTestDnw(name:string){
+        const { data, error } = await this.client
+        .storage
+        .from('test')
+        .download(name + '.png')
+
+        if(error) console.error(error)
+        return data
+    }
+
     async addImgToTest(name:string, img:ArrayBuffer){
         const { data, error } = await this.client
         .storage
