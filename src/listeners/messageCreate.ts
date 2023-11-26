@@ -43,7 +43,7 @@ export default (client: Client): void => {
         }
 
         if(message.content.toLowerCase().split('').join("") === "non" || message.content.toLowerCase().split('').join("") === "nan"){
-            //if (message.author.id === process.env.DEV!) return;
+            if (message.author.id === process.env.DEV!) return;
             message.reply("bril");
             return;
         }
