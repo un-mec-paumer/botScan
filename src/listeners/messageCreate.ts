@@ -20,26 +20,31 @@ export default (client: Client): void => {
         // console.log(message);
         // console.log("message est ", message.content);
         if(message.author.bot) return;
-        if (message.content.toLowerCase().trim().endsWith("quoi")) {
-            if (message.author.id === process.env.DEV!) return;
-            const test = await message.reply("feur");
-            message.react("🇫");
-            message.react("🇪");
-            message.react("🇺");
-            message.react("🇷");
-            return;
-        }
 
         if(feurIsIn(message.content.toLowerCase().trim())) {
             //console.log("feur");
             if (message.author.id === process.env.DEV!) return;
-            if(randomInt(0, 100) < 10) {
-                message.reply("feur");
-                message.react("🇫");
-                message.react("🇪");
-                message.react("🇺");
-                message.react("🇷");
-            }
+            
+            message.reply("feur");
+            message.react("🇫");
+            message.react("🇪");
+            message.react("🇺");
+            message.react("🇷");
+
+            message.author.send("ca t'apprendra a dire quoi");
+            
+            return;
+        }
+
+        if(message.content.toLowerCase().split('').join("") === "oui"){
+            if (message.author.id === process.env.DEV!) return;
+            message.reply("fi");
+            return;
+        }
+
+        if(message.content.toLowerCase().split('').join("") === "non" || message.content.toLowerCase().split('').join("") === "nan"){
+            //if (message.author.id === process.env.DEV!) return;
+            message.reply("bril");
             return;
         }
 
