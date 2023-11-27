@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 import feur from "../data/feur.json";
 import { randomInt } from "crypto";
 
-function feurIsIn(message:string): boolean {
+function tabin(message:string, tab:Array<string>): boolean {
     let res = false;
-    feur.forEach((feur) => {
-        let regex = new RegExp(`(${feur})`, "g");
+    tab.forEach((element) => {
+        let regex = new RegExp(`(${element})`, "g");
         //console.log(regex);
         if(regex.test(message)) res = true;
     });
@@ -20,8 +20,8 @@ export default (client: Client): void => {
         // console.log(message);
         // console.log("message est ", message.content);
         if(message.author.bot) return;
-
-        if(feurIsIn(message.content.toLowerCase().trim())) {
+        if(randomInt(0, 100) === 0) message.reply("bonjour ses est une fonctionnalité qui a été demander pas @tani_soe (je ne suis pas responsable)");
+        if(tabin(message.content.toLowerCase().trim(), feur)) {
             //console.log("feur");
             if (message.author.id === process.env.DEV!) return;
             
@@ -36,13 +36,13 @@ export default (client: Client): void => {
             return;
         }
 
-        if(message.content.toLowerCase().split('').join("") === "oui"){
-            if (message.author.id === process.env.DEV!) return;
+        if(tabin(message.content.toLowerCase().split('').join(""), ["oui", "ouais", "ouai", "oué", "oue"])){
+            if (message.author.id === process.env.DEV!) return;            
             message.reply("fi");
             return;
         }
 
-        if(message.content.toLowerCase().split('').join("") === "non" || message.content.toLowerCase().split('').join("") === "nan"){
+        if(tabin(message.content.toLowerCase().split('').join(""), ["non", "nan", "nann", "nannn", "nannnn"])){
             if (message.author.id === process.env.DEV!) return;
             message.reply("bril");
             return;
