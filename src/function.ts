@@ -52,7 +52,8 @@ export async function finderAll(client:Client) {
             //console.log(manga);
             finder(manga).then((value) => {
                 //console.log(value);
-                if(value){                    
+                if(value){
+                    console.log("Le chapitre " + (manga.chapitre_manga + 1) + " de " + manga.name_manga + " est sorti !");                    
                     BDD.updateChapitre(manga.name_manga, manga.chapitre_manga + 1).then(() => {
                         BDD.getLien(manga.id_manga).then((userID) => {
                             userID!.forEach((user) => {
@@ -93,5 +94,5 @@ export async function downloadImg(imgStr:string, name_manga:string) {
 }
 
 
-
+// finderAll();
 // downloadImg()
