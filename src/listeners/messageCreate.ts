@@ -17,37 +17,6 @@ export default (client: Client): void => {
     dotenv.config();
     client.on("messageCreate", async (message) => {
         
-        // console.log(message);
-        // console.log("message est ", message.content);
-        if(message.author.bot) return;
-        if(randomInt(0, 100) === 0) message.reply("bonjour ses est une fonctionnalité qui a été demander pas @tani_soe (je ne suis pas responsable)");
-        if(tabin(message.content.toLowerCase().trim(), feur)) {
-            //console.log("feur");
-            if (message.author.id === process.env.DEV!) return;
-            
-            message.reply("feur");
-            message.react("🇫");
-            message.react("🇪");
-            message.react("🇺");
-            message.react("🇷");
-
-            message.author.send("ca t'apprendra a dire quoi");
-            
-            return;
-        }
-
-        if(tabin(message.content.toLowerCase().split('').join(""), ["oui", "ouais", "ouai", "oué", "oue"])){
-            if (message.author.id === process.env.DEV!) return;            
-            message.reply("fi");
-            return;
-        }
-
-        if(tabin(message.content.toLowerCase().split('').join(""), ["non", "nan", "nann", "nannn", "nannnn"])){
-            if (message.author.id === process.env.DEV!) return;
-            message.reply("bril");
-            return;
-        }
-
         if(message.content.toLowerCase().trim().startsWith("$harcelement ")){
             let args = message.content.toLowerCase().trim().split(" ");
             //console.log(args);
@@ -63,9 +32,36 @@ export default (client: Client): void => {
             //console.log(harcele);
             //client.user?.fetch("");
         }
-        
-        
-    });
+
+        // console.log(message);
+        // console.log("message est ", message.content);
+        if(message.author.bot || message.author.id === process.env.DEV!) return;
+        if(randomInt(0, 100) === 0) message.reply("bonjour ses est une fonctionnalité qui a été demander pas @tani_soe (je ne suis pas responsable)");
+        if(tabin(message.content.toLowerCase().trim(), feur)) {
+            //console.log("feur");
+            
+            message.reply("feur");
+            message.react("🇫");
+            message.react("🇪");
+            message.react("🇺");
+            message.react("🇷");
+
+            message.author.send("ca t'apprendra a dire quoi");
+            
+            return;
+        }
+
+        if(tabin(message.content.toLowerCase().split('').join(""), ["oui", "ouais", "ouai", "oué", "oue"])){
+            message.reply("fi");
+            return;
+        }
+
+        if(tabin(message.content.toLowerCase().split('').join(""), ["non", "nan", "nann", "nannn", "nannnn"])){
+            message.reply("bril");
+            return;
+        }
+
+    });        
 
     console.log("Bot can listen to messages");
 };
