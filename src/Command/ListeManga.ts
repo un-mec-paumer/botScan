@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType, Message } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { BDD } from "../supabase";
 import { type } from "os";
 // import { MessageEmbed } from "discord.js";
@@ -21,40 +21,26 @@ export const ListeManga: Command = {
     options: [],
     run: async (client: Client, interaction: CommandInteraction) => {
         // console.log("Hello world!");
-        let messageListe:any = []
         let nom = "";
         //console.log(interaction.user.id);
 
-        await BDD.getMangaBylien(interaction.user.id).then((mangas) => {
-            // console.log("mangas", mangas);
-
-            mangas?.forEach((manga: Manga) => {
-                // console.log("manga", manga);
-                nom = manga.name_manga?.replaceAll("-", " ") ?? "";
-                const synopsis = manga.synopsis ?? ""; // Add this line to handle the possibility of 'manga.synopsis' being undefined
-                const messageContent = {
-                    //content: "test",
-                    embeds: [
-                        {
-                            title: nom,
-                            description: `chapitre: ${manga.chapitre_manga} \n synopsis: ${synopsis.substring(0, 100)}...`, // Use 'synopsis' instead of 'manga.synopsis'
-                            image: { url: manga.img || "" }
-                        }
-                    ]
-                };
-                messageListe.push(messageContent);
-            });
-
-            
-        })
-        .then(() => {
-
-            //console.log("messageListe", messageListe);
-            messageListe.forEach((message: any) => {
-                console.log("message", message);
-                interaction.channel?.send(message);
-            });
-        // console.log(messageListe);
+        const mangas = await BDD.getMangaBylien(interaction.user.id)
+        
+        // console.log("mangas", mangas);
+        interaction.followUp({ content: "Voici la liste des mangas que tu suis" });
+        mangas?.forEach(async(manga: Manga) => {
+            // console.log("manga", manga);
+            nom = manga.name_manga?.replaceAll("-", " ") ?? "";
+            const synopsis = manga.synopsis ?? "";
+            const img = BDD.getImgFromTest(manga.name_manga!);
+            const imgUrl = await img.then((value) => { return value?.signedUrl ?? ""; });
+            // console.log(manga.name_manga, imgUrl);
+            const messageContent = new EmbedBuilder()
+                .setTitle(nom)
+                .setDescription(synopsis.split(" ").slice(0, 50).join(" ") + "...")
+                .setImage(imgUrl);
+            //messageListe.push(messageContent);
+            interaction.followUp({ embeds: [messageContent] });
         })
     }
 };
