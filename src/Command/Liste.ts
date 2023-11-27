@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
+import { CommandInteraction, Client, EmbedBuilder } from "discord.js";
 import { BDD } from "../supabase";
 
 export const Liste: Command = {
