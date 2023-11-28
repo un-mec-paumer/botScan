@@ -1,6 +1,5 @@
 import { Client } from "discord.js";
 import dotenv from "dotenv";
-import feur from "../data/feur.json";
 import { randomInt } from "crypto";
 
 function tabin(message:string, tab:Array<string>): boolean {
@@ -36,8 +35,14 @@ export default (client: Client): void => {
         // console.log(message);
         // console.log("message est ", message.content);
         if(message.author.bot || message.author.id === process.env.DEV!) return;
-        if(randomInt(0, 100) === 0) message.reply("bonjour ses est une fonctionnalité qui a été demander pas @tani_soe (je ne suis pas responsable)");
-        if(tabin(message.content.toLowerCase().trim(), feur)) {
+        if(randomInt(0, 100) === 3) message.reply("bonjour ses est une fonctionnalité qui a été demander pas @tani_soe (je ne suis pas responsable)");
+        const messageContent = message.content.toLowerCase().trim().split(" ");
+        const end = messageContent.splice(messageContent.length - 1, messageContent.length).join(" ");
+        console.log(end);
+
+        
+        
+        if(tabin(end, ["quoi","koi","koa","quoa","koua"])) {
             //console.log("feur");
             
             message.reply("feur");
@@ -46,17 +51,17 @@ export default (client: Client): void => {
             message.react("🇺");
             message.react("🇷");
 
-            message.author.send("ca t'apprendra a dire quoi");
+            //message.author.send("ca t'apprendra a dire quoi");
             
             return;
         }
 
-        if(tabin(message.content.toLowerCase().split('').join(""), ["oui", "ouais", "ouai", "oué", "oue"])){
+        if(tabin(end, ["oui", "ouais", "ouai", "oué", "oue"])){
             message.reply("fi");
             return;
         }
 
-        if(tabin(message.content.toLowerCase().split('').join(""), ["non", "nan", "nann", "nannn", "nannnn"])){
+        if(tabin(end, ["non", "nan"])){
             message.reply("bril");
             return;
         }
