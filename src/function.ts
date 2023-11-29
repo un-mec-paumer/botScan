@@ -24,7 +24,7 @@ async function finder(manga:Manga): Promise<boolean> {
     // console.log(url2);
 
 
-    // console.log(manga.chapitre_manga);
+    //console.log(manga.chapitre_manga);
 
     try {
         const response = await fetch(proxyUrl, {
