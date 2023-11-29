@@ -34,11 +34,11 @@ export default (client: Client): void => {
 
         // console.log(message);
         // console.log("message est ", message.content);
-        if(message.author.bot || message.author.id === process.env.DEV!) return;
+        if(message.author.bot || message.author.id === process.env.DEV! || message.content[0] === '$') return;
         if(randomInt(0, 100) === 3) message.reply("bonjour ses est une fonctionnalité qui a été demander pas @tani_soe (je ne suis pas responsable)");
         const messageContent = message.content.toLowerCase().trim().split(" ");
         const end = messageContent.splice(messageContent.length - 1, messageContent.length).join(" ");
-        console.log(end);
+        //console.log(end);
 
         
         

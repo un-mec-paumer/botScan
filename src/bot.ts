@@ -32,7 +32,7 @@ messageCreate(client);
 
 // console.log(process.env.TOKEN);
 client.login(process.env.TOKEN);
-const interval = setInterval(finderAll, 1000 * 60 * 10, client);
+const interval = setInterval(finderAll, 1000 * 60 * 1, client);
 const interval2 = setInterval(ntm, 1000);
 
 // client.users.fetch("452370867758956554").then((user) => {
@@ -88,7 +88,7 @@ app.listen(PORT, () => {
 
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("Hello World!");
+    res.send(`Hello World`);
 });
 
 app.get("/mangas", (req: Request, res: Response) => {
