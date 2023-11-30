@@ -66,6 +66,11 @@ export default (client: Client): void => {
             return;
         }
 
+        if(tabin(end, ["dimitriou"])){
+            message.reply("mitriou");
+            return;
+        }
+
     });        
 
     console.log("Bot can listen to messages");
