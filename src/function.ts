@@ -2,23 +2,24 @@ import { Client, User } from "discord.js";
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 // import mangas from "./data/mangas.json";
 import { BDD } from "./supabase";
-import { text } from "stream/consumers";
-import { type } from "os";
+import * as cheerio from 'cheerio';
 
 
 
-
-type Manga = {name_manga:string, chapitre_manga:number, page:boolean};
+type Manga = {id_manga:number, name_manga:string, chapitre_manga:number, page:boolean};
 type json = { args: {url:string}, headers: { [key: string]: string }, origin: string, url: string };
 
 const urlBase = "https://fr-scan.com/manga/"
 
-async function finder(manga:Manga): Promise<boolean> {
+async function finder(manga:Manga, client:Client) /*Promise<boolean>*/ {
     let url: string = "";
+    let chap = String(manga.chapitre_manga).replace(".", "-");
     // let url2: string = "";
     // url = urlBase + manga.name_manga + "/";
-    if(!manga.page) url = urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/";
-    else url = urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/p/1000000";
+    // const url = urlBase + "one-piece/chapitre-1099-vf/p/100000/";
+    
+    if(!manga.page) url = urlBase + manga.name_manga + "/chapitre-" + (chap) + "-vf/";
+    else url = urlBase + manga.name_manga + "/chapitre-" + (chap) + "-vf/p/1000000";
     const proxyUrl = 'https://httpbin.org/get?url=' + encodeURIComponent(url);
     //console.log(url);
     // console.log(url2);
@@ -40,15 +41,39 @@ async function finder(manga:Manga): Promise<boolean> {
             const text = await response.text();
             return text;
         })
+        // console.log(text);
+        const $ = cheerio.load(text);
+        const nextUrl = $(".next_page").attr("href");
+        // console.log(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/", text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/"));
+        //return text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/");
         
-        //console.log(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/", text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/"));
-        return text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/");
+        if(nextUrl !== undefined && nextUrl !== null && nextUrl !== "") {
+            console.log("nextUrl ", nextUrl);
+            const tab = nextUrl!.split("/")[5].split("-");
+            let nbNext = parseFloat(tab[1]);
+            if(tab[2] !== "vf") nbNext += parseFloat("0." +parseFloat(tab[2]));
+            //console.log(nbNext);
 
+            console.log("Le chapitre " + (nbNext) + " de " + manga.name_manga + " est sorti !");                    
+            BDD.updateChapitre(manga.name_manga, nbNext).then(() => {
+                BDD.getLien(manga.id_manga).then((userID) => {
+                    userID!.forEach((user) => {
+                        client.users.fetch(user.id_user).then((user:User) => {
+                            user.send("Le chapitre " + (nbNext) + " de " + manga.name_manga.replaceAll("-", " ") + " est sorti !");
+                            if(tab[2] !== "vf") user.send(urlBase + manga.name_manga + "/chapitre-" + (parseFloat(tab[1]) + "-" + (parseFloat(tab[2])) + "-vf/"));
+                            else user.send(urlBase + manga.name_manga + "/chapitre-" + (nbNext) + "-vf/");
+                        });
+                    });
+                });
+            });
+            
+        }
+        // else return false;
         
     } catch (error) {
         console.log("veux pas");
         console.error('Error:', error);
-        return false;
+        // return false;
     }
 }
 
@@ -59,23 +84,7 @@ export async function finderAll(client:Client) {
     BDD.getMangas().then((mangas) => {
         //console.log(mangas)
         mangas!.forEach(manga => {
-            //console.log(manga);
-            finder(manga).then((value) => {
-                //console.log(value);
-                if(value){
-                    console.log("Le chapitre " + (manga.chapitre_manga + 1) + " de " + manga.name_manga + " est sorti !");                    
-                    BDD.updateChapitre(manga.name_manga, manga.chapitre_manga + 1).then(() => {
-                        BDD.getLien(manga.id_manga).then((userID) => {
-                            userID!.forEach((user) => {
-                                client.users.fetch(user.id_user).then((user:User) => {
-                                    user.send("Le chapitre " + (manga.chapitre_manga + 1) + " de " + manga.name_manga + " est sorti !");
-                                    user.send(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/");
-                                });
-                            });
-                        });
-                    });
-                }
-            });
+            finder(manga, client)
         });
     });
 }

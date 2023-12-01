@@ -4,6 +4,8 @@ import { BDD } from "../supabase";
 import * as cheerio from 'cheerio';
 // import mangas from "../data/mangas.json";
 import { downloadImg } from "../function";
+type json = { args: {url:string}, headers: { [key: string]: string }, origin: string, url: string };
+
 
 export const AddManga: Command = {
     name: "addmanga",
@@ -74,37 +76,25 @@ export const AddManga: Command = {
             else{
                 //console.log("verif ");
                 let page = interaction.options.get("page")?.value 
-
-                // BDD.getMangas().then((data) => {
-                //     data?.forEach(async (manga) => {
-                //         console.log(manga);
-                //         let url = "https://fr-scan.com/manga/" + manga.name_manga + "/";
-                //         const rep = await fetch(url, {
-                //             method: 'GET',
-                //             headers: {
-                //                 'Content-Type': 'text/html',
-                //             },
-                //         });
-                
-                //         const text = await rep.text();
-                //         const $ = cheerio.load(text);
-                //         const image = $(".summary_image img").attr("data-src");
-                //         // console.log(manga.name_manga.replaceAll("-", " "), image);
-                //         const synopsis = $(".summary__content").text().trim();
-                
-                //         //console.log(manga.name_manga.replaceAll("-", " ") + ":    ", synopsis, "\n");
-                //     });
-                // });
+                const url = "https://fr-scan.com/manga/" + nom + "/"
+                const proxyUrl = 'https://httpbin.org/get?url=' + encodeURIComponent(url);
 
 
-                const verif = await fetch("https://fr-scan.com/manga/" + nom + "/", {
+                const response = await fetch(proxyUrl, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'text/html',
+                        'User-Agent': 'PostmanRuntime/7.32.1',
                     },
                 });
+        
+                const json = await response.json() as json;
+                const text = await fetch(json.args.url, json.headers).then(async (response) => {
+                    const text = await response.text();
+                    return text;
+                })
 
-                const text = await verif.text();
+                //const text = await verif.text();
                 const $ = cheerio.load(text);
 
                 //console.log($(".summary_image img").attr("src"));
