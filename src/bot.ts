@@ -44,11 +44,7 @@ async function handleConnectionValidation() {
     return new Promise((resolve) => {
         // Attendez la réaction de l'utilisateur
         client.on("messageReactionAdd", async (reaction, reactingUser) => {
-            if (reaction.emoji.name === "👍") {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
+            resolve(reaction.emoji.name === "👍");
         });
     });
 }
