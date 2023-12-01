@@ -53,19 +53,6 @@ async function handleConnectionValidation() {
     });
 }
 
-async function handleCreateUser() {
-    return new Promise((resolve) => {
-        // Attendez la réaction de l'utilisateur
-        client.on("messageReactionAdd", async (reaction, reactingUser) => {
-            if (reaction.emoji.name === "👍") {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
-        });
-    });
-}
-
 const app = Express();
 
 app.use(Express.json());
@@ -218,7 +205,7 @@ app.post("/newUser", async (req: Request, res: Response) => {
             const avatarURL = user.avatarURL();
             const name = user.username;
             user.send("bonjour quelqu'un veut crée ajouté votre compte sur se bot si il s'agit de vous reagisser avec 👍 pour accespter sinon 👎").then(async () => {
-                handleCreateUser().then((value) => {
+                handleConnectionValidation().then((value) => {
                     if(!value) {
                         res.send({result:"not Accept"}); 
                         return;
