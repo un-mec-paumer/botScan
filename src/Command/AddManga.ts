@@ -108,7 +108,7 @@ export const AddManga: Command = {
                 const image = $(".summary_image img").attr("src");
                 // console.log(image);
                 const synopsis = $(".summary__content").text().trim();
-                // console.log(synopsis);
+                //console.log(synopsis);
 
 
                 BDD.addManga(nom as string, interaction.options.get("chapitre")?.value as number, (page === "oui" || page === "yes" || page === "o" || page === "y") ? true :false as boolean, image!, synopsis).then(() => {
