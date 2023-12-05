@@ -5,7 +5,7 @@ import { randomInt } from "crypto";
 function tabin(message:string, tab:Array<string>): boolean {
     let res = false;
     tab.forEach((element) => {
-        let regex = new RegExp(`(${element})`, "g");
+        let regex = new RegExp(` (${element}) `, "g");
         //console.log(regex);
         if(regex.test(message)) res = true;
     });
