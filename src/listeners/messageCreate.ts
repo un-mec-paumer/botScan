@@ -18,7 +18,7 @@ export default (client: Client): void => {
         
         if(message.content.toLowerCase().trim().startsWith("$harcelement ")){
             let args = message.content.toLowerCase().trim().split(" ");
-            //console.log(args);
+            // console.log(args);
             args.shift();
             //console.log(args);
             let harcele = args.join(" ");
