@@ -98,19 +98,18 @@ export const AddManga: Command = {
                 const $ = cheerio.load(text);
 
                 //console.log($(".summary_image img").attr("src"));
-                if($(".summary_image img").attr("src") === undefined){
+                if($(".summary_image img").attr("data-src") === undefined){
                     interaction.followUp({
                         ephemeral: true,
                         content: "Manga non trouvable sur le site fr-scan.com"
                     });
                     return;
                 }
-                const image = $(".summary_image img").attr("src");
+                const image = $(".summary_image img").attr("data-src")
                 // console.log(image);
                 const synopsis = $(".summary__content").text().trim();
                 //console.log(synopsis);
-
-
+                
                 BDD.addManga(nom as string, interaction.options.get("chapitre")?.value as number, (page === "oui" || page === "yes" || page === "o" || page === "y") ? true :false as boolean, image!, synopsis).then(() => {
                     downloadImg(image!, nom as string)
                     BDD.getManga(nom as string).then((manga) => {

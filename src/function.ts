@@ -106,12 +106,14 @@ export async function downloadImg(imgStr:string, name_manga:string) {
             'Content-Type': 'image/png',
         },
     });
+    // console.log(response);
 
     const img = await response.arrayBuffer().then((buffer: ArrayBuffer) => buffer);
+    // console.log(img);
     BDD.addImgToTest(name_manga + ".png", img)
     
 }
-
+// downloadImg('https://fr-scan.com/wp-content/uploads/2022/09/shuumatsu_no_valkyrie_ibun_-_ryo_fu_hou_sen_hishouden_vol_3945333-193x278.jpg', "test")
 
 // finderAll();
 // downloadImg()
