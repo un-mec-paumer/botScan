@@ -346,7 +346,7 @@ app.post("/addManga", async (req: Request, res: Response) => {
                                         //     ephemeral: true,
                                         //     content: "Manga ajouté avec succès"
                                         // });
-                                        // return;
+                                        // return
                                         res.send({res:true,text:"Manga ajouté avec succès"});
                                     });
                                 }
