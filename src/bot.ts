@@ -318,7 +318,7 @@ app.post("/addManga", async (req: Request, res: Response) => {
             //const text = await verif.text();
             const $ = cheerio.load(text);
 
-            //console.log($(".summary_image img").attr("src"));
+            //console.log($(".summary_image img").attr("src"))
             if($(".summary_image img").attr("data-src") === undefined){
                 // interaction.followUp({
                 //     ephemeral: true,
