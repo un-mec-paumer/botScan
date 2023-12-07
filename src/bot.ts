@@ -3,10 +3,12 @@ import * as dotenv from 'dotenv'
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
-import { finderAll } from "./function";
+import { finderAll, downloadImg } from "./function";
 import Express, { Request, Response, NextFunction  } from "express";
 import { BDD, randomString } from "./supabase";
-import { env } from "process";
+import * as cheerio from 'cheerio';
+
+type json = { args: {url:string}, headers: { [key: string]: string }, origin: string, url: string };
 
 dotenv.config()
 
@@ -248,4 +250,118 @@ app.post("/sendMessage", async (req: Request, res: Response) => {
     }).then(() => {
         res.send({res:true});
     })// }).catch((err) => {res.send({res:false})});
+});
+
+app.post("/addManga", async (req: Request, res: Response) => {
+    const name = req.body.name;
+    const chap = req.body.chap;
+    const page = req.body.page;
+    const token = req.body.token;
+
+    BDD.getManga(name as string).then( async (manga) => {
+        if(manga!.length === 1){
+            BDD.getUserByToken(token).then((user) => {
+                let id_user = user![0].user_id;
+                BDD.getUser(id_user).then((user) => {
+                    if(user?.length === 1){
+                        BDD.getLien(manga![0].id_manga).then((user) => {
+                            if(user!.find(id_user => id_user.id_user == id_user) !== undefined){
+                                res.send({res:true,text:"tu est déjà dans la liste des personnes à prévenir"});
+                            }
+                            else{
+                                // interaction.followUp({
+                                //     ephemeral: true,
+                                //     content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
+                                // });
+                                BDD.addLien(manga![0].id_manga, id_user);
+                                res.send({res:true,text:"Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"});
+                            }
+                        });
+                    }
+                    else{
+                        client.users.fetch(id_user).then((user:User) => {
+                            BDD.addUser(id_user, user.username, user.avatarURL()!).then(() => {
+                                BDD.addLien(manga![0].id_manga, id_user).then(() => {
+                                    // interaction.followUp({
+                                    //     ephemeral: true,
+                                    //     content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
+                                    // });
+                                    res.send({res:true,text:"Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"});
+                                });
+                            });
+                        });
+                    }
+                });
+            });
+        }
+        else{
+            //console.log("verif ");
+            // let page = interaction.options.get("page")?.value 
+            const url = "https://fr-scan.com/manga/" + name + "/"
+            const proxyUrl = 'https://httpbin.org/get?url=' + encodeURIComponent(url);
+
+
+            const response = await fetch(proxyUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'text/html',
+                    'User-Agent': 'PostmanRuntime/7.32.1',
+                },
+            });
+    
+            const json = await response.json() as json;
+            const text = await fetch(json.args.url, json.headers).then(async (response) => {
+                const text = await response.text();
+                return text;
+            })
+
+            //const text = await verif.text();
+            const $ = cheerio.load(text);
+
+            //console.log($(".summary_image img").attr("src"));
+            if($(".summary_image img").attr("data-src") === undefined){
+                // interaction.followUp({
+                //     ephemeral: true,
+                //     content: "Manga non trouvable sur le site fr-scan.com"
+                // });
+                res.send({res:false,text:"Manga non trouvable sur le site fr-scan.com"});
+                return;
+            }
+            const image = $(".summary_image img").attr("data-src")
+            // console.log(image);
+            const synopsis = $(".summary__content").text().trim();
+            //console.log(synopsis)
+            
+            BDD.addManga(name, chap, page, image!, synopsis).then(() => {
+                downloadImg(image!, name as string)
+                BDD.getManga(name as string).then((manga) => {
+                    BDD.getUserByToken(token).then((user) => {
+                        let id_user = user![0].user_id;
+                        BDD.getUser(id_user).then((userBDD) => {
+                            client.users.fetch(id_user).then((user:User) => {
+                                if(userBDD?.length === 0){
+                                    const useravatar = user.avatarURL();
+                                    BDD.addUser(id_user, user.username, useravatar!).then(() => {
+                                        // interaction.followUp({
+                                        //     ephemeral: true,
+                                        //     content: "Manga ajouté avec succès"
+                                        // });
+                                        // return;
+                                        res.send({res:true,text:"Manga ajouté avec succès"});
+                                    });
+                                }
+                                BDD.addLien(manga![0].id_manga, user.id).then(() => {
+                                    // interaction.followUp({
+                                    //     ephemeral: true,
+                                    //     content: "Manga ajouté avec succès"
+                                    // });
+                                    res.send({res:true,text:"Manga ajouté avec succès"});
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        }
+    });    
 });
