@@ -45,7 +45,7 @@ export default (client: Client): void => {
         
         
         if(tabin(end, ["quoi","koi","koa","quoa","koua"])) {
-            //console.log("feur");
+            //console.log("feur")
             
             message.reply("feur");
             message.react("🇫");
