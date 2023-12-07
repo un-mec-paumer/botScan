@@ -253,7 +253,7 @@ app.post("/sendMessage", async (req: Request, res: Response) => {
 });
 
 app.post("/addManga", async (req: Request, res: Response) => {
-    const name = req.body.name;
+    const name = req.body.name.toLowerCase().replaceAll(" ", "-")
     const chap = req.body.chap;
     const page = req.body.page;
     const token = req.body.token;
