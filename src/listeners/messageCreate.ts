@@ -4,10 +4,12 @@ import { randomInt } from "crypto";
 
 function tabin(message:string, tab:Array<string>): boolean {
     let res = false;
+    // console.log(message);
     tab.forEach((element) => {
-        let regex = new RegExp(` (${element}) `, "g");
-        //console.log(regex);
-        if(regex.test(message)) res = true;
+        // let regex = new RegExp(`(${element})`, "g");
+        // //console.log(regex);
+        // if(regex.test(message)) res = true;
+        if(message.includes(element)) res = true;
     });
     return res;
 }
@@ -34,9 +36,9 @@ export default (client: Client): void => {
 
         // console.log(message);
         // console.log("message est ", message.content);
-        if(message.author.bot || message.author.id === process.env.DEV! || message.content[0] === '$') return;
-        if(randomInt(0, 100) === 3) message.reply("bonjour ses est une fonctionnalité qui a été demander pas @tani_soe (je ne suis pas responsable)");
-        const messageContent = message.content.toLowerCase().trim().split(" ");
+        //if(message.author.bot || message.author.id === process.env.DEV! || message.content[0] === '$') return;
+        if(randomInt(0, 100) === 3) message.reply("Bonjour c'est une fonctionnalité (de merde) qui a été demandée par @tani_soe (je ne suis pas responsable)");
+        const messageContent = message.content.toLowerCase().replaceAll("?","").replaceAll("!","").replaceAll(".","").trim().split(" ")
         const end = messageContent.splice(messageContent.length - 1, messageContent.length).join(" ");
         //console.log(end);
 
