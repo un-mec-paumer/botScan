@@ -5,6 +5,9 @@ import { BDD } from "../supabase";
 export const Liste: Command = {
     name: "liste",
     description: "Liste of all mangas",
+    descriptionLocalizations: {
+        fr: "Liste de tout les mangas"
+    },
 
     run: async (client: Client, interaction: CommandInteraction) => {
         interaction.followUp({ content: "Voici la liste de tout les manga disponible avec le bot actuellement" });

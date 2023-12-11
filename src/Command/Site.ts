@@ -4,6 +4,9 @@ import { CommandInteraction, Client, ApplicationCommandOptionType } from "discor
 export const Site: Command = {
     name: "site",
     description: "site of scan",
+    descriptionLocalizations: {
+        fr: "site de scan"
+    },
     // type: "CHAT_INPUT",
     run: async (client: Client, interaction: CommandInteraction) => {
         interaction.followUp({

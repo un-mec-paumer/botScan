@@ -5,7 +5,10 @@ import dotenv from "dotenv";
 
 export const SupManga: Command = {
     name: "supmanga",
-    description: "Supprime un manga de la liste",
+    description: "Delete a manga from the list",
+    descriptionLocalizations: {
+        fr: "Supprime un manga de la liste"
+    },
     // type: "CHAT_INPUT",
     options: [
         {
@@ -13,7 +16,10 @@ export const SupManga: Command = {
             description: "Nom du manga",
             type: ApplicationCommandOptionType.String,
             required: true,
-            autocomplete: true
+            autocomplete: true,
+            descriptionLocalizations: {
+                fr: "Nom du manga"
+            },
         }
     ],
     run: async (client: Client, interaction: CommandInteraction) => {

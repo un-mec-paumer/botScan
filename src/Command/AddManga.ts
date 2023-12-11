@@ -10,6 +10,9 @@ type json = { args: {url:string}, headers: { [key: string]: string }, origin: st
 export const AddManga: Command = {
     name: "addmanga",
     description: "Add a manga to the scrap bot",
+    descriptionLocalizations: {
+        fr: "Ajoute un manga au bot de scrap"
+    },
     // type: "CHAT_INPUT",
     options: [
         {
@@ -17,21 +20,30 @@ export const AddManga: Command = {
             description: "Name of the manga",
             type: ApplicationCommandOptionType.String,
             required: true,
-            autocomplete: true
+            autocomplete: true,
+            descriptionLocalizations: {
+                fr: "Nom du manga"
+            },
         },
         {
             name: "chapitre",
-            description: "numero du dernier chapitre",
+            description: "number of the last chapter",
             type: ApplicationCommandOptionType.Number,
             required: true,
-            autocomplete: true
+            autocomplete: true,
+            descriptionLocalizations: {
+                fr: "numero du dernier chapitre"
+            },
         },
         {
             name: "page",
-            description: "le manga est t'il sur plusieurs pages ou non",
+            description: "is the manga on multiple pages or not",
             type: ApplicationCommandOptionType.String,
             required: true,
-            autocomplete: true
+            autocomplete: true,
+            descriptionLocalizations: {
+                fr: "le manga est t'il sur plusieurs pages ou non"
+            },
         }
     ],
     run: async (client: Client, interaction: CommandInteraction) => {

@@ -5,6 +5,9 @@ import { BDD } from "../supabase";
 export const AddAlerte: Command = {
     name: "addalerte",
     description: "Add an alerte when a new chapter is out for a manga",
+    descriptionLocalizations: {
+        fr: "Ajoute une alerte quand un nouveau chapitre d'un manga est sorti"
+    },
     // type: "CHAT_INPUT",
     options: [
         {
@@ -12,7 +15,11 @@ export const AddAlerte: Command = {
             description: "Name of the manga",
             type: ApplicationCommandOptionType.String,
             required: true,
-            autocomplete: true
+            autocomplete: true,
+            descriptionLocalizations: {
+                fr: "Nom du manga"
+            },
+            
         },
     ],
     run: async (client: Client, interaction: CommandInteraction) => {

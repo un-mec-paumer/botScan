@@ -16,7 +16,10 @@ type Manga = {
 
 export const ListeManga: Command = {
     name: "maliste",
-    description: "Liste des mangas suivis",
+    description: "List of all mangas",
+    descriptionLocalizations: {
+        fr: "Liste des mangas suivis"
+    },
     // type: "CHAT_INPUT",
     options: [],
     run: async (client: Client, interaction: CommandInteraction) => {
