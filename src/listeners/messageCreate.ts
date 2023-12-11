@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, EmbedBuilder} from "discord.js";
 import dotenv from "dotenv";
 import { randomInt } from "crypto";
 
@@ -66,6 +66,14 @@ export default (client: Client): void => {
 
         if(tabin(end, ["dimitriou"])){
             message.reply("mitriou");
+            return;
+        }
+
+        if(tabin(end, ["qui", "ki", "qu i", "q u i"])){
+            const rep = new EmbedBuilder()
+                .setTitle("che lorraine")
+                .setImage("https://assets.afcdn.com/recipe/20221010/135915_w1024h1024c1cx999cy749cxt0cyt0cxb1999cyb1499.webp");
+            message.reply({embeds: [rep]});
             return;
         }
 
