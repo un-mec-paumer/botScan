@@ -28,7 +28,7 @@ export default (client: Client): void => {
 
         // console.log(message);
         // console.log("message est ", message.content);
-        //if(message.author.bot || message.author.id === process.env.DEV! || message.content[0] === '$') return;
+        if(message.author.bot || message.author.id === process.env.DEV! || message.content[0] === '$') return;
         if(randomInt(0, 100) === 3) message.reply("Bonjour c'est une fonctionnalité (de merde) qui a été demandée par @tani_soe (je ne suis pas responsable)");
         const messageContent = message.content.toLowerCase().replaceAll("?","").replaceAll("!","").replaceAll(".","").trim().split(" ")
         const end = messageContent[messageContent.length - 1];
@@ -59,7 +59,7 @@ export default (client: Client): void => {
             return;
         }
 
-        if(tabin(end, ["non", "nan", "no n", "na n"])){
+        if(tabin(end, ["non", "nan" , "no n", "na n"])){
             message.reply("bril");
             return;
         }
