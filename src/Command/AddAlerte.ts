@@ -8,7 +8,7 @@ export const AddAlerte: Command = {
     descriptionLocalizations: {
         fr: "Ajoute une alerte quand un nouveau chapitre d'un manga est sorti"
     },
-    // type: "CHAT_INPUT",
+    // type: "CHAT_INPUT"
     options: [
         {
             name: "name",
