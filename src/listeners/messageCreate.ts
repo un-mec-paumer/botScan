@@ -36,31 +36,43 @@ export default (client: Client): void => {
         // console.log(end);
 
         if(messageContent.filter((element) => {return element === "oui"}).length === 2){
-            message.reply("https://youtu.be/6vlY1vdkPf4?si=xrf1H11MG2aRamdB");
+            message.reply(`**AVEC SONT GROS TAXI !** \nhttps://youtu.be/6vlY1vdkPf4?si=xrf1H11MG2aRamdB`);
             return;
         }
         
         if(tabin(end, ["quoi","koi","koa","quoa","koua", "qu oi", "qu oa", "k oi", "k oa"])) {
             //console.log("feur")
             
-            message.reply("feur");
+            //message.reply("feur");
             message.react("🇫");
             message.react("🇪");
             message.react("🇺");
             message.react("🇷");
-
+            const rep = new EmbedBuilder()
+                .setTitle("feur")
+                .setImage("https://media.tenor.com/SVRGZaisSqsAAAAC/quoifeur-feur.gif");
+            message.reply({embeds: [rep]});
             //message.author.send("ca t'apprendra a dire quoi");
             
             return;
         }
 
         if(tabin(end, ["oui", "ouais", "ouai", "oué", "oue", "ou i", "ou ai", "ou é", "ou e"])){
-            message.reply("fi");
+            // message.reply("fi");
+            const rep = new EmbedBuilder()
+                .setTitle("fi")
+                .setImage("https://i.redd.it/iu7vpn5lbe861.jpg");
+
+            message.reply({embeds: [rep]});
             return;
         }
 
         if(tabin(end, ["non", "nan" , "no n", "na n"])){
-            message.reply("bril");
+            // message.reply("bril");
+            const rep = new EmbedBuilder()
+                .setTitle("bril")
+                .setImage("https://urlr.me/JkNWM");
+            message.reply({embeds: [rep]});
             return;
         }
 
@@ -70,6 +82,10 @@ export default (client: Client): void => {
         }
 
         if(tabin(end, ["qui", "ki", "qu i", "q u i"])){
+            message.react("🇨");
+            message.react("🇭")
+            message.react("🇪");
+
             const rep = new EmbedBuilder()
                 .setTitle("che lorraine")
                 .setImage("https://assets.afcdn.com/recipe/20221010/135915_w1024h1024c1cx999cy749cxt0cyt0cxb1999cyb1499.webp");
