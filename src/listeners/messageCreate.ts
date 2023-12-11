@@ -3,15 +3,7 @@ import dotenv from "dotenv";
 import { randomInt } from "crypto";
 
 function tabin(message:string, tab:Array<string>): boolean {
-    let res = false;
-    // console.log(message);
-    tab.forEach((element) => {
-        // let regex = new RegExp(`(${element})`, "g");
-        // //console.log(regex);
-        // if(regex.test(message)) res = true;
-        if(message.includes(element)) res = true;
-    });
-    return res;
+    return tab.filter((element) => {return element === message}).length === 1 ? true : false;
 }
 
 export default (client: Client): void => {
@@ -39,12 +31,16 @@ export default (client: Client): void => {
         //if(message.author.bot || message.author.id === process.env.DEV! || message.content[0] === '$') return;
         if(randomInt(0, 100) === 3) message.reply("Bonjour c'est une fonctionnalité (de merde) qui a été demandée par @tani_soe (je ne suis pas responsable)");
         const messageContent = message.content.toLowerCase().replaceAll("?","").replaceAll("!","").replaceAll(".","").trim().split(" ")
-        const end = messageContent.splice(messageContent.length - 1, messageContent.length).join(" ");
-        //console.log(end);
+        const end = messageContent[messageContent.length - 1];
+        // console.log(messageContent);
+        // console.log(end);
 
+        if(messageContent.filter((element) => {return element === "oui"}).length === 2){
+            message.reply("https://youtu.be/6vlY1vdkPf4?si=xrf1H11MG2aRamdB");
+            return;
+        }
         
-        
-        if(tabin(end, ["quoi","koi","koa","quoa","koua"])) {
+        if(tabin(end, ["quoi","koi","koa","quoa","koua", "qu oi", "qu oa", "k oi", "k oa"])) {
             //console.log("feur")
             
             message.reply("feur");
@@ -58,12 +54,12 @@ export default (client: Client): void => {
             return;
         }
 
-        if(tabin(end, ["oui", "ouais", "ouai", "oué", "oue"])){
+        if(tabin(end, ["oui", "ouais", "ouai", "oué", "oue", "ou i", "ou ai", "ou é", "ou e"])){
             message.reply("fi");
             return;
         }
 
-        if(tabin(end, ["non", "nan"])){
+        if(tabin(end, ["non", "nan", "no n", "na n"])){
             message.reply("bril");
             return;
         }
