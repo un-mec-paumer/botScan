@@ -21,6 +21,7 @@ console.log("Bot is starting...");
 const client = new Client({
     intents: [
         Intents.Guilds,
+        Intents.GuildMembers,
         Intents.GuildMessages,
         Intents.DirectMessages,
         Intents.MessageContent,
@@ -41,6 +42,23 @@ const interval2 = setInterval(ntm, 1000);
 //     console.log(user.avatarURL())
 //  });
 
+// console.log("hello world")
+// async function test() {
+//     const Guilds = await client.guilds.fetch("1039531159866060830")
+//     console.log(Guilds.members.list());
+// }
+// test();
+//console.log(client.guilds.cache.get(Guilds[0]));
+// Guilds.forEach((guild) => {
+//     client.guilds.fetch(guild).then((guild) => {
+//         guild.members.fetch().then((members) => {
+//             members.forEach((member) => {
+//                 console.log(member.user.username);
+//                 //console.log(member.user.avatarURL());
+//             });
+//         });
+//     });
+// });
 
 async function handleConnectionValidation() {
     return new Promise((resolve) => {
