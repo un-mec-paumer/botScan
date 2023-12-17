@@ -108,16 +108,16 @@ export const AddManga: Command = {
 
                 //const text = await verif.text();
                 const $ = cheerio.load(text);
-
-                //console.log($(".summary_image img").attr("src"));
-                if($(".summary_image img").attr("data-src") === undefined){
+                // console.log($(".summary_image img").toString());
+                // console.log($(".summary_image img").attr("data-lazy-src"));
+                if($(".summary_image img").attr("data-lazy-src") === undefined){
                     interaction.followUp({
                         ephemeral: true,
                         content: "Manga non trouvable sur le site fr-scan.com"
                     });
                     return;
                 }
-                const image = $(".summary_image img").attr("data-src")
+                const image = $(".summary_image img").attr("data-lazy-src")
                 // console.log(image);
                 const synopsis = $(".summary__content").text().trim();
                 //console.log(synopsis)
