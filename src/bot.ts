@@ -337,7 +337,7 @@ app.post("/addManga", async (req: Request, res: Response) => {
             const $ = cheerio.load(text);
 
             //console.log($(".summary_image img").attr("src"))
-            if($(".summary_image img").attr("data-src") === undefined){
+            if($(".summary_image img").attr("data-lazy-src") === undefined){
                 // interaction.followUp({
                 //     ephemeral: true,
                 //     content: "Manga non trouvable sur le site fr-scan.com"
@@ -345,7 +345,7 @@ app.post("/addManga", async (req: Request, res: Response) => {
                 res.send({res:false,text:"Manga non trouvable sur le site fr-scan.com"});
                 return;
             }
-            const image = $(".summary_image img").attr("data-src")
+            const image = $(".summary_image img").attr("data-lazy-src")
             // console.log(image);
             const synopsis = $(".summary__content").text().trim();
             //console.log(synopsis)
