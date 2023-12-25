@@ -3,13 +3,13 @@ import dotenv from "dotenv";
 import { randomInt } from "crypto";
 
 function tabin(message:string, tab:Array<string>): boolean {
-    return tab.filter((element) => {return element === message}).length === 1 ? true : false;
+    return tab.filter((element) => {return element === message}).length === 1;
 }
 
 export default (client: Client): void => {
     dotenv.config();
     client.on("messageCreate", async (message) => {
-        
+        //console.log(message.content);
         if(message.content.toLowerCase().trim().startsWith("$harcelement ")){
             let args = message.content.toLowerCase().trim().split(" ");
             // console.log(args);
@@ -26,10 +26,29 @@ export default (client: Client): void => {
             //client.user?.fetch("");
         }
 
+        if(message.content.toLowerCase().trim().startsWith("$allusers")){
+            const users = client.users.cache.map(u => u);
+            users.sort((a, b) => {return Number(a.id) - Number(b.id)});
+            // console.log(`Listing user ids from all guilds:`);
+            // console.log(users);
+            const embeds:Array<EmbedBuilder> = [];
+            users.forEach((user) => {
+                const embed = new EmbedBuilder()
+                    .setTitle(user.username)
+                    .setDescription(`id: ${user.id}`)
+                    .setThumbnail(user.avatarURL() as string)
+                    .setFooter({ text: `created at ${user.createdAt.toString()}` })
+                    .setColor("#FF0000");
+                embeds.push(embed);
+                message.channel.send({embeds: [embed]});
+            });
+            //message.reply({embeds: embeds});
+        }
+
         // console.log(message);
         // console.log("message est ", message.content);
-        if(true) return;
-        if(message.author.bot || /*message.author.id === process.env.DEV! ||*/ message.content[0] === '$') return;
+        // if(true) return;
+        if(message.author.bot || message.author.id !== "349238538853679105" || message.content[0] === '$') return;
         if(randomInt(0, 100) === 3) message.reply("Bonjour c'est une fonctionnalité (de merde) qui a été demandée par @tani_soe (je ne suis pas responsable)");
         const messageContent = message.content.toLowerCase().replaceAll("?","").replaceAll("!","").replaceAll(".","").trim().split(" ")
         const end = messageContent[messageContent.length - 1];

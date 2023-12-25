@@ -41,17 +41,15 @@ export const SupManga: Command = {
                     });
                 }
                 else{
-                    BDD.getManga(nom as string).then((manga) => {
-                        BDD.supprimerManga(manga![0].name_manga).then(async () => {
+                    BDD.supprimerManga(manga![0].name_manga).then(async () => {
 
-                            await BDD.supImgFromTest(manga![0].name_manga)
+                        await BDD.supImgFromTest(manga![0].name_manga)
 
-                            interaction.followUp({
-                                ephemeral: true,
-                                content: "Manga supprimé"
-                            });
+                        interaction.followUp({
+                            ephemeral: true,
+                            content: "Manga supprimé"
                         });
-                    });               
+                    });          
                 }
             });
         }
