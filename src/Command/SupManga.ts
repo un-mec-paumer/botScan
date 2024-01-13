@@ -26,38 +26,35 @@ export const SupManga: Command = {
         // console.log("Hello world!");
 
         //console.log(interaction.options);
-        let nom = interaction.options.get("name")?.value;
-        nom = nom?.toString().replaceAll(" ", "-").toLowerCase();
+        const nom = interaction.options.get("name")?.value
+                    ?.toString().replaceAll(" ", "-").toLowerCase();
         dotenv.config();
 
 
-        if(interaction.user.id === process.env.DEV!){
-            BDD.getManga(nom as string).then((manga) => {
-                // console.log(manga);
-                if(manga!.length === 0){
-                    interaction.followUp({
-                        ephemeral: true,
-                        content: "Le manga n'existe pas"
-                    });
-                }
-                else{
-                    BDD.supprimerManga(manga![0].name_manga).then(async () => {
-
-                        await BDD.supImgFromTest(manga![0].name_manga)
-
-                        interaction.followUp({
-                            ephemeral: true,
-                            content: "Manga supprimé"
-                        });
-                    });          
-                }
-            });
-        }
-        else{
+        if(interaction.user.id !== process.env.DEV!) {
             interaction.followUp({
                 ephemeral: true,
                 content: "Vous n'avez pas les droits pour cette commande"
             });
+            return;
         }
+
+        const manga = await BDD.getManga(nom as string);
+        // console.log(manga);
+        if(manga!.length === 0){
+            interaction.followUp({
+                ephemeral: true,
+                content: "Le manga n'existe pas"
+            });
+            return;
+        }
+
+        await BDD.supprimerManga(manga![0].name_manga);
+        await BDD.supImgFromTest(manga![0].name_manga);
+
+        interaction.followUp({
+            ephemeral: true,
+            content: "Manga supprimé"
+        });
     }
 };

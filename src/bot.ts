@@ -3,12 +3,9 @@ import * as dotenv from 'dotenv'
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
-import { finderAll, downloadImg } from "./function";
+import { finderAll, downloadImg, getCherrioText } from "./function";
 import Express, { Request, Response, NextFunction  } from "express";
-import { BDD, randomString } from "./supabase";
-import * as cheerio from 'cheerio';
-
-type json = { args: {url:string}, headers: { [key: string]: string }, origin: string, url: string };
+import { BDD } from "./supabase";
 
 dotenv.config()
 
@@ -25,8 +22,7 @@ const client = new Client({
         Intents.GuildMessages,
         Intents.DirectMessages,
         Intents.MessageContent,
-        Intents.DirectMessageReactions,
-        Intents.GuildPresences
+        Intents.DirectMessageReactions
     ]
 });
 
@@ -71,7 +67,6 @@ async function handleConnectionValidation() {
 }
 
 const app = Express();
-//
 app.use(Express.json());
 
 app.use((req:Request, res:Response, next:NextFunction ) => {
@@ -79,7 +74,7 @@ app.use((req:Request, res:Response, next:NextFunction ) => {
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
-  });
+});
 
 app.use(Express.urlencoded({ extended: true }));
 
@@ -95,104 +90,91 @@ app.get("/", (req: Request, res: Response) => {
     res.send(`Hello World`);
 });
 
-app.get("/mangas", (req: Request, res: Response) => {
-    BDD.getMangas().then((data) => {
-        res.send(data);
-    });
-})
-
-app.post("/mangaImg", (req: Request, res: Response) => {
-    BDD.getImgFromTest(req.body.name).then((data) => {
-        res.send(data);
-    });
+app.get("/mangas", async (req: Request, res: Response) => {
+    const data = await BDD.getMangas();
+    res.send(data);
 });
 
-app.post("/mangasByToken", (req: Request, res: Response) => {
-    BDD.getMangasByToken(req.body.token).then((data) => {
-        if(data === undefined || data!.length === 0) {
-            res.send({result:"notExist"});
-            return;
-        }
-        let result:any = [];
-        data.forEach((e:any) => {
-            result.push({
-                id: e.id_manga,
-                name: e.manga_name,
-                chap: e.chapitre_manga,
-                page: e.page,
-                img: e.img,
-                synopsis: e.synopsis
-            });
-        });     
-        res.send(result);
-    });
+app.post("/mangaImg", async (req: Request, res: Response) => {
+    const data = await BDD.getImgFromTest(req.body.name);
+    res.send(data);
 });
 
-app.post("/mangaByid", (req: Request, res: Response) => {
-    BDD.getMangaById(parseInt(req.body.id)).then((data) => {
-        // console.log("coucou", req);
-        res.send(data);
-    });
-})
+app.post("/mangasByToken", async (req: Request, res: Response) => {
+    const data = await BDD.getMangasByToken(req.body.token);
+    if(data === undefined || data!.length === 0) {
+        res.send({result:"notExist"});
+        return;
+    }
 
-app.post("/manga", (req: Request, res: Response) => {
+    let result:any = [];
+    data.forEach((e:any) => {
+        result.push({
+            id: e.id_manga,
+            name: e.manga_name,
+            chap: e.chapitre_manga,
+            page: e.page,
+            img: e.img,
+            synopsis: e.synopsis
+        });
+    });     
+    res.send(result);
+});
+
+app.post("/mangaByid", async (req: Request, res: Response) => {
+    const data = await BDD.getMangaById(parseInt(req.body.id));
+    // console.log("coucou", req);
+    res.send(data);
+});
+
+app.post("/manga", async (req: Request, res: Response) => {
     //console.log(req.body);
-    BDD.getManga(req.body.name).then((data) => {
-        res.send(data);
-    });
-})
+    const data = await BDD.getManga(req.body.name);
+    res.send(data);
+});
 
-app.post("/addSub", (req: Request, res: Response) => {
-    BDD.addAlerteByToken(req.body.id_manga, req.body.token).then((data) => {
-        res.send({res:true});
-    });
-})
+app.post("/addSub", async (req: Request, res: Response) => {
+    const data = await BDD.addAlerteByToken(req.body.id_manga, req.body.token);
+    res.send({res:true});
+});
 
-app.post("/deleteSub", (req: Request, res: Response) => {
-    BDD.suppAlerteByToken(req.body.id_manga, req.body.token).then((data) => {
-        res.send({res:true});
-    });
-})
+app.post("/deleteSub", async (req: Request, res: Response) => {
+    const data = await BDD.suppAlerteByToken(req.body.id_manga, req.body.token);
+    res.send({res:true});
+});
 
 app.post("/getSub",async (req: Request, res: Response) => {
     const data = await BDD.getAlerteByToken(req.body.token, req.body.id_manga);
-    //console.log(data?.length === 0 ? false : true);
-    res.send({sub:data?.length === 0 ? false : true});
-})
+    //console.log(data?.length !== 0);
+    res.send({sub:data?.length !== 0});
+});
 
-app.post("/connexion", (req: Request, res: Response) => {
-    BDD.getUserByName(req.body.name).then((data) => {
+app.post("/connexion", async (req: Request, res: Response) => {
+    const data = await BDD.getUserByName(req.body.name);
         //console.log(data);
 
-        if(data?.length === 0) {
-            res.send({token:"not Exist"});
-            return;
-        }
-        client.users.fetch(data![0].id_user).then((user:User) => {
-            //const connectionId = randomString();
+    if(data?.length === 0) {
+        res.send({token:"not Exist"});
+        return;
+    }
+    
+    const userDiscord = await client.users.fetch(data![0].id_user);
+    //const connectionId = randomString();
 
-            // Stockez cet identifiant de connexion en attente
-            //pendingConnections.set(connectionId, user.id);
+    // Stockez cet identifiant de connexion en attente
+    //pendingConnections.set(connectionId, user.id);
 
-            user.send("bonjour quelqu'un veut se connecter sur le site ScanManager et nous voudrions savoir si c'est bien vous (pour accepter la connexion :👍 sinon 👎)").then(async () => {
-                // Vous n'avez pas besoin de gérer la réaction ici, car vous pouvez le faire dans le gestionnaire de réaction
-                handleConnectionValidation().then((value) => {
-                    if(value) {
-                        BDD.addToken(user.id).then((data) => {
-                            res.send({token:data});
-                        });
-                    }
-                    else {
-                        res.send({token:"not Accept"});
-                    }
-                });
-                
-                //console.log(resVal);
-                //res.send(resVal);
-            });
-        })
-    })
-})
+    await userDiscord.send("Bonjour quelqu'un veut se connecter sur le site ScanManager et nous voudrions savoir si c'est bien vous (pour accepter la connexion :👍 sinon 👎)");
+    // Vous n'avez pas besoin de gérer la réaction ici, car vous pouvez le faire dans le gestionnaire de réaction
+    const value = await handleConnectionValidation();
+    if(!value) { res.send({token:"not Accept"}); }
+
+    const tokenData = await BDD.addToken(userDiscord.id);
+    res.send({token:tokenData});
+
+    //console.log(resVal);
+    //res.send(resVal);
+});
 
 app.post("/getUser", async (req: Request, res: Response) => {
     //console.log(req.body.token);
@@ -212,175 +194,146 @@ app.post("/newUser", async (req: Request, res: Response) => {
     const idDiscord = req.body.id;
     //const name = req.body.name;
 
-    client.users.fetch(idDiscord).then(async (user:User) => {
+    try {
+        const userDiscord = await client.users.fetch(idDiscord);
         //const verif = await BDD.getUser(idDiscord).then((data) => { return data });
 
         // if(verif?.length !== 0){
         //     res.send({result:"alreadyExist"});
         // }
         //else{
-            const avatarURL = user.avatarURL();
-            const name = user.username;
-            user.send("bonjour quelqu'un veut crée ajouté votre compte sur se bot si il s'agit de vous reagisser avec 👍 pour accespter sinon 👎").then(async () => {
-                handleConnectionValidation().then((value) => {
-                    if(!value) {
-                        res.send({result:"not Accept"}); 
-                        return;
-                    }
-                    BDD.addUser(idDiscord, name, avatarURL!).then((data) => {
-                        //res.send({res:true});
-    
-                        BDD.addToken(idDiscord).then((data) => {
-                            res.send({result:data});
-                        });
-                    });
-                    // if(user.globalName === "totodu91") {
-                    //     BDD.addToken(idDiscord).then((data) => {
-                    //         res.send({result:data});
-                    //     });
-                    // }
-                });
-            })
-            .catch(() => {
-                res.send({result:"not Access to DM"});
-            });
+        const avatarURL = userDiscord.avatarURL();
+        const name = userDiscord.username;
+        await userDiscord.send("Bonjour quelqu'un veut créer / ajouter votre compte sur ce bot s'il s'agit de vous réagissez avec 👍 pour accepter sinon 👎");
+        const value = await handleConnectionValidation();
+        if(!value) {
+            res.send({result:"not Accept"}); 
+            return;
+        }
+        try {
+            await BDD.addUser(idDiscord, name, avatarURL!);
+            //res.send({res:true});
+
+            const data = await BDD.addToken(idDiscord);
+            res.send({result:data});
+            //* bloc de code ne servant à rien mais wallah on sait jamais vérifie avant de supprimer
+            // if(user.globalName === "totodu91") {
+            //     BDD.addToken(idDiscord).then((data) => {
+            //         res.send({result:data});
+            //     });
+            // }
+        } catch(error) {
+            res.send({result:"not Access to DM"});
+        };
         //}
-    }).catch(() => {
+    } catch (error) {
         res.send({result:"ID not exist in discord"});
-    });
+    };
 });
 
 app.post("/sendMessage", async (req: Request, res: Response) => {
     //console.log(req.body.text);
 
-    const User:User|void = await BDD.getUserByToken(req.body.token).then(async (data) => {
-        // console.log(data);
-        const res = await client.users.fetch(data![0].user_id).then((user:User) => {
-            //console.log("user in: ",user);
-            return user;
-        });
-        return res;
-    });
+    const response = await BDD.getUserByToken(req.body.token);
+    const userDiscord: User|void = await client.users.fetch(response![0].user_id);
 
     //console.log("user out: ",User);
 
     client.users.fetch(process.env.DEV!).then((user:User) => {
-        user.send("message de " + User!.username + " : " + req.body.text);
+        user.send(`Message de ${userDiscord!.username} : ${req.body.text}`);
     }).then(() => {
         res.send({res:true});
     })// }).catch((err) => {res.send({res:false})});
 });
 
 app.post("/addManga", async (req: Request, res: Response) => {
-    const name = req.body.name.toLowerCase().replaceAll(" ", "-")
+    const name = req.body.name.toLowerCase().replaceAll(" ", "-");
     const chap = req.body.chapter;
     const page = req.body.page;
     const token = req.body.token;
 
-    BDD.getManga(name as string).then( async (manga) => {
-        if(manga!.length === 1){
-            BDD.getUserByToken(token).then((user) => {
-                let id_user = user![0].user_id;
-                BDD.getUser(id_user).then((user) => {
-                    if(user?.length === 1){
-                        BDD.getLien(manga![0].id_manga).then((user) => {
-                            if(user!.find(id_user => id_user.id_user == id_user) !== undefined){
-                                res.send({res:true,text:"tu est déjà dans la liste des personnes à prévenir"});
-                            }
-                            else{
-                                // interaction.followUp({
-                                //     ephemeral: true,
-                                //     content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
-                                // });
-                                BDD.addLien(manga![0].id_manga, id_user);
-                                res.send({res:true,text:"Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"});
-                            }
-                        });
-                    }
-                    else{
-                        client.users.fetch(id_user).then((user:User) => {
-                            BDD.addUser(id_user, user.username, user.avatarURL()!).then(() => {
-                                BDD.addLien(manga![0].id_manga, id_user).then(() => {
-                                    // interaction.followUp({
-                                    //     ephemeral: true,
-                                    //     content: "Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"
-                                    // });
-                                    res.send({res:true,text:"Manga déjà présent je vous ai ajouté à la liste des personnes à prévenir"});
-                                });
-                            });
-                        });
-                    }
-                });
+    const manga = await BDD.getManga(name as string);
+    const userBDD = await BDD.getUserByToken(token);
+    const id_user = userBDD![0].user_id;
+    const userDiscord = await client.users.fetch(id_user);
+
+    if(manga!.length === 1) {
+
+        const userTest = await BDD.getLien(manga![0].id_manga);
+        if(userTest!.find(id_user => id_user.id_user == id_user) !== undefined){
+            res.send({
+                res: true,
+                text: "Vous êtes déjà dans la liste des personnes à prévenir"
             });
+            return;
         }
-        else{
-            //console.log("verif ");
-            // let page = interaction.options.get("page")?.value 
-            const url = "https://fr-scan.com/manga/" + name + "/"
-            const proxyUrl = 'https://httpbin.org/get?url=' + encodeURIComponent(url);
 
+        // const user2 = await BDD.getUser(id_user);
+        // utiliser user2 dans le if si ça marche pas
+        if(userBDD?.length !== 1) {
+            await BDD.addUser(id_user, userDiscord.username, userDiscord.avatarURL()!);
+        }
 
-            const response = await fetch(proxyUrl, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'text/html',
-                    'User-Agent': 'PostmanRuntime/7.32.1',
-                },
-            });
+        await BDD.addLien(manga![0].id_manga, id_user);
+        // interaction.followUp({
+        //     ephemeral: true,
+        //     content: "Manga déjà présent vous avez été ajouté à la liste des personnes à prévenir"
+        // });
+        res.send({
+            res: true,
+            text: "Manga déjà présent vous avez été ajouté à la liste des personnes à prévenir"
+        });
+        return;
+    }
+
+    //console.log("verif ");
+    // let page = interaction.options.get("page")?.value;
+    const url = `https://fr-scan.com/manga/${name}/`;
+
+    const $ = await getCherrioText(url);
+
+    //console.log($(".summary_image img").attr("src"))
+    if($(".summary_image img").attr("data-lazy-src") === undefined){
+        // interaction.followUp({
+        //     ephemeral: true,
+        //     content: "Manga non trouvable sur le site fr-scan.com"
+        // });
+        res.send({
+            res: false,
+            text: "Manga non trouvable sur le site fr-scan.com"
+        });
+        return;
+    }
+    const image = $(".summary_image img").attr("data-lazy-src")
+    // console.log(image);
+    const synopsis = $(".summary__content").text().trim();
+    //console.log(synopsis)
     
-            const json = await response.json() as json;
-            const text = await fetch(json.args.url, json.headers).then(async (response) => {
-                const text = await response.text();
-                return text;
-            })
+    await BDD.addManga(name, chap, page, image!, synopsis);
+    downloadImg(image!, name as string);
 
-            //const text = await verif.text();
-            const $ = cheerio.load(text);
-
-            //console.log($(".summary_image img").attr("src"))
-            if($(".summary_image img").attr("data-lazy-src") === undefined){
-                // interaction.followUp({
-                //     ephemeral: true,
-                //     content: "Manga non trouvable sur le site fr-scan.com"
-                // });
-                res.send({res:false,text:"Manga non trouvable sur le site fr-scan.com"});
-                return;
-            }
-            const image = $(".summary_image img").attr("data-lazy-src")
-            // console.log(image);
-            const synopsis = $(".summary__content").text().trim();
-            //console.log(synopsis)
-            
-            BDD.addManga(name, chap, page, image!, synopsis).then(() => {
-                downloadImg(image!, name as string)
-                BDD.getManga(name as string).then((manga) => {
-                    BDD.getUserByToken(token).then((user) => {
-                        let id_user = user![0].user_id;
-                        BDD.getUser(id_user).then((userBDD) => {
-                            client.users.fetch(id_user).then((user:User) => {
-                                if(userBDD?.length === 0){
-                                    const useravatar = user.avatarURL();
-                                    BDD.addUser(id_user, user.username, useravatar!).then(() => {
-                                        // interaction.followUp({
-                                        //     ephemeral: true,
-                                        //     content: "Manga ajouté avec succès"
-                                        // });
-                                        // return
-                                        res.send({res:true,text:"Manga ajouté avec succès"});
-                                    });
-                                }
-                                BDD.addLien(manga![0].id_manga, user.id).then(() => {
-                                    // interaction.followUp({
-                                    //     ephemeral: true,
-                                    //     content: "Manga ajouté avec succès"
-                                    // });
-                                    res.send({res:true,text:"Manga ajouté avec succès"});
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        }
-    });    
+    // const user2 = await BDD.getUser(id_user);
+    // utiliser user2 à la palce de userBDD si ça marche pas
+    if(userBDD?.length === 0){
+        const userAvatar = userDiscord.avatarURL();
+        await BDD.addUser(id_user, userDiscord.username, userAvatar!);
+        // interaction.followUp({
+        //     ephemeral: true,
+        //     content: "Manga ajouté avec succès"
+        // });
+        // return;
+        res.send({
+            res: true,
+            text: "Manga ajouté avec succès"
+        });
+    }
+    await BDD.addLien(manga![0].id_manga, userDiscord.id);
+    // interaction.followUp({
+    //     ephemeral: true,
+    //     content: "Manga ajouté avec succès"
+    // });
+    res.send({
+        res: true,
+        text: "Manga ajouté avec succès"
+    });
 });

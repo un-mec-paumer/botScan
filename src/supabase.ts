@@ -7,7 +7,7 @@ export function randomString() {
     let result           = '';
     let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let charactersLength = characters.length;
-    let random:number;
+    let random: number;
     for ( let i = 0; i < 32; i++ ) {
         random = randomInt(0, charactersLength)
         result += characters.charAt(random);

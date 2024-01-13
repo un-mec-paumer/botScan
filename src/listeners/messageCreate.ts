@@ -1,62 +1,40 @@
 import { Client, EmbedBuilder} from "discord.js";
 import dotenv from "dotenv";
 import { randomInt } from "crypto";
-
-function tabin(message:string, tab:Array<string>): boolean {
-    return tab.filter((element) => {return element === message}).length === 1;
-}
+import { tabin } from "../function";
 
 export default (client: Client): void => {
     dotenv.config();
     client.on("messageCreate", async (message) => {
-        //console.log(message.content);
+        
         if(message.content.toLowerCase().trim().startsWith("$harcelement ")){
             let args = message.content.toLowerCase().trim().split(" ");
             // console.log(args);
             args.shift();
             //console.log(args);
-            let harcele = args.join(" ");
-            harcele = String(harcele.replace("<@", "").replace(">", ""));
+            //* String() probablement inutile, à tester
+            const harcele = args.join(" ").replace("<@", "").replace(">", "");
+            // const harcele = String(args.join(" ").replace("<@", "").replace(">", ""));
             
             // console.log(harcele);
-            client.users.fetch(harcele).then((user) => {
-                for(let i = 0; i < 30; i++) user.send("oui tu va recevoir 30 messages de harcelement :)");
-            });
+            const userDiscord = await client.users.fetch(harcele)
+            for(let i = 0; i < 30; i++) userDiscord.send("Oui tu vas recevoir 30 messages de harcèlement :) ||(cheh)||");
             //console.log(harcele);
-            //client.user?.fetch("");
-        }
-
-        if(message.content.toLowerCase().trim().startsWith("$allusers")){
-            const users = client.users.cache.map(u => u);
-            users.sort((a, b) => {return Number(a.id) - Number(b.id)});
-            // console.log(`Listing user ids from all guilds:`);
-            // console.log(users);
-            const embeds:Array<EmbedBuilder> = [];
-            users.forEach((user) => {
-                const embed = new EmbedBuilder()
-                    .setTitle(user.username)
-                    .setDescription(`id: ${user.id}`)
-                    .setThumbnail(user.avatarURL() as string)
-                    .setFooter({ text: `created at ${user.createdAt.toString()}` })
-                    .setColor("#FF0000");
-                embeds.push(embed);
-                message.channel.send({embeds: [embed]});
-            });
-            //message.reply({embeds: embeds});
+            //client.userDiscord?.fetch("");
         }
 
         // console.log(message);
         // console.log("message est ", message.content);
-        // if(true) return;
-        if(message.author.bot || message.author.id !== "349238538853679105" || message.content[0] === '$') return;
+        return;
+        if(message.author.bot || /*message.author.id === process.env.DEV! ||*/ message.content[0] === '$') return;
         if(randomInt(0, 100) === 3) message.reply("Bonjour c'est une fonctionnalité (de merde) qui a été demandée par @tani_soe (je ne suis pas responsable)");
-        const messageContent = message.content.toLowerCase().replaceAll("?","").replaceAll("!","").replaceAll(".","").trim().split(" ")
+        const messageContent = message.content.toLowerCase().replaceAll("?","").replaceAll("!","").replaceAll(".","").trim().split(" ");
         const end = messageContent[messageContent.length - 1];
         // console.log(messageContent);
         // console.log(end);
 
-        if(messageContent.filter((element) => {return element === "oui"}).length === 2){
-            message.reply(`**AVEC SONT GROS TAXI !** \nhttps://youtu.be/6vlY1vdkPf4?si=xrf1H11MG2aRamdB`);
+        if(messageContent.filter((element) => {return element === "oui"}).length === 2) {
+            message.reply(`**AVEC SONT GROS TAXI !** \nhttps://youtu.be/6vlY1vdkPf4`);
             return;
         }
         
@@ -72,22 +50,21 @@ export default (client: Client): void => {
                 .setTitle("feur")
                 .setImage("https://media.tenor.com/SVRGZaisSqsAAAAC/quoifeur-feur.gif");
             message.reply({embeds: [rep]});
-            //message.author.send("ca t'apprendra a dire quoi");
+            //message.author.send("ça t'apprendras à dire quoi");
             
             return;
         }
 
-        if(tabin(end, ["oui", "ouais", "ouai", "oué", "oue", "ou i", "ou ai", "ou é", "ou e"])){
+        if(tabin(end, ["oui", "ou i"])) {
             // message.reply("fi");
             const rep = new EmbedBuilder()
                 .setTitle("fi")
                 .setImage("https://i.redd.it/iu7vpn5lbe861.jpg");
-
             message.reply({embeds: [rep]});
             return;
         }
 
-        if(tabin(end, ["non", "nan" , "no n", "na n"])){
+        if(tabin(end, ["non", "no n"])) {
             // message.reply("bril");
             const rep = new EmbedBuilder()
                 .setTitle("bril")
@@ -96,14 +73,14 @@ export default (client: Client): void => {
             return;
         }
 
-        if(tabin(end, ["dimitriou"])){
+        if(tabin(end, ["dimitriou"])) {
             message.reply("mitriou");
             return;
         }
 
-        if(tabin(end, ["qui", "ki", "qu i", "q u i"])){
+        if(tabin(end, ["qui", "ki", "qu i", "q u i"])) {
             message.react("🇨");
-            message.react("🇭")
+            message.react("🇭");
             message.react("🇪");
 
             const rep = new EmbedBuilder()

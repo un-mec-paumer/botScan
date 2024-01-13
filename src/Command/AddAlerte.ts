@@ -23,49 +23,40 @@ export const AddAlerte: Command = {
         },
     ],
     run: async (client: Client, interaction: CommandInteraction) => {
-        let name = interaction.options.get("name")?.value;
-        name = name?.toString().toLowerCase().replaceAll(" ", "-");
-        BDD.getManga(name!).then((manga) => {
-            // console.log(manga);
-            if (manga!.length == 0) {
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "Manga non trouvé"
-                });
-                return;
-            }
-            BDD.getUser(interaction.user.id).then((user) => {
-                
-                if(user?.length === 0){
-                    const useravatar = interaction.user.avatarURL();    
-                    BDD.addUser(interaction.user.id, interaction.user.username, useravatar!).then(() => {
-                        BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
-                            interaction.followUp({
-                                ephemeral: true,
-                                content: "vous avez été ajouté à la liste des personnes à prévenir de " + manga![0].name_manga.replaceAll("-", " ")
-                            });
-                        });
-                    });
-                    return;
-                }
+        const name = interaction.options.get("name")?.value
+                    ?.toString().toLowerCase().replaceAll(" ", "-");
+
+        const manga = await BDD.getManga(name!)
+        // console.log(manga);
+        if (manga!.length == 0) {
+            interaction.followUp({
+                ephemeral: true,
+                content: "Manga non trouvé"
             });
-            BDD.getLien(manga![0].id_manga).then((user) => {
-                // console.log(user, interaction.user.id);
-                if(user!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
-                    interaction.followUp({
-                        ephemeral: true,
-                        content: "tu est déjà dans la liste des personnes à prévenir"
-                    });
-                }
-                else{
-                    BDD.addLien(manga![0].id_manga, interaction.user.id).then(() => {
-                        interaction.followUp({
-                            ephemeral: true,
-                            content: "vous avez été ajouté à la liste des personnes à prévenir de " + manga![0].name_manga.replaceAll("-", " ")
-                        });
-                    });
-                }
+            return;
+        }
+
+        //* nom de variable car bancale (précédemment user) et en conflit avec la déclaration du dessus qui empêche d'en faire une constante
+        const userTest = await BDD.getLien(manga![0].id_manga);
+        // console.log(user, interaction.user.id);
+        if(userTest!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
+            interaction.followUp({
+                ephemeral: true,
+                content: "Vous êtes déjà dans la liste des personnes à prévenir"
             });
-        })        
+            return;
+        }
+
+        const userBDD = await BDD.getUser(interaction.user.id);
+        if(userBDD?.length === 0) {
+            const useravatar = interaction.user.avatarURL();
+            await BDD.addUser(interaction.user.id, interaction.user.username, useravatar!);
+        }
+
+        await BDD.addLien(manga![0].id_manga, interaction.user.id)
+        interaction.followUp({
+            ephemeral: true,
+            content: `Vous avez été ajouté à la liste des personnes à prévenir de ${manga![0].name_manga.replaceAll("-", " ")}`
+        });
     }
 };

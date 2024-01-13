@@ -22,31 +22,32 @@ export const SupAlerte: Command = {
         }
     ],
     run: async (client: Client, interaction: CommandInteraction) => {
-        let name = interaction.options.get("name")?.value;
-        name = name?.toString().toLowerCase().replaceAll(" ", "-");
+        const name = interaction.options.get("name")?.value
+                    ?.toString().toLowerCase().replaceAll(" ", "-");
 
-        BDD.getManga(name!).then((manga) => {
-            if(manga!.length === 0){
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "Manga non trouvé"
-                });
-                return;
-            }
-            BDD.supprimerLien(manga![0].id_manga, interaction.user.id).then((error) => {
-                if(error){
-                    interaction.followUp({
-                        ephemeral: true,
-                        content: "vous n'êtes pas dans la liste des personnes à prévenir de " + manga![0].name_manga.replaceAll("-", " ")
-                    });
-                    return;
-                }
-                interaction.followUp({
-                    ephemeral: true,
-                    content: "vous avez été supprimé de la liste des personnes à prévenir de " + manga![0].name_manga.replaceAll("-", " ")
-                });
+        const manga = await BDD.getManga(name!);
+
+        if(manga!.length === 0){
+            interaction.followUp({
+                ephemeral: true,
+                content: "Manga non trouvé"
             });
+            return;
+        }
+
+        const error = await BDD.supprimerLien(manga![0].id_manga, interaction.user.id);
+
+        if(error){
+            interaction.followUp({
+                ephemeral: true,
+                content: `Vous n'êtes pas dans la liste des personnes à prévenir de ${manga![0].name_manga.replaceAll("-", " ")}`
+            });
+            return;
+        }
+
+        interaction.followUp({
+            ephemeral: true,
+            content: `Vous avez été supprimé de la liste des personnes à prévenir de ${manga![0].name_manga.replaceAll("-", " ")}`
         });
-        
     }
 };

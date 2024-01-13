@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
+import { CommandInteraction, Client } from "discord.js";
 
 export const Site: Command = {
     name: "site",
