@@ -129,8 +129,7 @@ export async function getCherrioText(url: string) {
 }
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
-
-    mangas?.forEach( async (manga: Manga) => {
+       mangas?.forEach( async (manga: Manga) => {
         const nom = manga.name_manga?.replaceAll("-", " ") ?? "";
         const synopsis = manga.synopsis ?? "";
         const img = await BDD.getImgFromTest(manga.name_manga!)
@@ -139,7 +138,11 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
 
         const embed = new EmbedBuilder()
             .setTitle(nom)
-            .setDescription(synopsis.split(" ").slice(0, 50).join(" ") + "...")
+            .setURL(`https://fr-scan.com/manga/${manga.name_manga}/`)
+            .setDescription(
+                "***Chapitre n° " + manga.chapitre_manga + "*** \n" +
+                synopsis.split(" ").slice(0, 50).join(" ") + "..."
+            )
             .setImage(imgUrl);
 
         interaction.followUp({ embeds: [embed] });

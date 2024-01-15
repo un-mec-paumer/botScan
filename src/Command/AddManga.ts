@@ -104,7 +104,7 @@ export const AddManga: Command = {
             image!,
             synopsis
         );
-        downloadImg(image!, nom as string);
+        downloadImg(image as string, nom as string);
 
         if(user?.length === 0) {
             const useravatar = interaction.user.avatarURL();
@@ -115,7 +115,9 @@ export const AddManga: Command = {
             });
             return;
         }
-        await BDD.addLien(manga![0].id_manga, interaction.user.id);
+        const newManga = await BDD.getManga(nom as string);
+
+        await BDD.addLien(newManga![0].id_manga, interaction.user.id);
         interaction.followUp({
             ephemeral: true,
             content: "Manga ajouté avec succès"
