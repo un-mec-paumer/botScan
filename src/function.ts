@@ -42,11 +42,11 @@ async function finder(manga: Manga, client: Client) /*Promise<boolean>*/ {
         //return text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/");
         
         if(nextUrl === undefined || nextUrl === null || nextUrl === "") {
-            console.log(`nextUrl : ${nextUrl}`);
+            // console.log(`nextUrl : ${nextUrl}`);
             return false;
         }
 
-        console.log("nextUrl ", nextUrl);
+        // console.log("nextUrl ", nextUrl);
         const tab = nextUrl!.split("/")[5].split("-");
         let nbNext = parseFloat(tab[1]);
         if(tab[2] !== "vf") nbNext += parseFloat("0." +parseFloat(tab[2]));
@@ -58,9 +58,8 @@ async function finder(manga: Manga, client: Client) /*Promise<boolean>*/ {
 
         userBDD!.forEach(async (user) => {
             const userDiscord = await client.users.fetch(user.id_user);
-            userDiscord.send(`Le chapitre ${nbNext} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !`);
-            if(tab[2] !== "vf") userDiscord.send(`${urlBase + manga.name_manga}/chapitre-${parseFloat(tab[1])}-${parseFloat(tab[2])}-vf/`);
-            else userDiscord.send(`${urlBase + manga.name_manga}/chapitre-${nbNext}-vf/`);
+            userDiscord.send(`Le chapitre ${nbNext} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${nextUrl}`);
+            
         });
 
         return true;
