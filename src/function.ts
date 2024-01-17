@@ -28,7 +28,7 @@ async function finder(manga: Manga, client: Client) /*Promise<boolean>*/ {
 
     const urlBase = "https://fr-scan.com/manga/";
     const chap = String(manga.chapitre_manga).replace(".", "-");
-    const url: string = `${urlBase + manga.name_manga}/chapitre-${chap}-vf/${(manga.page ? "1000000" : "")}/`;
+    const url: string = `${urlBase + manga.name_manga}/chapitre-${chap}-vf/${(manga.page ? "p/1000000" : "")}/`;
     // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
     // console.log(url);
 
@@ -62,25 +62,31 @@ async function finder(manga: Manga, client: Client) /*Promise<boolean>*/ {
             if(tab[2] !== "vf") userDiscord.send(`${urlBase + manga.name_manga}/chapitre-${parseFloat(tab[1])}-${parseFloat(tab[2])}-vf/`);
             else userDiscord.send(`${urlBase + manga.name_manga}/chapitre-${nbNext}-vf/`);
         });
+
+        return true;
         
     } catch (error) {
         console.log("Veux pas");
         console.error('Error:', error);
-        // return false;
+        return false;
     }
 }
 
-export async function finderAll(client:Client) {
+export async function finderAll(client: Client) {
     console.log("finderAll");
     //const userID = "452370867758956554";
 
     const mangas = await BDD.getMangas();
-    //console.log(mangas)
-    mangas!.forEach(manga => {
-        finder(manga, client)
+    // console.log(mangas)
+    let res = false;
+    mangas!.forEach(async manga => {
+        res = await finder(manga, client)
+        while(res) {
+            let newManga = await BDD.getMangaById(manga.id_manga!);
+            res = await finder(newManga![0] as Manga, client)
+        }
     });
 }
-
 //* inutilisé
 export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/): boolean {
     //console.log("data ", data);
