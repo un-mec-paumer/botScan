@@ -32,7 +32,7 @@ messageCreate(client);
 
 // console.log(process.env.TOKEN);
 client.login(process.env.TOKEN);
-const interval = setInterval(finderAll, 1000 * 60, client);
+const interval = setInterval(finderAll, 1000 * 60 * 5, client);
 const interval2 = setInterval(ntm, 1000);
 
 // client.users.fetch("452370867758956554").then((user) => {

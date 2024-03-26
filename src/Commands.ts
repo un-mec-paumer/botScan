@@ -6,6 +6,7 @@ import { AddAlerte } from "./Command/AddAlerte";
 import { SupAlerte } from "./Command/SupAlerte";
 import { Site } from "./Command/Site";
 import { Liste } from "./Command/Liste";
+import { ConnexionVoc } from "./Command/ConnexionVoc";
 
 export const Commands: Command[] = [
     AddManga,
@@ -14,5 +15,6 @@ export const Commands: Command[] = [
     AddAlerte,
     SupAlerte,
     Site,
-    Liste
+    Liste,
+    ConnexionVoc
 ];

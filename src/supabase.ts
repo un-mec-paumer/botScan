@@ -28,6 +28,11 @@ class supabase{
 
         //console.log(this.url, this.key)
         this.client = createClient(this.url, this.key)
+
+        this.client.auth.signInWithPassword({
+            email: process.env.SUPABASE_EMAIL!,
+            password: process.env.SUPABASE_PASSWORD!
+        })
     }
 
     async getMangas(){
