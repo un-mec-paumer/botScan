@@ -1,6 +1,6 @@
 node_modules
+!node_modules\discord.js\typings\index.d.ts
 build
-token.json
 .vscode
 .env
 .idea
