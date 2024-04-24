@@ -6,6 +6,7 @@ import messageCreate from "./listeners/messageCreate";
 import { finderAll, downloadImg, getCherrioText } from "./function";
 import Express, { Request, Response, NextFunction  } from "express";
 import { BDD } from "./supabase";
+import { Player } from "discord-player";
 
 dotenv.config()
 
@@ -15,6 +16,8 @@ function ntm() {
 
 console.log("Bot is starting...");
 
+
+
 const client = new Client({
     intents: [
         Intents.Guilds,
@@ -22,15 +25,27 @@ const client = new Client({
         Intents.GuildMessages,
         Intents.DirectMessages,
         Intents.MessageContent,
-        Intents.DirectMessageReactions
+        Intents.DirectMessageReactions,
+        Intents.GuildVoiceStates
     ]
 });
+
+
+client.player = new Player(client, {
+    ytdlOptions: {
+        filter: "audioonly",
+        quality: "highestaudio",
+        highWaterMark: 1 << 25
+    }
+})
+
+client.player.extractors.loadDefault()
 
 ready(client);
 interactionCreate(client);
 messageCreate(client);
 
-// console.log(process.env.TOKEN);
+
 client.login(process.env.TOKEN);
 const interval = setInterval(finderAll, 1000 * 60 * 10, client);
 const interval2 = setInterval(ntm, 1000);
