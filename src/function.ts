@@ -2,6 +2,7 @@ import { Client, CommandInteraction, EmbedBuilder } from "discord.js";
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
+import puppeteer from "puppeteer";
 
 
 type Manga = {
@@ -24,52 +25,52 @@ type json = {
     url: string
 };
 
-async function finder(manga: Manga, client: Client) /*Promise<boolean>*/ {
+async function finder(manga: Manga, client:Client) /*Promise<boolean>*/ {
 
-    const urlBase = "https://fr-scan.com/manga/";
+    const RELOUDEMEDE = ["one-piece"]
+    const urlBase = "https://anime-sama.fr/catalogue/";
     const chap = String(manga.chapitre_manga).replace(".", "-");
-    const url: string = `${urlBase + manga.name_manga}/chapitre-${chap}-vf/${(manga.page ? "p/1000000" : "")}/`;
+    const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMEDE.includes(manga.name_manga!) ? "_noir-et-blanc":""}/vf/`;
     // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
     // console.log(url);
 
 
-    //console.log(manga.chapitre_manga);
+    // console.log(manga.name_manga);
 
     try {
         const $ = await getCherrioText(url);
-        const nextUrl = $(".next_page").attr("href");
-        // console.log(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga) + "-vf/", text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/"));
-        //return text.includes(urlBase + manga.name_manga + "/chapitre-" + (manga.chapitre_manga + 1) + "-vf/");
-        
-        if(nextUrl === undefined || nextUrl === null || nextUrl === "") {
+        // console.log($.html());
+        const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => { 
+            const nbChap = parseFloat(element!.split(" ")[1])
+            return nbChap > manga.chapitre_manga!
+        }).map((element) => { return parseFloat(element!.split(" ")[1])});
+
+        // console.log(newChap);
+
+        if(newChap.length === 0) {
             // console.log(`nextUrl : ${nextUrl}`);
             return false;
         }
-
-        // console.log("nextUrl ", nextUrl);
-        const tab = nextUrl!.split("/")[5].split("-");
-        let nbNext = parseFloat(tab[1]);
-        if(tab[2] !== "vf") nbNext += parseFloat("0." +parseFloat(tab[2]));
-        //console.log(nbNext);
-
-        console.log(`Le chapitre ${nbNext} de ${manga.name_manga} est sorti !`);                    
-        await BDD.updateChapitre(manga.name_manga!, nbNext);
+               
+        await BDD.updateChapitre(manga.name_manga!, newChap[newChap.length - 1]);
         const userBDD = await BDD.getLien(manga.id_manga!);
 
         userBDD!.forEach(async (user) => {
             const userDiscord = await client.users.fetch(user.id_user);
-            userDiscord.send(`Le chapitre ${nbNext} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${nextUrl}`);
-            
+            if (newChap.length === 1) userDiscord.send(`Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`);
+            else userDiscord.send(`Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`);
         });
 
         return true;
         
     } catch (error) {
         console.log("Veux pas");
+        console.error(manga.name_manga!);
         console.error('Error:', error);
         return false;
     }
 }
+
 
 export async function finderAll(client: Client) {
     console.log("finderAll");
@@ -77,13 +78,9 @@ export async function finderAll(client: Client) {
 
     const mangas = await BDD.getMangas();
     // console.log(mangas)
-    let res = false;
+    // let res = false;
     mangas!.forEach(async manga => {
-        res = await finder(manga, client)
-        while(res) {
-            let newManga = await BDD.getMangaById(manga.id_manga!);
-            res = await finder(newManga![0] as Manga, client)
-        }
+        await finder(manga, client);
     });
 }
 //* inutilisé
@@ -115,22 +112,27 @@ export function tabin(message:string, tab:Array<string>): boolean {
 }
 
 export async function getCherrioText(url: string) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
 
-    const proxyUrl = `https://httpbin.org/get?url=${encodeURIComponent(url)}`;
-
-    const response = await fetch(proxyUrl, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/html',
-            'User-Agent': 'PostmanRuntime/7.32.1',
-        },
+    // Bloquer les ressources inutiles
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+        const resourceType = req.resourceType();
+        if (resourceType === 'image' || resourceType === 'stylesheet' || resourceType === 'font' || resourceType === 'media') {
+            req.abort();
+        } else {
+            req.continue();
+        }
     });
 
-    const json = await response.json() as json;
-    const response2 = await fetch(json.args.url, json.headers)
-    const text = await response2.text();
+    await page.goto(url, { waitUntil: 'load' });
+    const html = await page.content();
 
-    return cheerio.load(text);
+    await page.close();
+    await browser.close();
+
+    return cheerio.load(html);
 }
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
@@ -158,3 +160,23 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
 
 // finderAll();
 // downloadImg()
+(async () => {
+    const AllMangas = await BDD.getMangas();
+    const urlBase = "https://anime-sama.fr/catalogue/";
+
+    AllMangas?.forEach(async (manga) => {
+        const $ = await getCherrioText(urlBase + manga.name_manga! + "/");
+
+        const image = $("#coverOeuvre").attr("src");
+        const synopsis = $(".text-sm.text-gray-400.mt-2").text().trim();
+
+        console.log(manga.name_manga);
+        console.log(image);
+        console.log(synopsis);
+
+        await downloadImg(image as string, manga.name_manga!);
+        await BDD.client.from('mangas').update({ img: image, synopsis: synopsis }).eq('id_manga', manga.id_manga);
+    });
+
+
+})();

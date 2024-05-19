@@ -77,12 +77,12 @@ export const AddManga: Command = {
 
         //console.log("verif ");
         const page = interaction.options.get("page")?.value;
-        const url = `https://fr-scan.com/manga/${nom}/`;
+        const url = `https://anime-sama.fr/catalogue/${nom}/`;
 
         const $ = await getCherrioText(url);
-        // console.log($(".summary_image img").toString());
-        // console.log($(".summary_image img").attr("data-lazy-src"));
-        if($(".summary_image img").attr("data-lazy-src") === undefined) {
+
+
+        if($("#coverOeuvre").attr("src") === undefined) {
             interaction.followUp({
                 ephemeral: true,
                 content: "Manga non trouvable sur le site fr-scan.com"
@@ -90,9 +90,9 @@ export const AddManga: Command = {
             return;
         }
 
-        const image = $(".summary_image img").attr("data-lazy-src");
+        const image = $("#coverOeuvre").attr("src")
         // console.log(image);
-        const synopsis = $(".summary__content").text().trim();
+        const synopsis = $(".text-sm.text-gray-400.mt-2").text().trim();
         //console.log(synopsis);
         
         //* Déclaration idéale pour le 3ème argument :
