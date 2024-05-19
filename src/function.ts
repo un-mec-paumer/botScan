@@ -160,23 +160,3 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
 
 // finderAll();
 // downloadImg()
-(async () => {
-    const AllMangas = await BDD.getMangas();
-    const urlBase = "https://anime-sama.fr/catalogue/";
-
-    AllMangas?.forEach(async (manga) => {
-        const $ = await getCherrioText(urlBase + manga.name_manga! + "/");
-
-        const image = $("#coverOeuvre").attr("src");
-        const synopsis = $(".text-sm.text-gray-400.mt-2").text().trim();
-
-        console.log(manga.name_manga);
-        console.log(image);
-        console.log(synopsis);
-
-        await downloadImg(image as string, manga.name_manga!);
-        await BDD.client.from('mangas').update({ img: image, synopsis: synopsis }).eq('id_manga', manga.id_manga);
-    });
-
-
-})();
