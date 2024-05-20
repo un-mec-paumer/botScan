@@ -27,10 +27,10 @@ type json = {
 
 async function finder(manga: Manga, client:Client) /*Promise<boolean>*/ {
 
-    const RELOUDEMEDE = ["one-piece"]
+    const RELOUDEMERDE = ["one-piece"]
     const urlBase = "https://anime-sama.fr/catalogue/";
     const chap = String(manga.chapitre_manga).replace(".", "-");
-    const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMEDE.includes(manga.name_manga!) ? "_noir-et-blanc":""}/vf/`;
+    const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc":""}/vf/`;
     // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
     // console.log(url);
 
@@ -136,16 +136,18 @@ export async function getCherrioText(url: string) {
 }
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
-       mangas?.forEach( async (manga: Manga) => {
+    const RELOUDEMERDE = ["one-piece"]
+    mangas?.forEach( async (manga: Manga) => {
         const nom = manga.name_manga?.replaceAll("-", " ") ?? "";
         const synopsis = manga.synopsis ?? "";
         const img = await BDD.getImgFromTest(manga.name_manga!)
         const imgUrl = img?.signedUrl ?? "";
 
+        
 
         const embed = new EmbedBuilder()
             .setTitle(nom)
-            .setURL(`https://fr-scan.com/manga/${manga.name_manga}/`)
+            .setURL(`https://anime-sama.fr/catalogue/${manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc":""}/vf/`)
             .setDescription(
                 "***Chapitre n° " + manga.chapitre_manga + "*** \n" +
                 synopsis.split(" ").slice(0, 50).join(" ") + "..."
