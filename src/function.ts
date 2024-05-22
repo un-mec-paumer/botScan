@@ -121,10 +121,33 @@ export async function getCherrioText(url: string) {
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--single-process', // Ajouté pour éviter les problèmes de création de thread
+            '--disable-extensions', // Pour désactiver les extensions Chrome
+            '--disable-background-networking',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-breakpad',
+            '--disable-client-side-phishing-detection',
+            '--disable-component-update',
+            '--disable-default-apps',
+            '--disable-domain-reliability',
+            '--disable-features=AudioServiceOutOfProcess',
+            '--disable-hang-monitor',
+            '--disable-ipc-flooding-protection',
+            '--disable-popup-blocking',
+            '--disable-prompt-on-repost',
+            '--disable-renderer-backgrounding',
+            '--disable-sync',
+            '--force-color-profile=srgb',
+            '--metrics-recording-only',
+            '--no-first-run',
+            '--safebrowsing-disable-auto-update',
+            '--enable-automation',
+            '--password-store=basic',
+            '--use-mock-keychain'
         ],
-        executablePath: process.env.CHROME_BIN
+        executablePath: process.env.CHROME_BIN || '/app/.apt/opt/google/chrome/chrome'
     });
     const page = await browser.newPage();
 
@@ -132,7 +155,8 @@ export async function getCherrioText(url: string) {
     await page.setRequestInterception(true);
     page.on('request', (req) => {
         const resourceType = req.resourceType();
-        if (resourceType === 'image' || resourceType === 'stylesheet' || resourceType === 'font' || resourceType === 'media') {
+        const expectedResourceTypes = ['other', "image", "stylesheet", "font", "media"];
+        if (!expectedResourceTypes.includes(resourceType)) {
             req.abort();
         } else {
             req.continue();
