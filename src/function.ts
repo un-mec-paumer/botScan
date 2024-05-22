@@ -112,7 +112,19 @@ export function tabin(message:string, tab:Array<string>): boolean {
 }
 
 export async function getCherrioText(url: string) {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--disable-gpu'
+        ],
+    });
     const page = await browser.newPage();
 
     // Bloquer les ressources inutiles
