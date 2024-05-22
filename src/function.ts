@@ -14,16 +14,16 @@ type Manga = {
     synopsis?: string
 };
 
-type json = {
-    args: {
-        url: string
-    },
-    headers: {
-        [key: string]: string
-    },
-    origin: string,
-    url: string
-};
+// type json = {
+//     args: {
+//         url: string
+//     },
+//     headers: {
+//         [key: string]: string
+//     },
+//     origin: string,
+//     url: string
+// };
 
 async function finder(manga: Manga, client:Client) /*Promise<boolean>*/ {
 
