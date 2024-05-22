@@ -124,6 +124,7 @@ export async function getCherrioText(url: string) {
         '--single-process',
         '--disable-gpu'
         ],
+        executablePath: process.env.CHROME_BIN
     });
     const page = await browser.newPage();
 
