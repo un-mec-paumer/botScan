@@ -122,8 +122,8 @@ export async function getCherrioText(url: string) {
             '--no-first-run',
             '--no-zygote',
             '--disable-gpu',
-            '--single-process', // Ajouté pour éviter les problèmes de création de thread
-            '--disable-extensions', // Pour désactiver les extensions Chrome
+            '--single-process',
+            '--disable-extensions',
             '--disable-background-networking',
             '--disable-background-timer-throttling',
             '--disable-backgrounding-occluded-windows',
@@ -156,7 +156,7 @@ export async function getCherrioText(url: string) {
     page.on('request', (req) => {
         const resourceType = req.resourceType();
         const expectedResourceTypes = ['other', "image", "stylesheet", "font", "media"];
-        if (!expectedResourceTypes.includes(resourceType)) {
+        if (expectedResourceTypes.includes(resourceType)) {
             req.abort();
         } else {
             req.continue();
