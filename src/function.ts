@@ -122,8 +122,8 @@ export async function getCherrioText(url: string) {
             '--no-first-run',
             '--no-zygote',
             '--disable-gpu',
-            '--single-process',
-            '--disable-extensions',
+            '--single-process', // Utilisation d'un seul processus
+            '--disable-extensions', // Désactivation des extensions
             '--disable-background-networking',
             '--disable-background-timer-throttling',
             '--disable-backgrounding-occluded-windows',
@@ -145,7 +145,9 @@ export async function getCherrioText(url: string) {
             '--safebrowsing-disable-auto-update',
             '--enable-automation',
             '--password-store=basic',
-            '--use-mock-keychain'
+            '--use-mock-keychain',
+            '--disable-software-rasterizer', // Ajout de l'option pour désactiver le rasterizer logiciel
+            '--disable-dev-shm-usage' // Ajout de l'option pour utiliser /tmp au lieu de /dev/shm
         ],
         executablePath: process.env.CHROME_BIN || '/app/.apt/opt/google/chrome/chrome'
     });
