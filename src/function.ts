@@ -122,7 +122,7 @@ export async function getCherrioText(url: string) {
             "--disable-gpu",
             "--window-size=1920x1080",
         ],
-        
+        executablePath: process.env.CHROME_PATH!
     });
     const page = await browser.newPage();
 
@@ -153,7 +153,9 @@ export async function getCherrioText(url: string) {
 // getCherrioText("https://anime-sama.fr/catalogue/one-piece/scan/vf/").then((res) => {
 //     // console.log(res.html());
 //     console.log(res("#selectChapitres option").toString())
-// });
+// }).catch((e) => {
+//     console.error(e)
+// })
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
     const RELOUDEMERDE = ["one-piece"]
