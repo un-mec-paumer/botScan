@@ -115,41 +115,14 @@ export async function getCherrioText(url: string) {
     const browser = await puppeteer.launch({
         headless: true,
         args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--disable-gpu',
-            '--single-process', // Utilisation d'un seul processus
-            '--disable-extensions', // Désactivation des extensions
-            '--disable-background-networking',
-            '--disable-background-timer-throttling',
-            '--disable-backgrounding-occluded-windows',
-            '--disable-breakpad',
-            '--disable-client-side-phishing-detection',
-            '--disable-component-update',
-            '--disable-default-apps',
-            '--disable-domain-reliability',
-            '--disable-features=AudioServiceOutOfProcess',
-            '--disable-hang-monitor',
-            '--disable-ipc-flooding-protection',
-            '--disable-popup-blocking',
-            '--disable-prompt-on-repost',
-            '--disable-renderer-backgrounding',
-            '--disable-sync',
-            '--force-color-profile=srgb',
-            '--metrics-recording-only',
-            '--no-first-run',
-            '--safebrowsing-disable-auto-update',
-            '--enable-automation',
-            '--password-store=basic',
-            '--use-mock-keychain',
-            '--disable-software-rasterizer', // Ajout de l'option pour désactiver le rasterizer logiciel
-            '--disable-dev-shm-usage' // Ajout de l'option pour utiliser /tmp au lieu de /dev/shm
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--disable-gpu",
+            "--window-size=1920x1080",
         ],
-        executablePath: process.env.CHROME_BIN || '/app/.apt/opt/google/chrome/chrome'
+        
     });
     const page = await browser.newPage();
 
@@ -157,7 +130,7 @@ export async function getCherrioText(url: string) {
     await page.setRequestInterception(true);
     page.on('request', (req) => {
         const resourceType = req.resourceType();
-        const expectedResourceTypes = ['other', "image", "stylesheet", "font", "media"];
+        const expectedResourceTypes = ['other', "image", "stylesheet", "font", "media", "texttrack", "xhr", "fetch", "other"];
         if (expectedResourceTypes.includes(resourceType)) {
             req.abort();
         } else {
@@ -167,7 +140,7 @@ export async function getCherrioText(url: string) {
 
     await page.goto(url, { 
         waitUntil: 'load', 
-        timeout: 60000,
+        //timeout: 60000,
     });
     const html = await page.content();
 
@@ -176,6 +149,11 @@ export async function getCherrioText(url: string) {
 
     return cheerio.load(html);
 }
+
+// getCherrioText("https://anime-sama.fr/catalogue/one-piece/scan/vf/").then((res) => {
+//     // console.log(res.html());
+//     console.log(res("#selectChapitres option").toString())
+// });
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
     const RELOUDEMERDE = ["one-piece"]
