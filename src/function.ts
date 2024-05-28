@@ -121,8 +121,8 @@ export async function getCherrioText(url: string) {
             "--disable-accelerated-2d-canvas",
             "--disable-gpu",
             "--window-size=1920x1080",
-            '--single-process', // Ajoutez cette ligne
-            '--disable-software-rasterizer' // Et cette ligne
+            // '--single-process', // Ajoutez cette ligne
+            // '--disable-software-rasterizer' // Et cette ligne
         ],
         executablePath: process.env.CHROME_PATH
     });
