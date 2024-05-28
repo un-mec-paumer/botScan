@@ -124,7 +124,7 @@ export async function getCherrioText(url: string) {
             '--single-process', // Ajoutez cette ligne
             '--disable-software-rasterizer' // Et cette ligne
         ],
-        executablePath: process.env.CHROME_PATH
+        // executablePath: process.env.CHROME_PATH
     });
     const page = await browser.newPage();
 
