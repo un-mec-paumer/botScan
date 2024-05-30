@@ -2,8 +2,7 @@ import { Client, CommandInteraction, EmbedBuilder } from "discord.js";
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
-import puppeteer from "puppeteer";
-
+import puppeteer from 'puppeteer-core';
 
 type Manga = {
     id_manga?: number,
@@ -13,17 +12,6 @@ type Manga = {
     img?: string,
     synopsis?: string
 };
-
-// type json = {
-//     args: {
-//         url: string
-//     },
-//     headers: {
-//         [key: string]: string
-//     },
-//     origin: string,
-//     url: string
-// };
 
 async function finder(manga: Manga, client:Client) /*Promise<boolean>*/ {
 
@@ -114,25 +102,15 @@ export function tabin(message:string, tab:Array<string>): boolean {
 export async function getCherrioText(url: string) {
     const browser = await puppeteer.launch({
         headless: true,
-        args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-accelerated-2d-canvas",
-            "--disable-gpu",
-            "--window-size=1920x1080",
-            // '--single-process', // Ajoutez cette ligne
-            // '--disable-software-rasterizer' // Et cette ligne
-        ],
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
         executablePath: process.env.CHROME_PATH
     });
-    const page = await browser.newPage();
 
-    // Bloquer les ressources inutiles
+    const page = await browser.newPage();
     await page.setRequestInterception(true);
     page.on('request', (req) => {
         const resourceType = req.resourceType();
-        const expectedResourceTypes = ['other', "image", "stylesheet", "font", "media", "texttrack", "xhr", "fetch", "other"];
+        const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
         if (expectedResourceTypes.includes(resourceType)) {
             req.abort();
         } else {
@@ -140,24 +118,33 @@ export async function getCherrioText(url: string) {
         }
     });
 
-    await page.goto(url, { 
-        waitUntil: 'load', 
-        //timeout: 60000,
-    });
-    const html = await page.content();
+    try{
+        await page.goto(url, {
+            waitUntil: 'load',
+    
+        });
+        const html = await page.content();
 
-    await page.close();
-    await browser.close();
+        await page.close();
+        await browser.close();
+        await browser.disconnect();
+    
 
-    return cheerio.load(html);
+        return cheerio.load(html);
+    } catch (error) {
+        console.error(error);
+        await page.close();
+        await browser.close();
+        await browser.disconnect();
+        return cheerio.load("");
+    }
 }
 
-// getCherrioText("https://anime-sama.fr/catalogue/one-piece/scan/vf/").then((res) => {
-//     // console.log(res.html());
-//     console.log(res("#selectChapitres option").toString())
-// }).catch((e) => {
-//     console.error(e)
-// })
+getCherrioText("https://anime-sama.fr/catalogue/one-piece/scan/vf/").then((res) => {
+    console.log(res("#selectChapitres option").toString())
+}).catch((e) => {
+    console.error(e)
+})
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
     const RELOUDEMERDE = ["one-piece"]
