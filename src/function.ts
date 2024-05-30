@@ -108,16 +108,16 @@ export async function getCherrioText(url: string) {
     });
 
     const page = await browser.newPage();
-    await page.setRequestInterception(true);
-    page.on('request', (req) => {
-        const resourceType = req.resourceType();
-        const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
-        if (expectedResourceTypes.includes(resourceType)) {
-            req.abort();
-        } else {
-            req.continue();
-        }
-    });
+    // await page.setRequestInterception(true);
+    // page.on('request', (req) => {
+    //     const resourceType = req.resourceType();
+    //     const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
+    //     if (expectedResourceTypes.includes(resourceType)) {
+    //         req.abort();
+    //     } else {
+    //         req.continue();
+    //     }
+    // });
 
     try{
         await page.goto(url, {
