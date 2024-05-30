@@ -102,7 +102,8 @@ export function tabin(message:string, tab:Array<string>): boolean {
 export async function getCherrioText(url: string) {
     const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: ['--no-sandbox'],
+        product: 'firefox',
         // executablePath: process.env.CHROME_PATH
     });
 
