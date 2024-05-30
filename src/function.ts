@@ -2,7 +2,7 @@ import { Client, CommandInteraction, EmbedBuilder } from "discord.js";
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
-import puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer';
 
 type Manga = {
     id_manga?: number,
