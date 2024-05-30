@@ -2,7 +2,7 @@ import { Client, CommandInteraction, EmbedBuilder } from "discord.js";
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 
 type Manga = {
     id_manga?: number,
@@ -102,9 +102,9 @@ export function tabin(message:string, tab:Array<string>): boolean {
 export async function getCherrioText(url: string) {
     const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox'],
-        product: 'firefox',
-        // executablePath: process.env.CHROME_PATH
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        
+        executablePath: process.env.CHROME_PATH
     });
 
     const page = await browser.newPage();
