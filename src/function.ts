@@ -103,7 +103,7 @@ export async function getCherrioText(url: string) {
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: process.env.CHROME_PATH
+        // executablePath: process.env.CHROME_PATH
     });
 
     const page = await browser.newPage();
@@ -140,11 +140,11 @@ export async function getCherrioText(url: string) {
     }
 }
 
-getCherrioText("https://anime-sama.fr/catalogue/one-piece/scan/vf/").then((res) => {
-    console.log(res("#selectChapitres option").toString())
-}).catch((e) => {
-    console.error(e)
-})
+// getCherrioText("https://anime-sama.fr/catalogue/one-piece/scan/vf/").then((res) => {
+//     console.log(res("#selectChapitres option").toString())
+// }).catch((e) => {
+//     console.error(e)
+// })
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
     const RELOUDEMERDE = ["one-piece"]
