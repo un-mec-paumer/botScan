@@ -122,7 +122,7 @@ export async function getCherrioText(url: string) {
     try{
         await page.goto(url, {
             waitUntil: 'load',
-    
+            // timeout: 60000
         });
         const html = await page.content();
 
