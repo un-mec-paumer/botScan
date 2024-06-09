@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv'
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
-import { finderAll, downloadImg, getCherrioText } from "./function";
+import { finderAll, downloadImg, getCherrioText, initBrowser, endErasmus } from "./function";
 import Express, { Request, Response, NextFunction  } from "express";
 import { BDD } from "./supabase";
 import { Player } from "discord-player";
@@ -47,8 +47,9 @@ messageCreate(client);
 
 
 client.login(process.env.TOKEN);
-const interval = setInterval(finderAll, 1000 * 60 * 1, client)
-const interval2 = setInterval(ntm, 1000);
+const interval = setInterval(finderAll, 1000 * 60 * 10, client)
+// const interval2 = setInterval(ntm, 1000);
+const interval3 = setInterval(endErasmus, 1000 * 60 * 10, client);
 
 // client.users.fetch("452370867758956554").then((user) => {
 //     console.log(user.avatarURL())
@@ -264,7 +265,7 @@ app.post("/sendMessage", async (req: Request, res: Response) => {
 app.post("/addManga", async (req: Request, res: Response) => {
     const name = req.body.name.toLowerCase().replaceAll(" ", "-");
     const chap = req.body.chapter;
-    const page = req.body.page;
+    const IsPage = req.body.page;
     const token = req.body.token;
 
     const manga = await BDD.getManga(name as string);
@@ -304,8 +305,12 @@ app.post("/addManga", async (req: Request, res: Response) => {
     //console.log("verif ");
     // let page = interaction.options.get("page")?.value;
     const url = `https://fr-scan.com/manga/${name}/`;
+    const {browser, page} = await initBrowser();
+    const $ = await getCherrioText(url, page);
+    await page.close();
+    await browser.close();
 
-    const $ = await getCherrioText(url);
+
 
     //console.log($(".summary_image img").attr("src"))
     if($(".summary_image img").attr("data-lazy-src") === undefined){
@@ -324,7 +329,7 @@ app.post("/addManga", async (req: Request, res: Response) => {
     const synopsis = $(".summary__content").text().trim();
     //console.log(synopsis)
     
-    await BDD.addManga(name, chap, page, image!, synopsis);
+    await BDD.addManga(name, chap, IsPage, image!, synopsis);
     downloadImg(image!, name as string);
 
     // const user2 = await BDD.getUser(id_user);

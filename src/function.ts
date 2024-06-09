@@ -2,7 +2,7 @@ import { Client, CommandInteraction, EmbedBuilder } from "discord.js";
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
-import puppeteer from 'puppeteer-core';
+import puppeteer, { Page } from 'puppeteer-core';
 
 type Manga = {
     id_manga?: number,
@@ -13,7 +13,32 @@ type Manga = {
     synopsis?: string
 };
 
-async function finder(manga: Manga, client:Client) /*Promise<boolean>*/ {
+export async function initBrowser() {
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+            '--no-sandbox', 
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+        ],
+        executablePath: process.env.CHROME_PATH
+    });
+
+    const page = await browser.newPage();
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+        const resourceType = req.resourceType();
+        const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
+        if (expectedResourceTypes.includes(resourceType)) {
+            req.abort();
+        } else {
+            req.continue();
+        }
+    });
+    return {browser, page}
+}
+
+async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>*/ {
 
     const RELOUDEMERDE = ["one-piece"]
     const urlBase = "https://anime-sama.fr/catalogue/";
@@ -26,7 +51,7 @@ async function finder(manga: Manga, client:Client) /*Promise<boolean>*/ {
     // console.log(manga.name_manga);
 
     try {
-        const $ = await getCherrioText(url);
+        const $ = await getCherrioText(url, page);
         // console.log($.html());
         const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => { 
             const nbChap = parseFloat(element!.split(" ")[1])
@@ -45,8 +70,9 @@ async function finder(manga: Manga, client:Client) /*Promise<boolean>*/ {
 
         userBDD!.forEach(async (user) => {
             const userDiscord = await client.users.fetch(user.id_user);
-            if (newChap.length === 1) userDiscord.send(`Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`);
-            else userDiscord.send(`Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`);
+            if (newChap.length === 1) await userDiscord.send(`Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`);
+            else if (newChap.length === 2) await userDiscord.send(`Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`);
+            else await userDiscord.send(`Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`);
         });
 
         return true;
@@ -63,13 +89,20 @@ async function finder(manga: Manga, client:Client) /*Promise<boolean>*/ {
 export async function finderAll(client: Client) {
     console.log("finderAll");
     //const userID = "452370867758956554";
-
+    const {browser, page} = await initBrowser();
     const mangas = await BDD.getMangas();
-    // console.log(mangas)
-    // let res = false;
-    mangas!.forEach(async manga => {
-        await finder(manga, client);
-    });
+    
+    for (const manga of mangas!) {
+        try {
+            const res = await finder(manga, client, page);
+            // if(!res) console.log(`Pas de nouveau chapitre pour ${manga.name_manga}`);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    await page.close();
+    await browser.close();
 }
 //* inutilisé
 export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/): boolean {
@@ -99,53 +132,43 @@ export function tabin(message:string, tab:Array<string>): boolean {
     return tab.filter((element) => {return element === message}).length === 1;
 }
 
-export async function getCherrioText(url: string) {
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        
-        executablePath: process.env.CHROME_PATH
-    });
-
-    const page = await browser.newPage();
-    // await page.setRequestInterception(true);
-    // page.on('request', (req) => {
-    //     const resourceType = req.resourceType();
-    //     const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
-    //     if (expectedResourceTypes.includes(resourceType)) {
-    //         req.abort();
-    //     } else {
-    //         req.continue();
-    //     }
-    // });
-
-    try{
+export async function getCherrioText(url: string, page:Page) {
+    try {
         await page.goto(url, {
             waitUntil: 'load',
-            // timeout: 60000
+            timeout: 450000
         });
+        await page.waitForSelector('#selectChapitres');
         const html = await page.content();
-
-        await page.close();
-        await browser.close();
-        await browser.disconnect();
-    
 
         return cheerio.load(html);
     } catch (error) {
         console.error(error);
-        await page.close();
-        await browser.close();
-        await browser.disconnect();
         return cheerio.load("");
     }
 }
 
-// getCherrioText("https://anime-sama.fr/catalogue/one-piece/scan/vf/").then((res) => {
-//     console.log(res("#selectChapitres option").toString())
-// }).catch((e) => {
-//     console.error(e)
-// })
+export async function endErasmus(client: Client): Promise<void> {
+    const now = new Date();
+    const end = new Date("2024-06-13");
+    const nbjours = end.getDate() - now.getDate();
+    console.log(endErasmus.name);
+    
+    if([11].includes(now.getHours())) {
+        for (const id of ["452370867758956554", "411190739771326465"]) {
+            const user = await client.users.fetch(id);
+            if (user.dmChannel === null) await user.createDM();
+            const messages = (await user.dmChannel?.messages.fetch())?.filter((message) => message.content.includes("la fin de ton erasmus est dans") && message.author.id === client.user?.id).map((message) => message.content) ?? [""];
+            
+            // console.log(messages);
+
+            const nbJoursMsg = messages[0].split(" ").map((element) => parseInt(element)).filter((element) => !isNaN(element))[0]
+            // console.log(nbJoursMsg);
+            if(nbJoursMsg < nbjours) await user.send(`Salut ${user} la fin de ton erasmus est dans ${nbjours} jour${nbjours !== 1 ? "s":""} !`);
+        }
+    }
+}
+// endErasmus();
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
     const RELOUDEMERDE = ["one-piece"]

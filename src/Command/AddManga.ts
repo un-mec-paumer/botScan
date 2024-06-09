@@ -1,7 +1,7 @@
 import { Command } from "../Command";
 import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import { BDD } from "../supabase";
-import { downloadImg, tabin, getCherrioText } from "../function";
+import { downloadImg, tabin, getCherrioText, initBrowser} from "../function";
 
 export const AddManga: Command = {
     name: "addmanga",
@@ -40,6 +40,7 @@ export const AddManga: Command = {
             descriptionLocalizations: {
                 fr: "le manga est t'il sur plusieurs pages ou non"
             },
+            
         }
     ],
     run: async (client: Client, interaction: CommandInteraction) => {
@@ -79,7 +80,10 @@ export const AddManga: Command = {
         const page = interaction.options.get("page")?.value;
         const url = `https://anime-sama.fr/catalogue/${nom}/`;
 
-        const $ = await getCherrioText(url);
+        const {browser, page: page2} = await initBrowser();
+        const $ = await getCherrioText(url, page2);
+        await page2.close();
+        await browser.close();
 
 
         if($("#coverOeuvre").attr("src") === undefined) {

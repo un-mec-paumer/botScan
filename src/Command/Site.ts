@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client } from "discord.js";
+import { CommandInteraction, Client, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandAttachmentOption, SlashCommandBooleanOption, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandOptionsOnlyBuilder, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder, SlashCommandUserOption } from "discord.js";
 
 export const Site: Command = {
     name: "site",
@@ -11,7 +11,7 @@ export const Site: Command = {
     run: async (client: Client, interaction: CommandInteraction) => {
         interaction.followUp({
             ephemeral: true,
-            content: "https://fr-scan.com/"
+            content: "https://anime-sama.fr/"
         });
-    }
+    },
 };
