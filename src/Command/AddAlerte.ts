@@ -1,8 +1,6 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType, ApplicationCommandOptionData } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
 import { BDD } from "../supabase";
-
-// type test = ApplicationCommandOptionData & {options: string[]}
 
 export const AddAlerte: Command = {
     name: "addalerte",
@@ -11,6 +9,7 @@ export const AddAlerte: Command = {
         fr: "Ajoute une alerte quand un nouveau chapitre d'un manga est sorti"
     },
     // type: "CHAT_INPUT"
+    
     options: [
         {
             name: "name",
@@ -20,7 +19,7 @@ export const AddAlerte: Command = {
             autocomplete: true,
             descriptionLocalizations: {
                 fr: "Nom du manga"
-            }, 
+            },
         }
     ],
     run: async (client: Client, interaction: CommandInteraction) => {

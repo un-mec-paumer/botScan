@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandAttachmentOption, SlashCommandBooleanOption, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandOptionsOnlyBuilder, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder, SlashCommandUserOption } from "discord.js";
+import { CommandInteraction, Client } from "discord.js";
 
 export const Site: Command = {
     name: "site",
@@ -9,6 +9,7 @@ export const Site: Command = {
     },
     // type: "CHAT_INPUT",
     run: async (client: Client, interaction: CommandInteraction) => {
+        // console.log(interaction.options.get("site")?.value);
         interaction.followUp({
             ephemeral: true,
             content: "https://anime-sama.fr/"

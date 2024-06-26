@@ -3,4 +3,4 @@ build
 .vscode
 .env
 .idea
-node_modules/discord.js/
+node_modules

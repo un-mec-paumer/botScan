@@ -31,17 +31,17 @@ export const AddManga: Command = {
                 fr: "numero du dernier chapitre"
             },
         },
-        {
-            name: "page",
-            description: "is the manga on multiple pages or not",
-            type: ApplicationCommandOptionType.String,
-            required: true,
-            autocomplete: true,
-            descriptionLocalizations: {
-                fr: "le manga est t'il sur plusieurs pages ou non"
-            },
+        // {
+        //     name: "page",
+        //     description: "is the manga on multiple pages or not",
+        //     type: ApplicationCommandOptionType.String,
+        //     required: true,
+        //     autocomplete: true,
+        //     descriptionLocalizations: {
+        //         fr: "le manga est t'il sur plusieurs pages ou non"
+        //     },
             
-        }
+        // }
     ],
     run: async (client: Client, interaction: CommandInteraction) => {
         // console.log("Hello world!");
@@ -77,7 +77,7 @@ export const AddManga: Command = {
         }
 
         //console.log("verif ");
-        const page = interaction.options.get("page")?.value;
+        // const page = interaction.options.get("page")?.value;
         const url = `https://anime-sama.fr/catalogue/${nom}/`;
 
         const {browser, page: page2} = await initBrowser();
@@ -89,7 +89,7 @@ export const AddManga: Command = {
         if($("#coverOeuvre").attr("src") === undefined) {
             interaction.followUp({
                 ephemeral: true,
-                content: "Manga non trouvable sur le site fr-scan.com"
+                content: "Manga non trouvable sur le site anime-sama.fr"
             });
             return;
         }
@@ -104,7 +104,7 @@ export const AddManga: Command = {
         await BDD.addManga(
             nom as string,
             interaction.options.get("chapitre")?.value as number,
-            tabin(String(page), ["oui", "yes", "o", "y"]) as boolean,
+            false,
             image!,
             synopsis
         );
