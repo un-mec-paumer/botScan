@@ -26,7 +26,8 @@ const client = new Client({
         Intents.DirectMessages,
         Intents.MessageContent,
         Intents.DirectMessageReactions,
-        Intents.GuildVoiceStates
+        Intents.GuildVoiceStates,
+        Intents.GuildMessageReactions,
     ]
 });
 
@@ -188,7 +189,7 @@ app.post("/connexion", async (req: Request, res: Response) => {
 
     // Stockez cet identifiant de connexion en attente
     //pendingConnections.set(connectionId, user.id);
-
+    if(userDiscord.dmChannel === null) await userDiscord.createDM();
     await userDiscord.send("Bonjour quelqu'un veut se connecter sur le site ScanManager et nous voudrions savoir si c'est bien vous (pour accepter la connexion :👍 sinon 👎)");
     // Vous n'avez pas besoin de gérer la réaction ici, car vous pouvez le faire dans le gestionnaire de réaction
     const value = await handleConnectionValidation();
@@ -229,6 +230,7 @@ app.post("/newUser", async (req: Request, res: Response) => {
         //else{
         const avatarURL = userDiscord.avatarURL();
         const name = userDiscord.username;
+        if(userDiscord.dmChannel === null) await userDiscord.createDM();
         await userDiscord.send("Bonjour quelqu'un veut créer / ajouter votre compte sur ce bot s'il s'agit de vous réagissez avec 👍 pour accepter sinon 👎");
         const value = await handleConnectionValidation();
         if(!value) {

@@ -3,4 +3,3 @@ build
 .vscode
 .env
 .idea
-node_modules

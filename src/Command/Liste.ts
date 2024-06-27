@@ -11,9 +11,9 @@ export const Liste: Command = {
     },
 
     run: async (client: Client, interaction: CommandInteraction) => {
-        interaction.followUp({ content: "Voici la liste de tous les mangas disponibles avec le bot actuellement" });
+        // interaction.followUp({ content: "Voici la liste de tous les mangas disponibles avec le bot actuellement" });
         const mangas = await BDD.getMangas();
         
-        getEmbedListeMangas(mangas!, interaction);
+        await getEmbedListeMangas(mangas!, interaction);
     }
 };
