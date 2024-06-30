@@ -1,4 +1,4 @@
-import { ApplicationCommandPermissionsManager, Client, CommandInteraction, EmbedBuilder, Message, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, CommandInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel } from "discord.js";
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
@@ -194,110 +194,63 @@ export async function endErasmus(client: Client): Promise<void> {
 // endErasmus();
 
 export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
-    // const RELOUDEMERDE = ["one-piece"]
-    // const mangaList = await BDD.getMangaBylien(interaction.user.id);
-    // const embeds: EmbedBuilder[] = [];
+    const RELOUDEMERDE = ["one-piece"]
     const dev = await interaction.client.users.fetch(process.env.DEV!);
+    mangas = mangas.sort((a, b) => a.name_manga.localeCompare(b.name_manga));
     const embed = new EmbedBuilder()
-    .setTitle("Liste des mangas")
+    .setTitle(mangas[0].name_manga.replaceAll("-", " "))
+    .setURL(`https://anime-sama.fr/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc":""}/vf/`)
     .setDescription(`
-        Voici la liste des mangas que tu peux trouver
-        ${mangas[0]?.name_manga}
+        Voici la liste des mangas que tu peux trouver:
         ${mangas[0]?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
     `)
-    .setImage(mangas[0]?.imageURL)
+    .setImage(mangas[0]?.img)
     .setTimestamp()
     .setFooter({
-        text: "dev" + dev.username,
+        text: "dev " + dev.username,
         iconURL: dev.displayAvatarURL()
         
     })
-    // .setAuthor({
-    //     name: "dev" + dev.username,
-    //     iconURL: dev.displayAvatarURL()
-    // })
 
-    try{
-        // interaction.followUp({embeds: [embed]});
-
-        const message = (await interaction.followUp({embeds: [embed]})) as Message
-        // console.log("message", message);
-        await message.react("👈");
-        await message.react("👉");
-
-        interaction.client.on("messageReactionAdd", async (reaction) => {
-            const newEmbed = new EmbedBuilder()
-            .setTitle("Liste des mangas")
-            .setTimestamp()
-            .setAuthor({
-                name: "dev" + dev.username,
-                iconURL: dev.displayAvatarURL()
-            })
-            .setDescription(`
-                Voici la liste des mangas que tu peux trouver
-                ${mangas[0]?.name_manga}
-                ${mangas[0]?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
-            `)
-            .setImage(mangas[0]?.img)
-
-
-            const idManga = mangas.findIndex((manga) => {
-                return manga.name_manga === message.embeds[0].description?.split(" ").map((element) => element.replace('\n', '')).filter((element) => element !== "")[9]
-            });
-
-
-
-            if(reaction.emoji.name === "👈") {
-                
+    const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId("select")
+    .setPlaceholder("Select a manga")
+    .addOptions(
+        mangas.map((manga) => {
+            return new StringSelectMenuOptionBuilder()
+            .setLabel(manga.name_manga)
+            .setValue(String(manga.id_manga))
+            .setDescription(manga.synopsis.split(" ").slice(0, 10).join(" ") + " ...")
             }
-            else if(reaction.emoji.name === "👉") {
-                newEmbed.setDescription(`
-                    Voici la liste des mangas que tu peux trouver
-                    ${mangas[idManga + 1]?.name_manga}
-                    ${mangas[idManga + 1]?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
-                `)
-                .setImage(mangas[idManga + 1]?.img)
-            
-                // console.log(idManga);
-                await message.edit({embeds: [newEmbed]})
-            }
-        });
+        )
+    )
 
-    }
-    catch (error) {
-        console.error(error);
-        interaction.followUp({ content: "Une erreur est survenue, merci de reessayer ultérieurement", ephemeral: true });
-    }
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)
+    // .addComponents(leftButton, rightButton)
 
-    
-    // interaction.client.on("reactionAdd", async (reaction) => {
-    //     if(reaction.emoji.name === ":point_left:") {
-    //         console.log("reactionAdd");
-    //     }
-    // });
+    const rep = await interaction.followUp({ embeds: [embed], components: [row] });
+
+    // const filter = (i: any) => i.user.id === interaction.user.id;
+    const collector = rep.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 3600000 });
+
+
+    collector.on("collect", async (i) => {
+
+        const value = i.values[0];
+        // console.log(value);
+        // console.log(mangas);
+        const manga = mangas.find((manga) => manga.id_manga === parseInt(value));
+        // console.log(manga);
+        const newEmbed = new EmbedBuilder()
+        .setTitle(manga?.name_manga.replaceAll("-", " "))
+        .setDescription(`
+            Voici la liste des mangas que tu peux trouver:
+            ${manga?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
+        `)
+        .setURL(`https://anime-sama.fr/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc":""}/vf/`)
+        .setTimestamp()
+        .setImage(manga?.img)
+        await i.update({ embeds: [newEmbed] });
+    });
+
 }
-
-// downloadImg('https://fr-scan.com/wp-content/uploads/2022/09/shuumatsu_no_valkyrie_ibun_-_ryo_fu_hou_sen_hishouden_vol_3945333-193x278.jpg', "test")
-
-// finderAll();
-// downloadImg()
-
-
-// async function getvideo(url: string) {
-//     const response = await fetch(url, {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'video/mp4',
-//         },
-//     });
-
-//     console.log(response);
-
-//     const video = await response.arrayBuffer().then((buffer: ArrayBuffer) => buffer).then((buffer: ArrayBuffer) => new Uint8Array(buffer));
-//     // console.log(video);
-
-
-
-//     // const path: PathOrFileDescriptor = "./video.mp4";
-//     // writeFileSync(path, video, "binary");
-// }
