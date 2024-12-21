@@ -1,7 +1,8 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandOptionType, ApplicationCommandOptionChoiceData } from "discord.js";
 import { BDD } from "../supabase";
 import { downloadImg, tabin, getCherrioText, initBrowser} from "../function";
+import fs from "fs";
 
 export const AddManga: Command = {
     name: "addmanga",
@@ -20,6 +21,20 @@ export const AddManga: Command = {
             descriptionLocalizations: {
                 fr: "Nom du manga"
             },
+            // choices: fs.readFileSync("src/Command/test.txt", "utf-8").split("\n").map(manga => {
+            //     return {
+            //         name: manga,
+            //         value: manga
+            //     }
+            // }).filter(manga => manga.name !== "" && manga.name !== "\r")
+            // choices: (async() => {
+            //     const res = await BDD.getMangas() as string[];
+            //     // const data = await res.json();
+            //     return res.map((manga: string) => ({
+            //         name: manga,
+            //         value: manga
+            //     })) as readonly ApplicationCommandOptionChoiceData<string>[];
+            // })()
         },
         {
             name: "chapitre",
@@ -128,3 +143,7 @@ export const AddManga: Command = {
         });
     }
 };
+function getMangas() {
+    throw new Error("Function not implemented.");
+}
+
