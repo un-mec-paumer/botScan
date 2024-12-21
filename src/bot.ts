@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits as Intents, User} from "discord.js";
+import { Client, EmbedBuilder, GatewayIntentBits as Intents, User} from "discord.js";
 import * as dotenv from 'dotenv'
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
@@ -6,6 +6,7 @@ import messageCreate from "./listeners/messageCreate";
 import { finderAll, downloadImg, getCherrioText, initBrowser } from "./function";
 import Express, { Request, Response, NextFunction } from "express";
 import { BDD } from "./supabase";
+import { error } from "console";
 // import { Player } from "discord-player";
 
 dotenv.config()
@@ -48,10 +49,7 @@ messageCreate(client);
 
 
 client.login(process.env.TOKEN);
-const interval = setInterval(finderAll, 1000 * 60 * 10, client)
-// const interval2 = setInterval(ntm, 1000);
-// const interval3 = setInterval(endErasmus, 1000 * 60 * 1, client);
-// const interval4 = setInterval(haroun, 1000 * 20, client);
+const interval = setInterval(finderAll, 1000 * 60, client);
 
 // client.users.fetch("452370867758956554").then((user) => {
 //     console.log(user.avatarURL())

@@ -39,6 +39,8 @@ class supabase{
         const { data, error } = await this.client
         .from('mangas')
         .select('*')
+
+        if(error) console.error(error)
         return data
     }
 
@@ -318,10 +320,12 @@ class supabase{
         if(error) console.error(error)
         return data
     }
+
+
 }
 
 export const BDD = new supabase()
 
-// BDD.getMangaBylien("325756152098848768").then((data) => {
+// BDD.getMangas().then((data) => {
 //     console.log(data)
 // })

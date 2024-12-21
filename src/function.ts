@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, CommandInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel } from "discord.js";
+import { ActionRowBuilder, Client, CommandInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel } from "discord.js";
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
@@ -24,7 +24,8 @@ export async function initBrowser() {
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
         ],
-        executablePath: process.env.CHROME_PATH
+        executablePath: process.env.CHROME_PATH,
+        ignoreHTTPSErrors: true,
     });
 
     const page = await browser.newPage();
@@ -201,8 +202,9 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
     .setTitle(mangas[0].name_manga.replaceAll("-", " "))
     .setURL(`https://anime-sama.fr/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc":""}/vf/`)
     .setDescription(`
-        Voici la liste des mangas que tu peux trouver:
-        ${mangas[0]?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
+        ***chapitre n°${mangas[0]?.chapitre_manga}***
+        description:
+        ${mangas[0]?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}   
     `)
     .setImage(mangas[0]?.img)
     .setTimestamp()
@@ -218,7 +220,7 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
     .addOptions(
         mangas.map((manga) => {
             return new StringSelectMenuOptionBuilder()
-            .setLabel(manga.name_manga)
+            .setLabel(manga.name_manga.replaceAll("-", " "))
             .setValue(String(manga.id_manga))
             .setDescription(manga.synopsis.split(" ").slice(0, 10).join(" ") + " ...")
             }
@@ -244,7 +246,8 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
         const newEmbed = new EmbedBuilder()
         .setTitle(manga?.name_manga.replaceAll("-", " "))
         .setDescription(`
-            Voici la liste des mangas que tu peux trouver:
+            ***chapitre n°${manga?.chapitre_manga}***
+            description:
             ${manga?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
         `)
         .setURL(`https://anime-sama.fr/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc":""}/vf/`)
@@ -252,5 +255,7 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
         .setImage(manga?.img)
         await i.update({ embeds: [newEmbed] });
     });
-
 }
+
+
+

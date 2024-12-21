@@ -1,7 +1,0 @@
-/ doit retourner tous les mangas avec sinopsis et image
-/ doit pouvoir faire une recherche par nom de manga
-/ doit pouvoir s'ajouter / se retirer de la liste d'abonnment 
-/ doit pouvoir voir la liste d'abonnement
-/ doit pouvoir se co (veux faire ca part discord mais pas sûr de réussir)
-
-test

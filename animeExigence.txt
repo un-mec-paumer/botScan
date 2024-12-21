@@ -1,0 +1,19 @@
+nouvel bdd => chagement dans le supabase.ts et dans supabase
+    - id, nom, saison, ep, vf/vo
+
+nouvel command discord pour add supr
+
+ordre d'excution dans le bot: verif de new anime => 
+    - 1 verif saison: aller dans page acceiul animé verif new saison => oui edit anime ep 1 verif classique ep 
+                                                        => non verif classique ep
+
+    - 2 verif classique ep: vo => recup select des ep 
+                            vf => click element vf => wait fetch => recup select des ep
+
+    - 3 envoie message: comme manga
+
+ordre de réal que je pense faire:
+    - 1: 2 car pour bdd
+    - 2: 1
+    - 3: 3 mdr c le plus simple
+
