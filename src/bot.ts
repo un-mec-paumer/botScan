@@ -50,6 +50,9 @@ messageCreate(client);
 
 client.login(process.env.TOKEN);
 const interval = setInterval(finderAll, 1000 * 60, client);
+// finderAll(client);
+// const intervalCommand = setInterval(reloadOptionCmd, 1000 * 60 , client);
+// reloadOptionCmd(client);
 
 // client.users.fetch("452370867758956554").then((user) => {
 //     console.log(user.avatarURL())

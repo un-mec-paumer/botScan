@@ -143,7 +143,3 @@ export const AddManga: Command = {
         });
     }
 };
-function getMangas() {
-    throw new Error("Function not implemented.");
-}
-

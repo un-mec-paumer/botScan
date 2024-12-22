@@ -4,6 +4,7 @@ import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
 import puppeteer, { Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
+import { Commands } from "./Commands";
 
 dotenv.config()
 
@@ -95,19 +96,34 @@ async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>
 export async function finderAll(client: Client) {
     console.log("finderAll");
     //const userID = "452370867758956554";
-    const {browser, page} = await initBrowser();
+    let {browser, page} = await initBrowser();
     const mangas = await BDD.getMangas() ?? [];
     
+    // console.log(mangas);
     for (const manga of mangas) {
         try {
+            if (browser.connected === false || page.isClosed() === true) {
+                console.log("reconnexion");
+                const {browser: browser2, page: page2} = await initBrowser();
+                browser = browser2;
+                page = page2;
+            }
             const res = await finder(manga, client, page);
             // if(!res) console.log(`Pas de nouveau chapitre pour ${manga.name_manga}`);
         } catch (error) {
             console.error(error);
+
+            const {browser: browser2, page: page2} = await initBrowser();
+            browser = browser2;
+            page = page2;
+
+            const res = await finder(manga, client, page);
         }
     }
 
+    
     await page.close();
+    await browser.disconnect();
     await browser.close();
 }
 //* inutilisé
@@ -140,12 +156,24 @@ export function tabin(message:string, tab:Array<string>): boolean {
 
 export async function getCherrioText(url: string, page:Page) {
     try {
-        await page.goto(url, {
+        
+        
+        const test = await page.goto(url, {
             waitUntil: 'load',
             timeout: 450000
         });
+
+        // console.log("console: ", test?.ok(), ' sur le site: ', url);
+        // console.log(test?.status(), " ", test?.statusText());
+        // console.log(test);
+
+        if (!test?.ok()) {
+            console.error("error coté serveur ou puppeteer");
+            return cheerio.load("");
+        }
         // await page.waitForSelector('#selectChapitres');
         const html = await page.content();
+           
 
         return cheerio.load(html);
     } catch (error) {
@@ -257,5 +285,17 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
     });
 }
 
+// export async function reloadOptionCmd(client:Client):Promise<void>{
+    
+//     await client.application?.commands.fetch().then(async (commands) => {
+//         commands.forEach(async (command) => {
+//             await command.delete();
+//         });
+//     });
+
+    
+//     client.application?.commands.set(Commands);
+//     console.log("Commands reloaded");
+// }
 
 
