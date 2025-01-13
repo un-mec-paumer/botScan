@@ -49,7 +49,7 @@ messageCreate(client);
 
 
 client.login(process.env.TOKEN);
-const interval = setInterval(finderAll, 1000 * 60, client);
+const interval = setInterval(finderAll, 1000 * 60 * 3, client);
 // finderAll(client);
 // const intervalCommand = setInterval(reloadOptionCmd, 1000 * 60 , client);
 // reloadOptionCmd(client);

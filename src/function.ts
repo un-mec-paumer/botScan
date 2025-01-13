@@ -55,6 +55,8 @@ async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>
 
     // console.log(manga.name_manga);
 
+    
+
     try {
         const $ = await getCherrioText(url, page);
         // console.log($.html());
@@ -75,6 +77,10 @@ async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>
 
         userBDD!.forEach(async (user) => {
             const userDiscord = await client.users.fetch(user.id_user);
+            
+            const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
+            if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
+
             if(userDiscord === null) return;
             if(userDiscord.dmChannel === null) await userDiscord.createDM();
             if (newChap.length === 1) await userDiscord.send(`Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`);
@@ -95,6 +101,8 @@ async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>
 
 export async function finderAll(client: Client) {
     console.log("finderAll");
+    const time = new Date(); 
+    console.log("temps: ", (time.getHours().toString().split("").length === 1 ? "0" : "") + time.getHours() + "h" + (time.getMinutes().toString().split("").length === 1 ? "0" : "") + time.getMinutes() + "min");
     //const userID = "452370867758956554";
     let {browser, page} = await initBrowser();
     const mangas = await BDD.getMangas() ?? [];
@@ -111,6 +119,7 @@ export async function finderAll(client: Client) {
             const res = await finder(manga, client, page);
             // if(!res) console.log(`Pas de nouveau chapitre pour ${manga.name_manga}`);
         } catch (error) {
+            console.error("pb avec ça: ");
             console.error(error);
 
             const {browser: browser2, page: page2} = await initBrowser();
@@ -123,7 +132,7 @@ export async function finderAll(client: Client) {
 
     
     await page.close();
-    await browser.disconnect();
+    // await browser.disconnect();
     await browser.close();
 }
 //* inutilisé
