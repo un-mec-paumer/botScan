@@ -15,14 +15,19 @@ jobs:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build
+    - name: Install dependencies
       run: |
         npm install
-        npx webpack
+        npm install --save-dev webpack-cli # Installer webpack-cli si nécessaire
+        npm audit fix                      # Corriger automatiquement les vulnérabilités si possible
+
+    - name: Build project with Webpack
+      run: npx webpack
