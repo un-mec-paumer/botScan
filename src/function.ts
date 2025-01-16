@@ -83,9 +83,13 @@ async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>
 
             if(userDiscord === null) return;
             if(userDiscord.dmChannel === null) await userDiscord.createDM();
-            if (newChap.length === 1) await userDiscord.send(`Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`);
-            else if (newChap.length === 2) await userDiscord.send(`Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`);
-            else await userDiscord.send(`Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`);
+            let message = '';
+            if (newChap.length === 1) message = `Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`;
+            else if (newChap.length === 2) message = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
+            else message = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
+            
+            console.log(message);
+            await userDiscord.send(message);
         });
 
         return true;

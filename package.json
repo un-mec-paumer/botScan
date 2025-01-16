@@ -11,6 +11,7 @@
 	},
 	"author": "Antoine Ciric",
 	"license": "ISC",
+	"module": "CommonJS",
 	"dependencies": {
 		"@supabase/supabase-js": "^2.38.1",
 		"cheerio": "^1.0.0-rc.12",
