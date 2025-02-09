@@ -24,9 +24,12 @@ export async function initBrowser() {
             '--no-sandbox', 
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
+            '--disable-gpu', 
+            '--disable-features'
         ],
         executablePath: process.env.CHROME_PATH,
         ignoreHTTPSErrors: true,
+        protocolTimeout: 60000,
     });
 
     const page = await browser.newPage();

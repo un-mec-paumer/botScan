@@ -23,7 +23,7 @@ RUN npm install
 COPY . .
 
 # 7. Compiler TypeScript
-RUN npm run build
+# RUN npm run build
 
 # 8. Définir les variables d'environnement pour Puppeteer
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium-browser" \
@@ -33,4 +33,4 @@ ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium-browser" \
 EXPOSE 3000
 
 # 10. Commande pour démarrer l'application
-CMD ["npm", "start"]
+CMD ["npm", "run", "start2"]
