@@ -15,11 +15,11 @@ export function randomString() {
     return result;
 }
 
-class supabase{
-    private url:string
-    private key:string
+class Supabase {
+    private readonly url: string
+    private readonly key: string
 
-    private client:SupabaseClient;
+    private readonly client: SupabaseClient;
 
     constructor(){
         dotenv.config()
@@ -44,7 +44,7 @@ class supabase{
         return data
     }
 
-    async getManga(name:string){
+    async getManga(name:string) {
         const { data, error } = await this.client
         .from('mangas')
         .select('*')
@@ -59,7 +59,7 @@ class supabase{
         return data
     }
 
-    async getMangaById(id:number){
+    async getMangaById(id:number) {
         const { data, error } = await this.client
         .from('mangas')
         .select('*')
@@ -67,7 +67,7 @@ class supabase{
         return data
     }
 
-    async getMangaBylien(id:string){
+    async getMangaBylien(id:string) {
         const res = await this.client
         .from('alerte')
         .select('id_manga')
@@ -88,7 +88,7 @@ class supabase{
         return mangas
     }
 
-    async supprimerManga(name:string){
+    async supprimerManga(name:string) {
         const { data, error } = await this.client
         .from('mangas')
         .delete()
@@ -96,7 +96,7 @@ class supabase{
         return data
     }
 
-    async addManga(name:string, chap:number, page:boolean, image:string, synopsis:string){
+    async addManga(name:string, chap:number, page:boolean, image:string, synopsis:string) {
         const { data, error } = await this.client
         .from('mangas')
         .insert([
@@ -105,7 +105,7 @@ class supabase{
         return data
     }
 
-    async getChapitre(name:string){
+    async getChapitre(name:string) {
         const { data, error } = await this.client
         .from('mangas')
         .select('chapitre_manga')
@@ -113,7 +113,7 @@ class supabase{
         return data
     }
 
-    async updateChapitre(name:string, chap:number){
+    async updateChapitre(name:string, chap:number) {
         const { data, error } = await this.client
         .from('mangas')
         .update({ chapitre_manga: chap })
@@ -121,7 +121,7 @@ class supabase{
         return data
     }
 
-    async addUser(id:string, name:string, img:string){
+    async addUser(id:string, name:string, img:string) {
         const { data, error } = await this.client
         .from('users')
         .insert([
@@ -130,14 +130,14 @@ class supabase{
         return data
     }
 
-    async getUsers(){
+    async getUsers() {
         const { data, error } = await this.client
         .from('users')
         .select('*')
         return data
     }
 
-    async getUser(id_user:string){
+    async getUser(id_user:string) {
         const { data, error } = await this.client
         .from('users')
         .select('*')
@@ -145,7 +145,7 @@ class supabase{
         return data
     }
 
-    async getUserByName(name_user:string){
+    async getUserByName(name_user:string) {
         const { data, error } = await this.client
         .from('users')
         .select('*')
@@ -153,7 +153,7 @@ class supabase{
         return data
     }
 
-    async supprimerUser(id:string){
+    async supprimerUser(id:string) {
         const { data, error } = await this.client
         .from('users')
         .delete()
@@ -161,7 +161,7 @@ class supabase{
         return data
     }
 
-    async addLien(id_manga:number, id_user:string){
+    async addLien(id_manga:number, id_user:string) {
         const { data, error } = await this.client
         .from('alerte')
         .insert([
@@ -171,7 +171,7 @@ class supabase{
 
     }
 
-    async getLien(id_manga:number){
+    async getLien(id_manga:number) {
         const { data, error } = await this.client
         .from('alerte')
         .select('id_user')
@@ -179,7 +179,7 @@ class supabase{
         return data
     }
 
-    async verfiLien(id_user:string, id_manga:number){
+    async verfiLien(id_user:string, id_manga:number) {
         const { data, error } = await this.client
         .from('alerte')
         .select('*')
@@ -187,14 +187,14 @@ class supabase{
         return data
     }
 
-    async getLiens(){
+    async getLiens() {
         const { data, error } = await this.client
         .from('alerte')
         .select('*')
         return data
     }
 
-    async supprimerLien(id_manga:number, id_user:string){
+    async supprimerLien(id_manga:number, id_user:string) {
         const { data, error } = await this.client
         .from('alerte')
         .delete()
@@ -202,7 +202,7 @@ class supabase{
         return data
     }
 
-    async addToken(id_user:string):Promise<string>{
+    async addToken(id_user:string): Promise<string> {
         const random = randomString()
 
         //console.log(random, id_user)
@@ -218,20 +218,20 @@ class supabase{
         return random;
     }
 
-    async getUserByToken(token:string){
+    async getUserByToken(token:string) {
         const { data, error } = await this.client
         .from('token')
         .select('user_id')
         .match({ token: token })
         return data
     }
-    async getMangasByToken(token:string){
+    async getMangasByToken(token:string) {
         const { data, error } = await this.client
         .rpc('get_mangas_with_token', { token_string: token })
         return data
     }
 
-    async addAlerteByToken(id_manga:number, token:string){
+    async addAlerteByToken(id_manga:number, token:string) {
         this.getUserByToken(token).then((data) => {
             //console.log(data)
             if(data?.length == 0) return false;
@@ -239,7 +239,7 @@ class supabase{
         })
     }
 
-    async suppAlerteByToken(id_manga:number, token:string){
+    async suppAlerteByToken(id_manga:number, token:string) {
         this.getUserByToken(token).then((data) => {
             //console.log(data)
             if(data?.length == 0) return false;
@@ -247,7 +247,7 @@ class supabase{
         })
     }
 
-    async getAlerteByToken(token:string, id_manga:number){
+    async getAlerteByToken(token:string, id_manga:number) {
         const user = await this.getUserByToken(token);
 
         if(user?.length == 0) return;
@@ -259,7 +259,7 @@ class supabase{
         return data
     }
 
-    async verifTokens(){
+    async verifTokens() {
         
         let { data, error } = await this.client
         .rpc('delete_old_tokens')
@@ -268,7 +268,7 @@ class supabase{
         return data
     }
 
-    async getUserInfo(token:string){
+    async getUserInfo(token:string) {
         const res = await this.getUserByToken(token);
 
         if(res?.length == 0) return;
@@ -281,7 +281,7 @@ class supabase{
         return data
     }
 
-    async getImgFromTest(name:string){
+    async getImgFromTest(name:string) {
         const { data, error } = await this.client
         .storage
         .from('test')
@@ -291,7 +291,7 @@ class supabase{
         return data
     }
 
-    async getImgFromTestDnw(name:string){
+    async getImgFromTestDnw(name:string) {
         const { data, error } = await this.client
         .storage
         .from('test')
@@ -301,7 +301,7 @@ class supabase{
         return data
     }
 
-    async addImgToTest(name:string, img:ArrayBuffer){
+    async addImgToTest(name:string, img:ArrayBuffer) {
         const { data, error } = await this.client
         .storage
         .from('test')
@@ -311,7 +311,7 @@ class supabase{
         return data
     }
 
-    async supImgFromTest(name:string){
+    async supImgFromTest(name:string) {
         const { data, error } = await this.client
         .storage
         .from('test')
@@ -324,7 +324,7 @@ class supabase{
 
 }
 
-export const BDD = new supabase()
+export const BDD = new Supabase();
 
 // BDD.getMangas().then((data) => {
 //     console.log(data)

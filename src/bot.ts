@@ -97,7 +97,7 @@ app.use((req:Request, res:Response, next:NextFunction ) => {
 
 app.use(Express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ?? 3000;
 
 app.listen(PORT, () => {
     console.log("Server started!");
@@ -349,15 +349,6 @@ app.post("/addManga", async (req: Request, res: Response) => {
     if(userBDD?.length === 0){
         const userAvatar = userDiscord.avatarURL();
         await BDD.addUser(id_user, userDiscord.username, userAvatar!);
-        // interaction.followUp({
-        //     ephemeral: true,
-        //     content: "Manga ajouté avec succès"
-        // });
-        // return;
-        res.send({
-            res: true,
-            text: "Manga ajouté avec succès"
-        });
     }
     await BDD.addLien(manga![0].id_manga, userDiscord.id);
     // interaction.followUp({

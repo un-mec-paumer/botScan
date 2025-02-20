@@ -10,6 +10,7 @@
 		"start2": "npx ts-node src/bot.ts"
 	},
 	"author": "Antoine Ciric",
+	"co-author": "Yoni Rigaut",
 	"license": "ISC",
 	"module": "CommonJS",
 	"dependencies": {

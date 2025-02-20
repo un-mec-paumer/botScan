@@ -4,11 +4,10 @@ import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
 import puppeteer, { Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
-import { Commands } from "./Commands";
 
 dotenv.config()
 
-type Manga = {
+interface Manga {
     id_manga?: number,
     name_manga?: string,
     chapitre_manga?: number,
@@ -43,10 +42,14 @@ export async function initBrowser() {
     return {browser, page}
 }
 
-async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>*/ {
+async function finder(manga: Manga, client:Client, page:Page): Promise<boolean> {
 
     const RELOUDEMERDE = ["one-piece"]
     const urlBase = "https://anime-sama.fr/catalogue/";
+    const compareUrlBaseScan = /^https:\/\/anime-sama\.fr\/catalogue\/scan.*(\/vf\/)?/
+    const compareUrlBaseAnime = /^https:\/\/anime-sama\.fr\/catalogue\/saison.*(\/vostfr\/)?/
+    const compareUrlBaseFilm = /^https:\/\/anime-sama\.fr\/catalogue\/film.*(\/vostfr\/)?/
+    const compareUrlBaseOav = /^https:\/\/anime-sama\.fr\/catalogue\/oav.*(\/vostfr\/)?/
     const chap = String(manga.chapitre_manga).replace(".", "-");
     const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc":""}/vf/`;
     // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
@@ -55,15 +58,17 @@ async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>
 
     // console.log(manga.name_manga);
 
-    
-
     try {
         const $ = await getCherrioText(url, page);
         // console.log($.html());
-        const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => { 
+        const newChap = $("#selectChapitres option").toArray().map((element) => {
+            return $(element).attr("value")
+        }).filter((element) => { 
             const nbChap = parseFloat(element!.split(" ")[1])
             return nbChap > manga.chapitre_manga!
-        }).map((element) => { return parseFloat(element!.split(" ")[1])});
+        }).map((element) => {
+            return parseFloat(element!.split(" ")[1])
+        });
 
         // console.log(newChap);
 
@@ -81,12 +86,24 @@ async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>
             const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
             if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
 
-            if(userDiscord === null) return;
+            if(userDiscord === null) return false;
             if(userDiscord.dmChannel === null) await userDiscord.createDM();
             let message = '';
-            if (newChap.length === 1) message = `Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`;
-            else if (newChap.length === 2) message = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
-            else message = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
+            switch(newChap.length) {
+                case 1: {
+                    message = `Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`
+                    break;
+                } case 2: {
+                    message = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
+                    break;
+                } default: {
+                    message = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
+                    break;
+                }
+            }
+            // if (newChap.length === 1) message = `Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`;
+            // else if (newChap.length === 2) message = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
+            // else message = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
             
             console.log(message);
             await userDiscord.send(message);
