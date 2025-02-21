@@ -1,0 +1,17 @@
+FROM node:18-alpine
+
+WORKDIR /app
+COPY package*.json ./
+
+RUN npm ci
+COPY . .
+
+EXPOSE 3000
+
+CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npm start"]
+
+# Better way to do it but refuse to elaborate
+# RUN npx prisma generate && \
+#     npx prisma migrate deploy
+
+# CMD ["npm", "start"]

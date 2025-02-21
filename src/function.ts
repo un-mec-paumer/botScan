@@ -4,6 +4,7 @@ import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
 import puppeteer, { Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
+import { CATALOGUE_URL } from "./variables";
 
 dotenv.config()
 
@@ -45,14 +46,9 @@ export async function initBrowser() {
 async function finder(manga: Manga, client:Client, page:Page): Promise<boolean> {
 
     const RELOUDEMERDE = ["one-piece"]
-    const urlBase = "https://anime-sama.fr/catalogue/";
-    const compareUrlBaseScan = /^https:\/\/anime-sama\.fr\/catalogue\/scan.*(\/vf\/)?/
-    const compareUrlBaseAnime = /^https:\/\/anime-sama\.fr\/catalogue\/saison.*(\/vostfr\/)?/
-    const compareUrlBaseFilm = /^https:\/\/anime-sama\.fr\/catalogue\/film.*(\/vostfr\/)?/
-    const compareUrlBaseOav = /^https:\/\/anime-sama\.fr\/catalogue\/oav.*(\/vostfr\/)?/
     const chap = String(manga.chapitre_manga).replace(".", "-");
-    const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc":""}/vf/`;
-    // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
+    const url: string = `${CATALOGUE_URL + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc":""}/vf/`;
+    // const url: string = `${CATALOGUE_URL + manga.name_manga}/chapitre-1099-vf/1000000/`;
     // console.log(url);
 
 

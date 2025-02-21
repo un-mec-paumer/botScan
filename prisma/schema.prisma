@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id   String  @id @db.VarChar
+  name_user String  @db.VarChar
+  pp        String? @db.Text
+
+  alerts    Alert[] @relation("UsersAlerts")
+
+  @@map("users")
+}
+
+model Series {
+  series_id       Int           @id @default(autoincrement())
+  series_name     String        @db.VarChar
+  series_image    String?       @db.Text
+  series_synopsis String?       @db.Text
+
+  media           MediaSeries[] @relation("SeriesMediaSeries")
+
+  @@map("series")
+}
+
+model Media {
+  media_id        Int           @id @default(autoincrement())
+  media_name      String        @db.VarChar
+  media_base_link String        @db.VarChar
+
+  media_series    MediaSeries[] @relation("MediaMediaSeries")
+
+  @@map("medias")
+}
+
+model MediaSeries {
+  media_series_id              Int      @id @default(autoincrement())
+  media_id                     Int
+  series_id                    Int
+  media_chapter                Float    @db.DoublePrecision
+  additional_link_media_series String   @db.VarChar @default("")
+
+  media                        Media[]  @relation("MediaMediaSeries")
+  series                       Series[] @relation("SeriesMediaSeries")
+  alerts                       Alert[]  @relation("MediasAlerts")
+
+  @@unique([media_id, series_id, additional_link_media_series])
+  @@map("medias_series")
+}
+
+model Alert {
+  alert_id        Int         @id @default(autoincrement())
+  media_series_id Int
+  user_id         String      @db.VarChar
+
+  media_series    MediaSeries @relation("MediasAlerts", fields: [media_series_id], references: [media_series_id])
+  user            User        @relation("UsersAlerts", fields: [user_id], references: [user_id])
+
+  @@unique([media_series_id, user_id])
+  @@map("alerts")
+} 

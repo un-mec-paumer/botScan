@@ -6,7 +6,7 @@ import messageCreate from "./listeners/messageCreate";
 import { finderAll, downloadImg, getCherrioText, initBrowser } from "./function";
 import Express, { Request, Response, NextFunction } from "express";
 import { BDD } from "./supabase";
-import { error } from "console";
+import { PORT } from "./variables";
 // import { Player } from "discord-player";
 
 dotenv.config()
@@ -96,8 +96,6 @@ app.use((req:Request, res:Response, next:NextFunction ) => {
 });
 
 app.use(Express.urlencoded({ extended: true }));
-
-const PORT = process.env.PORT ?? 3000;
 
 app.listen(PORT, () => {
     console.log("Server started!");
