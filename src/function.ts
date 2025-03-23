@@ -28,6 +28,7 @@ export async function initBrowser() {
             '--disable-features'
         ],
         executablePath: process.env.CHROME_PATH,
+        // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         ignoreHTTPSErrors: true,
         protocolTimeout: 60000,
     });
@@ -181,7 +182,7 @@ export async function getCherrioText(url: string, page:Page) {
 
         // console.log("console: ", test?.ok(), ' sur le site: ', url);
         // console.log(test?.status(), " ", test?.statusText());
-        // console.log(test);
+        // console.log(test?.remoteAddress());
 
         if (!test?.ok()) {
             console.error("error coté serveur ou puppeteer");
