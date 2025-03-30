@@ -29,7 +29,7 @@ export async function initBrowser() {
         ],
         executablePath: process.env.CHROME_PATH,
         // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        ignoreHTTPSErrors: true,
+        // ignoreHTTPSErrors: true,
         protocolTimeout: 60000,
     });
 
