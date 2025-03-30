@@ -17,18 +17,34 @@ type Manga = {
     synopsis?: string
 };
 
+const userAgents = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/115.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/114.0",
+    "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (iPad; CPU OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 12; Samsung Galaxy S21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/118.0.2088.46",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Version/15.2 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Opera/91.0.4472.106",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
+];
+
 export async function initBrowser() {
     const browser = await puppeteer.launch({
         headless: true,
         args: [
-            '--no-sandbox', 
+            '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu', 
-            '--disable-features'
+            '--disable-blink-features=AutomationControlled'
         ],
-        executablePath: process.env.CHROME_PATH,
-        // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        // executablePath: process.env.CHROME_PATH,
+        executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         // ignoreHTTPSErrors: true,
         protocolTimeout: 60000,
     });
@@ -44,6 +60,10 @@ export async function initBrowser() {
             req.continue();
         }
     });
+
+    await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
+    await page.setViewport({ width: 1920, height: 1080 });
+    await page.setDefaultNavigationTimeout(0);
     return {browser, page}
 }
 
@@ -172,11 +192,9 @@ export function tabin(message:string, tab:Array<string>): boolean {
 }
 
 export async function getCherrioText(url: string, page:Page) {
-    try {
-        
-        
+    try {        
         const test = await page.goto(url, {
-            waitUntil: 'load',
+            waitUntil: 'networkidle2',
             timeout: 450000
         });
 
@@ -188,9 +206,9 @@ export async function getCherrioText(url: string, page:Page) {
             console.error("error coté serveur ou puppeteer");
             return cheerio.load("");
         }
-        // await page.waitForSelector('#selectChapitres');
+        await page.waitForSelector('#selectChapitres');
         const html = await page.content();
-           
+        console.log(html);
 
         return cheerio.load(html);
     } catch (error) {
@@ -198,6 +216,12 @@ export async function getCherrioText(url: string, page:Page) {
         return cheerio.load("");
     }
 }
+
+(async() => {
+    const {browser, page} = await initBrowser();
+    const url = "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/";
+    const $ = await getCherrioText(url, page);
+})()
 
 export async function endErasmus(client: Client): Promise<void> {
     const now = new Date();
