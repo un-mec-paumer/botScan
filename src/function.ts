@@ -208,7 +208,7 @@ export async function getCherrioText(url: string, page:Page) {
         }
         await page.waitForSelector('#selectChapitres');
         const html = await page.content();
-        console.log(html);
+        // console.log(html);
 
         return cheerio.load(html);
     } catch (error) {
@@ -217,11 +217,11 @@ export async function getCherrioText(url: string, page:Page) {
     }
 }
 
-(async() => {
-    const {browser, page} = await initBrowser();
-    const url = "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/";
-    const $ = await getCherrioText(url, page);
-})()
+// (async() => {
+//     const {browser, page} = await initBrowser();
+//     const url = "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/";
+//     const $ = await getCherrioText(url, page);
+// })()
 
 export async function endErasmus(client: Client): Promise<void> {
     const now = new Date();
