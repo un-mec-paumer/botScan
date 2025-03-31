@@ -43,8 +43,8 @@ export async function initBrowser() {
             '--disable-setuid-sandbox',
             '--disable-blink-features=AutomationControlled'
         ],
-        // executablePath: process.env.CHROME_PATH,
-        executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        executablePath: process.env.CHROME_PATH,
+        // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         // ignoreHTTPSErrors: true,
         protocolTimeout: 60000,
     });
