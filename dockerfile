@@ -1,14 +1,28 @@
 # 1. Utilisation d'une image légère de Node.js
-FROM node:22.13.1-alpine
+FROM node:22-slim
 
 # 2. Installation des dépendances système nécessaires à Puppeteer
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
+    wget \
     chromium \
-    nss \
-    freetype \
-    harfbuzz \
     ca-certificates \
-    ttf-freefont
+    fonts-liberation \
+    libappindicator3-1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libgdk-pixbuf2.0-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    xdg-utils \
+    --no-install-recommends && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 3. Définir le dossier de travail
 WORKDIR /app
@@ -26,7 +40,7 @@ COPY . .
 # RUN npm run build
 
 # 8. Définir les variables d'environnement pour Puppeteer
-ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium-browser" \
+ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # 9. Exposer le port (optionnel, si ton bot a un serveur HTTP)
