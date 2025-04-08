@@ -41,7 +41,9 @@ export async function initBrowser() {
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-blink-features=AutomationControlled'
+            '--disable-blink-features=AutomationControlled',
+            '--disable-extensions',
+            '--enable-gpu'
         ],
         executablePath: process.env.CHROME_PATH,
         // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -63,7 +65,7 @@ export async function initBrowser() {
 
     await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
     await page.setViewport({ width: 1920, height: 1080 });
-    await page.setDefaultNavigationTimeout(0);
+    // await page.setDefaultNavigationTimeout(0);
     return {browser, page}
 }
 

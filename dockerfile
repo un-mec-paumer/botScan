@@ -41,7 +41,8 @@ COPY . .
 
 # 8. Définir les variables d'environnement pour Puppeteer
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium" \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    CHROME_DEVEL_SANDBOX="/usr/local/sbin/chrome-devel-sandbox"
 
 # 9. Exposer le port (optionnel, si ton bot a un serveur HTTP)
 EXPOSE 3000
