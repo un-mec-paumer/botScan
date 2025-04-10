@@ -100,7 +100,7 @@ app.use(Express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log("Server started!");
+    console.log("Server started! Listening on port " + PORT);
 });
 
 
