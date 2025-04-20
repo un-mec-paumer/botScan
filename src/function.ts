@@ -276,6 +276,8 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
     const RELOUDEMERDE = ["one-piece"]
     const dev = await interaction.client.users.fetch(process.env.DEV!);
     mangas = mangas.sort((a, b) => a.name_manga.localeCompare(b.name_manga));
+    const img = (await BDD.getImgFromTest(mangas[0].name_manga!))?.signedUrl ?? null;
+    
     const embed = new EmbedBuilder()
     .setTitle(mangas[0].name_manga.replaceAll("-", " "))
     .setURL(`https://anime-sama.fr/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc":""}/vf/`)
@@ -284,12 +286,11 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
         description:
         ${mangas[0]?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}   
     `)
-    .setImage(mangas[0]?.img)
+    .setImage(img)
     .setTimestamp()
     .setFooter({
         text: "dev " + dev.username,
         iconURL: dev.displayAvatarURL()
-        
     })
 
     const selectMenu = new StringSelectMenuBuilder()
@@ -317,10 +318,10 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
     collector.on("collect", async (i) => {
 
         const value = i.values[0];
-        // console.log(value);
-        // console.log(mangas);
+        
         const manga = mangas.find((manga) => manga.id_manga === parseInt(value));
-        // console.log(manga);
+        const img = (await BDD.getImgFromTest(manga.name_manga!))?.signedUrl ?? null;
+
         const newEmbed = new EmbedBuilder()
         .setTitle(manga?.name_manga.replaceAll("-", " "))
         .setDescription(`
@@ -330,7 +331,7 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
         `)
         .setURL(`https://anime-sama.fr/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc":""}/vf/`)
         .setTimestamp()
-        .setImage(manga?.img)
+        .setImage(img)
         await i.update({ embeds: [newEmbed] });
     });
 }
