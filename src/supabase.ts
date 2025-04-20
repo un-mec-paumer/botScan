@@ -282,12 +282,14 @@ class supabase{
     }
 
     async getImgFromTest(name:string){
-        const { data, error } = await this.client
+        const { data } = this.client
         .storage
         .from('test')
-        .createSignedUrl(name + '.png', 60 * 60 * 24)
+        .getPublicUrl(name + '.png')
+        // .createSignedUrl(name + '.png', 60 * 60 * 24, { download: false })
+        
 
-        if(error) console.error(error)
+        // if(error) console.error(error)
         return data
     }
 
