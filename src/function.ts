@@ -195,10 +195,13 @@ export function tabin(message:string, tab:Array<string>): boolean {
 
 export async function getCherrioText(url: string, page:Page) {
     try {        
+        console.log("url: ", url);
         const test = await page.goto(url, {
             waitUntil: 'networkidle2',
-            timeout: 450000
+            // timeout: 45000
         });
+
+        console.log(test?.ok(), ' sur le site: ', url);
 
         // console.log("console: ", test?.ok(), ' sur le site: ', url);
         // console.log(test?.status(), " ", test?.statusText());
@@ -208,9 +211,9 @@ export async function getCherrioText(url: string, page:Page) {
             console.error("error coté serveur ou puppeteer");
             return cheerio.load("");
         }
-        await page.waitForSelector('#selectChapitres');
+        // await page.waitForSelector('#selectChapitres');
         const html = await page.content();
-        // console.log(html);
+        console.log(html);
 
         return cheerio.load(html);
     } catch (error) {
@@ -219,11 +222,15 @@ export async function getCherrioText(url: string, page:Page) {
     }
 }
 
-// (async() => {
-//     const {browser, page} = await initBrowser();
-//     const url = "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/";
-//     const $ = await getCherrioText(url, page);
-// })()
+(async() => {
+    const {browser, page} = await initBrowser();
+    const url = "https://anime-sama.fr/catalogue/marchen-crown/";
+    const $ = await getCherrioText(url, page);
+    console.log($.html());
+
+    await page.close();
+    await browser.close();
+})()
 
 export async function endErasmus(client: Client): Promise<void> {
     const now = new Date();
