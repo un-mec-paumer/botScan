@@ -201,7 +201,7 @@ export async function getCherrioText(url: string, page:Page) {
             // timeout: 45000
         });
 
-        console.log(test?.ok(), ' sur le site: ', url);
+        // console.log(test?.ok(), ' sur le site: ', url);
 
         // console.log("console: ", test?.ok(), ' sur le site: ', url);
         // console.log(test?.status(), " ", test?.statusText());
@@ -222,15 +222,15 @@ export async function getCherrioText(url: string, page:Page) {
     }
 }
 
-(async() => {
-    const {browser, page} = await initBrowser();
-    const url = "https://anime-sama.fr/catalogue/marchen-crown/";
-    const $ = await getCherrioText(url, page);
-    console.log($.html());
+// (async() => {
+//     const {browser, page} = await initBrowser();
+//     const url = "https://anime-sama.fr/catalogue/marchen-crown/";
+//     const $ = await getCherrioText(url, page);
+//     console.log($.html());
 
-    await page.close();
-    await browser.close();
-})()
+//     await page.close();
+//     await browser.close();
+// })()
 
 export async function endErasmus(client: Client): Promise<void> {
     const now = new Date();
