@@ -4,7 +4,8 @@ import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
 import puppeteer, { Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
-import { Commands } from "./Commands";
+import { jsPDF, jsPDFAPI } from "jspdf";
+
 
 dotenv.config()
 
@@ -66,72 +67,72 @@ export async function initBrowser() {
     await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
     await page.setViewport({ width: 1920, height: 1080 });
     // await page.setDefaultNavigationTimeout(0);
-    return {browser, page}
+    return { browser, page }
 }
 
-async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>*/ {
+async function finder(manga: Manga, client: Client, page: Page) /*Promise<boolean>*/ {
 
     const RELOUDEMERDE = ["one-piece"]
     const urlBase = "https://anime-sama.fr/catalogue/";
     const chap = String(manga.chapitre_manga).replace(".", "-");
-    const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc":""}/vf/`;
+    const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc" : ""}/vf/`;
     // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
     // console.log(url);
 
 
     // console.log(manga.name_manga);
 
-    
+
 
     try {
         const $ = await getCherrioText(url, page);
         // console.log($.html());
-        const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => { 
+        const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
             const nbChap = parseFloat(element!.split(" ")[1])
             return nbChap > manga.chapitre_manga!
-        }).map((element) => { return parseFloat(element!.split(" ")[1])});
+        }).map((element) => { return parseFloat(element!.split(" ")[1]) });
 
         // console.log(newChap);
 
-        if(newChap.length === 0) {
+        if (newChap.length === 0) {
             // console.log(`nextUrl : ${nextUrl}`);
             return false;
         }
-               
+
         await BDD.updateChapitre(manga.name_manga!, newChap[newChap.length - 1]);
         const userBDD = await BDD.getLien(manga.id_manga!);
 
         const img = (await BDD.getImgFromTest(manga.name_manga!)).publicUrl ?? null;
 
         const message = new EmbedBuilder()
-        .setTitle(manga.name_manga!.replaceAll("-", " "))
-        .setURL(url)
-        .setImage(img)
-        .setFooter({
-            text: "dev " + (await client.users.fetch(process.env.DEV!)).username,
-            iconURL: (await client.users.fetch(process.env.DEV!)).displayAvatarURL()
-        })
+            .setTitle(manga.name_manga!.replaceAll("-", " "))
+            .setURL(url)
+            .setImage(img)
+            .setFooter({
+                text: "dev " + (await client.users.fetch(process.env.DEV!)).username,
+                iconURL: (await client.users.fetch(process.env.DEV!)).displayAvatarURL()
+            })
 
         userBDD!.forEach(async (user) => {
             const userDiscord = await client.users.fetch(user.id_user);
-            
+
             const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
             if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
 
-            if(userDiscord === null) return;
-            if(userDiscord.dmChannel === null) await userDiscord.createDM();
+            if (userDiscord === null) return;
+            if (userDiscord.dmChannel === null) await userDiscord.createDM();
             let messageText = '';
             if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`;
             else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
             else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
-            
+
             message.setDescription(messageText);
             console.log(messageText);
-            await userDiscord.send({embeds: [message]});
+            await userDiscord.send({ embeds: [message] });
         });
 
         return true;
-        
+
     } catch (error) {
         console.log("Veux pas");
         console.error(manga.name_manga!);
@@ -143,18 +144,18 @@ async function finder(manga: Manga, client:Client, page:Page) /*Promise<boolean>
 
 export async function finderAll(client: Client) {
     console.log("finderAll");
-    const time = new Date(); 
+    const time = new Date();
     console.log("temps: ", (time.getHours().toString().split("").length === 1 ? "0" : "") + time.getHours() + "h" + (time.getMinutes().toString().split("").length === 1 ? "0" : "") + time.getMinutes() + "min");
     //const userID = "452370867758956554";
-    let {browser, page} = await initBrowser();
+    let { browser, page } = await initBrowser();
     const mangas = await BDD.getMangas() ?? [];
-    
+
     // console.log(mangas);
     for (const manga of mangas) {
         try {
             if (browser.connected === false || page.isClosed() === true) {
                 console.log("reconnexion");
-                const {browser: browser2, page: page2} = await initBrowser();
+                const { browser: browser2, page: page2 } = await initBrowser();
                 browser = browser2;
                 page = page2;
             }
@@ -164,7 +165,7 @@ export async function finderAll(client: Client) {
             console.error("pb avec ça: ");
             console.error(error);
 
-            const {browser: browser2, page: page2} = await initBrowser();
+            const { browser: browser2, page: page2 } = await initBrowser();
             browser = browser2;
             page = page2;
 
@@ -172,13 +173,13 @@ export async function finderAll(client: Client) {
         }
     }
 
-    
+
     await page.close();
     // await browser.disconnect();
     await browser.close();
 }
 //* inutilisé
-export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/): boolean {
+export function sauvegarder(data: string/*, path:PathOrFileDescriptor*/): boolean {
     //console.log("data ", data);
     //let str = JSON.stringify(data);
     const path2: PathOrFileDescriptor = "./src/data/mangas.json";
@@ -186,8 +187,8 @@ export function sauvegarder(data:string/*, path:PathOrFileDescriptor*/): boolean
     return true;
 }
 
-export async function downloadImg(imgStr:string, name_manga:string): Promise<void> {
-    
+export async function downloadImg(imgStr: string, name_manga: string): Promise<void> {
+
     const response = await fetch(imgStr, {
         method: 'GET',
         headers: {
@@ -201,12 +202,12 @@ export async function downloadImg(imgStr:string, name_manga:string): Promise<voi
     await BDD.addImgToTest(name_manga + ".png", img);
 }
 
-export function tabin(message:string, tab:Array<string>): boolean {
-    return tab.filter((element) => {return element === message}).length === 1;
+export function tabin(message: string, tab: Array<string>): boolean {
+    return tab.filter((element) => { return element === message }).length === 1;
 }
 
-export async function getCherrioText(url: string, page:Page) {
-    try {        
+export async function getCherrioText(url: string, page: Page) {
+    try {
         // console.log("url: ", url);
         const test = await page.goto(url, {
             waitUntil: 'networkidle2',
@@ -271,10 +272,9 @@ export async function endErasmus(client: Client): Promise<void> {
         const nbJoursMsg = messages[0]?.split(" ").map((element) => parseInt(element)).filter((element) => !isNaN(element))[0] ?? 0
         // console.log(nbJoursMsg, nbjours);
         // console.log(nbJoursMsg > nbjours && now.getHours() === 13)
-        if(nbJoursMsg > nbjours && now.getHours() === 12) {
-            try
-            {
-                await user.send(`Salut ${user} le grand ***BARBECUE***/***FEU DE JOIE DE FIN D'ANNEE*** est dans ${nbjours} jour${nbjours !== 1 ? "s":""} (merci a justin pour le message avec les réactions de tous le monde) :) !`);
+        if (nbJoursMsg > nbjours && now.getHours() === 12) {
+            try {
+                await user.send(`Salut ${user} le grand ***BARBECUE***/***FEU DE JOIE DE FIN D'ANNEE*** est dans ${nbjours} jour${nbjours !== 1 ? "s" : ""} (merci a justin pour le message avec les réactions de tous le monde) :) !`);
             }
             catch (error) {
                 console.error(error);
@@ -289,34 +289,34 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
     const dev = await interaction.client.users.fetch(process.env.DEV!);
     mangas = mangas.sort((a, b) => a.name_manga.localeCompare(b.name_manga));
     const img = (await BDD.getImgFromTest(mangas[0].name_manga!)).publicUrl ?? null;
-    
+
     const embed = new EmbedBuilder()
-    .setTitle(mangas[0].name_manga.replaceAll("-", " "))
-    .setURL(`https://anime-sama.fr/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc":""}/vf/`)
-    .setDescription(`
+        .setTitle(mangas[0].name_manga.replaceAll("-", " "))
+        .setURL(`https://anime-sama.fr/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
+        .setDescription(`
         ***chapitre n°${mangas[0]?.chapitre_manga}***
         description:
         ${mangas[0]?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}   
     `)
-    .setImage(img)
-    .setTimestamp()
-    .setFooter({
-        text: "dev " + dev.username,
-        iconURL: dev.displayAvatarURL()
-    })
+        .setImage(img)
+        .setTimestamp()
+        .setFooter({
+            text: "dev " + dev.username,
+            iconURL: dev.displayAvatarURL()
+        })
 
     const selectMenu = new StringSelectMenuBuilder()
-    .setCustomId("select")
-    .setPlaceholder("Select a manga")
-    .addOptions(
-        mangas.map((manga) => {
-            return new StringSelectMenuOptionBuilder()
-            .setLabel(manga.name_manga.replaceAll("-", " "))
-            .setValue(String(manga.id_manga))
-            .setDescription(manga.synopsis.split(" ").slice(0, 10).join(" ") + " ...")
+        .setCustomId("select")
+        .setPlaceholder("Select a manga")
+        .addOptions(
+            mangas.map((manga) => {
+                return new StringSelectMenuOptionBuilder()
+                    .setLabel(manga.name_manga.replaceAll("-", " "))
+                    .setValue(String(manga.id_manga))
+                    .setDescription(manga.synopsis.split(" ").slice(0, 10).join(" ") + " ...")
             }
+            )
         )
-    )
 
     const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)
     // .addComponents(leftButton, rightButton)
@@ -330,36 +330,122 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
     collector.on("collect", async (i) => {
 
         const value = i.values[0];
-        
+
         const manga = mangas.find((manga) => manga.id_manga === parseInt(value));
         const img = (await BDD.getImgFromTest(manga.name_manga!))?.publicUrl ?? null;
         // console.log(img)
         const newEmbed = new EmbedBuilder()
-        .setTitle(manga?.name_manga.replaceAll("-", " "))
-        .setDescription(`
+            .setTitle(manga?.name_manga.replaceAll("-", " "))
+            .setDescription(`
             ***chapitre n°${manga?.chapitre_manga}***
             description:
             ${manga?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
         `)
-        .setURL(`https://anime-sama.fr/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc":""}/vf/`)
-        .setTimestamp()
-        .setImage(img)
+            .setURL(`https://anime-sama.fr/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
+            .setTimestamp()
+            .setImage(img)
 
         await i.update({ embeds: [newEmbed] });
     });
 }
 
-// export async function reloadOptionCmd(client:Client):Promise<void>{
-    
-//     await client.application?.commands.fetch().then(async (commands) => {
-//         commands.forEach(async (command) => {
-//             await command.delete();
-//         });
-//     });
+function upperCaseFirstLetter(str: string): string {
+    const tab = str.split("-");
+    for (let i = 0; i < tab.length; i++) {
+        const firstLetter = tab[i].charAt(0).toUpperCase();
+        const restOfString = tab[i].slice(1).toLowerCase();
+        tab[i] = firstLetter + restOfString;
+    }
+    return tab.join("%20");
+}
 
-    
-//     client.application?.commands.set(Commands);
-//     console.log("Commands reloaded");
-// }
 
+
+export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
+    const RELOUDEMERDE = new Map<string, string>()
+    .set("hunter-x-hunter", "Hunter%20x%20Hunter")
+    .set("kaiju-n8", "Kaiju%20N%20°8")
+    .set("shangri-la-frontier", "Shangri-La%20Frontier")
+    .set("the-beginning-after-the-end", "The%20Beginning%20After%20the%20End")
+    .set("the-max-level-player-100th-regression", "The%20Max-Level%20Player's%20100th%20Regression")
+    .set("unordinary", "unOrdinary")
+    .set("valkyrie-apocalypse", "Valkyrie%20apocalypse")
+
+    let name = "";
+    if (RELOUDEMERDE.has(mangas.name_manga!)) name = RELOUDEMERDE.get(mangas.name_manga!)!;
+    else name = upperCaseFirstLetter(mangas.name_manga!);
+    const url = `https://anime-sama.fr/s2/scans/${name}/${chap}/`;
+
+    const res = new jsPDF();
+    res.deletePage(1); // supprime la première page vide
+
+    for (let i = 1; i < 100; i++) {
+        // console.log(i);
+        const urlImg = `${url}${i}.jpg`;
+        console.log(urlImg);
+        const response = await fetch(urlImg, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'image/png',
+            },
+        });
+        
+        if (response.status === 404) break;
+        const img = await response.arrayBuffer().then((buffer: ArrayBuffer) =>  new Uint8Array(buffer));
+        
+        const size = getJpegSize(img);
+        if (size === null) {
+            console.log("pb avec l'image: ", urlImg);
+            break;
+        }
+
+        if (size.width > 14400 || size.height > 14400) {
+            size.width = size.width / 8;
+            size.height = size.height / 8;
+        }
+
+        if (size.width > size.height) {
+            res.addPage([size.height, size.width], "landscape");
+            res.addImage(img, "JPEG", 0, 0, size.width, size.height); 
+        }
+        else {
+            res.addPage([size.height, size.width], "portrait");
+            res.addImage(img, "JPEG", 0, 0, size.width, size.height);
+        }
+    }
+    res.save(`./test/${mangas.name_manga}-${chap}.pdf`);
+}
+
+function getJpegSize(buffer: Uint8Array): { width: number, height: number } | null {
+    let offset = 2;
+    while (offset < buffer.length) {
+        if (buffer[offset] !== 0xFF) return null;
+        const marker = buffer[offset + 1];
+        const length = (buffer[offset + 2] << 8) + buffer[offset + 3];
+
+        // SOF0, SOF2, etc.
+        if ([0xC0, 0xC2].includes(marker)) {
+            const height = (buffer[offset + 5] << 8) + buffer[offset + 6];
+            const width = (buffer[offset + 7] << 8) + buffer[offset + 8];
+            return { width, height };
+        }
+
+        offset += 2 + length;
+    }
+    return null;
+}
+
+(async () => {
+    // const manga = await BDD.getMangas() ?? [];
+    // for (let i = 0; i < manga.length; i++) {
+    //     try { await getImgToPdf(manga[i], manga[i].chapitre_manga!);}
+            
+    //     catch (error) {
+    //         console.error(error);
+    //         console.error(manga[i].name_manga);
+    //     }
+    // }   
+
+    await getImgToPdf({name_manga: "one-piece", chapitre_manga: 1147}, 1147);
+})()
 
