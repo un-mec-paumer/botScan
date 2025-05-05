@@ -6,7 +6,7 @@ import { AddAlerte } from "./Command/AddAlerte";
 import { SupAlerte } from "./Command/SupAlerte";
 import { Site } from "./Command/Site";
 import { Liste } from "./Command/Liste";
-import { Find } from "./Command/find";
+import { Find } from "./Command/Find";
 // import { PlaySong } from "./Command/PlaySong";
 // import { StopSong } from "./Command/StopSong";
 
