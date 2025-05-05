@@ -5,6 +5,7 @@ import * as cheerio from 'cheerio';
 import puppeteer, { Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
 import { jsPDF, jsPDFAPI } from "jspdf";
+import e from "express";
 
 
 dotenv.config()
@@ -142,7 +143,7 @@ async function finder(manga: Manga, client: Client, page: Page) /*Promise<boolea
 }
 
 
-export async function finderAll(client: Client) {
+export async function finderAll(client: Client): Promise<boolean> {
     console.log("finderAll");
     const time = new Date();
     console.log("temps: ", (time.getHours().toString().split("").length === 1 ? "0" : "") + time.getHours() + "h" + (time.getMinutes().toString().split("").length === 1 ? "0" : "") + time.getMinutes() + "min");
@@ -150,8 +151,9 @@ export async function finderAll(client: Client) {
     let { browser, page } = await initBrowser();
     const mangas = await BDD.getMangas() ?? [];
 
-    // console.log(mangas);
+    const resultRes = [];
     for (const manga of mangas) {
+        let res = false;
         try {
             if (browser.connected === false || page.isClosed() === true) {
                 console.log("reconnexion");
@@ -159,7 +161,7 @@ export async function finderAll(client: Client) {
                 browser = browser2;
                 page = page2;
             }
-            const res = await finder(manga, client, page);
+            res = await finder(manga, client, page);
             // if(!res) console.log(`Pas de nouveau chapitre pour ${manga.name_manga}`);
         } catch (error) {
             console.error("pb avec ça: ");
@@ -169,14 +171,16 @@ export async function finderAll(client: Client) {
             browser = browser2;
             page = page2;
 
-            const res = await finder(manga, client, page);
+            res = await finder(manga, client, page);
         }
+        resultRes.push(res);
     }
 
 
     await page.close();
     // await browser.disconnect();
     await browser.close();
+    return resultRes.includes(true);
 }
 //* inutilisé
 export function sauvegarder(data: string/*, path:PathOrFileDescriptor*/): boolean {
@@ -364,7 +368,7 @@ function upperCaseFirstLetter(str: string): string {
 export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
     const RELOUDEMERDE = new Map<string, string>()
     .set("hunter-x-hunter", "Hunter%20x%20Hunter")
-    .set("kaiju-n8", "Kaiju%20N%20°8")
+    .set("kaiju-n8", "Kaiju%20N°8")
     .set("shangri-la-frontier", "Shangri-La%20Frontier")
     .set("the-beginning-after-the-end", "The%20Beginning%20After%20the%20End")
     .set("the-max-level-player-100th-regression", "The%20Max-Level%20Player's%20100th%20Regression")
@@ -376,7 +380,14 @@ export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
     else name = upperCaseFirstLetter(mangas.name_manga!);
     const url = `https://anime-sama.fr/s2/scans/${name}/${chap}/`;
 
-    const res = new jsPDF();
+    const res = new jsPDF({
+        orientation: "landscape",
+        unit: "px",
+        format: [14400, 21600],
+        putOnlyUsedFonts: true,
+        floatPrecision: 16,
+        compress: true,
+    });
     res.deletePage(1); // supprime la première page vide
 
     for (let i = 1; i < 100; i++) {
@@ -390,62 +401,89 @@ export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
             },
         });
         
-        if (response.status === 404) break;
-        const img = await response.arrayBuffer().then((buffer: ArrayBuffer) =>  new Uint8Array(buffer));
+        if (response.status === 404 && i !== 1) break;
+        const img = await response.arrayBuffer().then((buffer: ArrayBuffer) => {console.log(buffer) ; return new Uint8Array(buffer)});
         
-        const size = getJpegSize(img);
+        const size = getImageSize(img);
+        console.log(size);
         if (size === null) {
             console.log("pb avec l'image: ", urlImg);
             break;
         }
-
-        if (size.width > 14400 || size.height > 14400) {
-            size.width = size.width / 8;
-            size.height = size.height / 8;
-        }
-
-        if (size.width > size.height) {
-            res.addPage([size.height, size.width], "landscape");
-            res.addImage(img, "JPEG", 0, 0, size.width, size.height); 
-        }
-        else {
-            res.addPage([size.height, size.width], "portrait");
-            res.addImage(img, "JPEG", 0, 0, size.width, size.height);
+        
+        if (size.type !== "AVI") {
+            if (size.width > 14400 || size.height > 14400) {
+                size.width = size.width / 8;
+                size.height = size.height / 8;
+            }
+    
+            if (size.width > size.height) {
+                res.addPage([size.height, size.width], "landscape");
+                res.addImage(img, size.type, 0, 0, size.width, size.height, undefined, 'FAST'); 
+            }
+            else {
+                res.addPage([size.height, size.width], "portrait");
+                res.addImage(img, size.type, 0, 0, size.width, size.height, undefined, 'FAST');
+            }
         }
     }
     res.save(`./test/${mangas.name_manga}-${chap}.pdf`);
 }
 
-function getJpegSize(buffer: Uint8Array): { width: number, height: number } | null {
-    let offset = 2;
-    while (offset < buffer.length) {
-        if (buffer[offset] !== 0xFF) return null;
-        const marker = buffer[offset + 1];
-        const length = (buffer[offset + 2] << 8) + buffer[offset + 3];
-
-        // SOF0, SOF2, etc.
-        if ([0xC0, 0xC2].includes(marker)) {
-            const height = (buffer[offset + 5] << 8) + buffer[offset + 6];
-            const width = (buffer[offset + 7] << 8) + buffer[offset + 8];
-            return { width, height };
-        }
-
-        offset += 2 + length;
+function getImageSize(buffer: Uint8Array): { width: number, height: number, type: string } | null {
+    // Vérifier PNG d'abord (signature PNG)
+    if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
+        const width = (buffer[16] << 24) + (buffer[17] << 16) + (buffer[18] << 8) + buffer[19];
+        const height = (buffer[20] << 24) + (buffer[21] << 16) + (buffer[22] << 8) + buffer[23];
+        return { width, height, type: "PNG" };
     }
+
+    // Vérifier JPEG (signature JPEG)
+    if (buffer[0] === 0xFF && buffer[1] === 0xD8) {
+        let offset = 2;
+        while (offset < buffer.length) {
+            if (buffer[offset] !== 0xFF) return null;
+            const marker = buffer[offset + 1];
+            const length = (buffer[offset + 2] << 8) + buffer[offset + 3];
+
+            if ([0xC0, 0xC2].includes(marker)) {
+                const height = (buffer[offset + 5] << 8) + buffer[offset + 6];
+                const width = (buffer[offset + 7] << 8) + buffer[offset + 8];
+                return { width, height, type: "JPEG" };
+            }
+
+            offset += 2 + length;
+        }
+    }
+
+    // Vérifier AVI (signature RIFF....AVI )
+    if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46) {
+        if (buffer[8] === 0x41 && buffer[9] === 0x56 && buffer[10] === 0x49 && buffer[11] === 0x20) {
+            // Normalement, l'info width/height est dans le 'strf' chunk, c'est plus compliqué.
+            // Mais on peut déjà dire que c'est un AVI.
+            return { width: 0, height: 0, type: "AVI" };
+        } else {
+            // Ce n'est pas un AVI valide.
+            return null;
+        }
+    }
+
     return null;
 }
 
-(async () => {
-    // const manga = await BDD.getMangas() ?? [];
-    // for (let i = 0; i < manga.length; i++) {
-    //     try { await getImgToPdf(manga[i], manga[i].chapitre_manga!);}
-            
-    //     catch (error) {
-    //         console.error(error);
-    //         console.error(manga[i].name_manga);
-    //     }
-    // }   
 
-    await getImgToPdf({name_manga: "one-piece", chapitre_manga: 1147}, 1147);
-})()
+
+// (async () => {
+//     // const manga = await BDD.getMangas() ?? [];
+//     // for (let i = 0; i < manga.length; i++) {
+//     //     try { await getImgToPdf(manga[i], manga[i].chapitre_manga!);}
+            
+//     //     catch (error) {
+//     //         console.error(error);
+//     //         console.error(manga[i].name_manga);
+//     //     }
+//     // }   
+
+//     await getImgToPdf({name_manga: "magic-emperor", chapitre_manga: 587}, 587);
+// })()
 
