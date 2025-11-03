@@ -6,5 +6,6 @@ docker-build:
 	@echo "building docker image..."
 	docker build -t bot-scan:latest ./
 
-docker-run:	@echo "running docker image..."
+docker-run:	
+	@echo "running docker image..."
 	docker compose up -d
