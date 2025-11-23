@@ -1,0 +1,22 @@
+{
+  "name": "botmanager",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "start": "vite preview"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.3",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vue-tsc": "^1.8.5"
+  }
+}
