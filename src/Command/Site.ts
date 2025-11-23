@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client } from "discord.js";
+import { Client, ChatInputCommandInteraction } from "discord.js";
 
 export const Site: Command = {
     name: "site",
@@ -8,7 +8,7 @@ export const Site: Command = {
         fr: "site de scan"
     },
     // type: "CHAT_INPUT",
-    run: async (client: Client, interaction: CommandInteraction) => {
+    run: async (client: Client, interaction: ChatInputCommandInteraction) => {
         // console.log(interaction.options.get("site")?.value);
         interaction.followUp({
             ephemeral: true,

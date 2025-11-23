@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client } from "discord.js";
+import { Client, ChatInputCommandInteraction } from "discord.js";
 import { BDD } from "../supabase";
 import { getEmbedListeMangas } from "../function";
 
@@ -12,7 +12,7 @@ export const ListeManga: Command = {
     },
     // type: "CHAT_INPUT",
     options: [],
-    run: async (client: Client, interaction: CommandInteraction) => {
+    run: async (client: Client, interaction: ChatInputCommandInteraction) => {
         // console.log("Hello world!");
         // console.log(interaction.user.id);
 

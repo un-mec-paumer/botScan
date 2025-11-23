@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { BDD } from "../supabase";
 import dotenv from "dotenv";
 
@@ -22,11 +22,11 @@ export const SupManga: Command = {
             },
         }
     ],
-    run: async (client: Client, interaction: CommandInteraction) => {
+    run: async (client: Client, interaction: ChatInputCommandInteraction) => {
         // console.log("Hello world!");
 
         //console.log(interaction.options);
-        const nom = interaction.options.get("name")?.value
+        const nom = interaction.options.getString("name", true) 
                     ?.toString().replaceAll(" ", "-").toLowerCase();
         dotenv.config();
 

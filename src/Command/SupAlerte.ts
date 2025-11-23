@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
+import { Client, ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { BDD } from "../supabase";
 
 export const SupAlerte: Command = {
@@ -21,8 +21,8 @@ export const SupAlerte: Command = {
             },
         }
     ],
-    run: async (client: Client, interaction: CommandInteraction) => {
-        const name = interaction.options.get("name")?.value
+    run: async (client: Client, interaction: ChatInputCommandInteraction) => {
+        const name = interaction.options.getString("name", true)
                     ?.toString().toLowerCase().replaceAll(" ", "-");
 
         const manga = await BDD.getManga(name!);

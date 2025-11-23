@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client } from "discord.js";
+import { Client, ChatInputCommandInteraction } from "discord.js";
 import { BDD } from "../supabase";
 import { getEmbedListeMangas } from "../function";
 
@@ -10,7 +10,7 @@ export const Liste: Command = {
         fr: "Liste de tout les mangas"
     },
 
-    run: async (client: Client, interaction: CommandInteraction) => {
+    run: async (client: Client, interaction: ChatInputCommandInteraction) => {
         // interaction.followUp({ content: "Voici la liste de tous les mangas disponibles avec le bot actuellement" });
         const mangas = await BDD.getMangas();
         

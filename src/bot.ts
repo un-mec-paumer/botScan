@@ -32,17 +32,6 @@ const client = new Client({
     ]
 });
 
-
-// client.player = new Player(client, {
-//     ytdlOptions: {
-//         filter: "audioonly",
-//         quality: "highestaudio",
-//         highWaterMark: 1 << 25
-//     }
-// })
-
-// client.player.extractors.loadDefault()
-
 ready(client);
 interactionCreate(client);
 messageCreate(client);
@@ -87,6 +76,7 @@ async function handleConnectionValidation() {
 
 const app = Express();
 app.use(Express.json());
+
 
 app.use((req:Request, res:Response, next:NextFunction ) => {
     res.header('Access-Control-Allow-Origin', "*");

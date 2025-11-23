@@ -1,5 +1,5 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType, ApplicationCommandOptionChoiceData } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandOptionType, ApplicationCommandOptionChoiceData, ChatInputCommandInteraction } from "discord.js";
 import { BDD } from "../supabase";
 import { downloadImg, tabin, getCherrioText, initBrowser} from "../function";
 import fs from "fs";
@@ -21,20 +21,6 @@ export const AddManga: Command = {
             descriptionLocalizations: {
                 fr: "Nom du manga"
             },
-            // choices: fs.readFileSync("src/Command/test.txt", "utf-8").split("\n").map(manga => {
-            //     return {
-            //         name: manga,
-            //         value: manga
-            //     }
-            // }).filter(manga => manga.name !== "" && manga.name !== "\r")
-            // choices: (async() => {
-            //     const res = await BDD.getMangas() as string[];
-            //     // const data = await res.json();
-            //     return res.map((manga: string) => ({
-            //         name: manga,
-            //         value: manga
-            //     })) as readonly ApplicationCommandOptionChoiceData<string>[];
-            // })()
         },
         {
             name: "chapitre",
@@ -46,22 +32,11 @@ export const AddManga: Command = {
                 fr: "numero du dernier chapitre"
             },
         },
-        // {
-        //     name: "page",
-        //     description: "is the manga on multiple pages or not",
-        //     type: ApplicationCommandOptionType.String,
-        //     required: true,
-        //     autocomplete: true,
-        //     descriptionLocalizations: {
-        //         fr: "le manga est t'il sur plusieurs pages ou non"
-        //     },
-            
-        // }
     ],
-    run: async (client: Client, interaction: CommandInteraction) => {
+    run: async (client: Client, interaction: ChatInputCommandInteraction) => {
         // console.log("Hello world!");
 
-        const nom = interaction.options.get("name")?.value
+        const nom = interaction.options.getString("name", true)
                     ?.toString().toLowerCase().replaceAll(" ", "-");
         //console.log(mangas.find(manga => manga.name === nom));
 
