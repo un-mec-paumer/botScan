@@ -16,23 +16,32 @@ export function randomString() {
 }
 
 class supabase{
-    private url:string
-    private key:string
+    private url!: string;
+    private key!: string;
 
-    private client:SupabaseClient;
+    private client!: SupabaseClient;
+
+    public static instance:supabase;
 
     constructor(){
-        dotenv.config()
-        this.url = process.env.SUPABASE_URL!
-        this.key = process.env.SUPABASE_KEY!
+        if (supabase.instance !== undefined || supabase.instance !== null ) {
+            return supabase.instance;
+        } else {
+            supabase.instance = this;
 
-        //console.log(this.url, this.key)
-        this.client = createClient(this.url, this.key)
+            dotenv.config()
+            this.url = process.env.SUPABASE_URL!
+            this.key = process.env.SUPABASE_KEY!
 
-        this.client.auth.signInWithPassword({
-            email: process.env.SUPABASE_EMAIL!,
-            password: process.env.SUPABASE_PASSWORD!
-        })
+            //console.log(this.url, this.key)
+            this.client = createClient(this.url, this.key)
+
+            this.client.auth.signInWithPassword({
+                email: process.env.SUPABASE_EMAIL!,
+                password: process.env.SUPABASE_PASSWORD!
+            })
+            return this;
+        }
     }
 
     async getMangas(){
@@ -327,7 +336,3 @@ class supabase{
 }
 
 export const BDD = new supabase()
-
-// BDD.getMangas().then((data) => {
-//     console.log(data)
-// })
