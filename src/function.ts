@@ -74,7 +74,7 @@ export async function initBrowser() {
 async function finder(manga: Manga, client: Client, page: Page) /*Promise<boolean>*/ {
 
     const RELOUDEMERDE = ["one-piece"]
-    const urlBase = "https://anime-sama.org/catalogue/";
+    const urlBase = "https://anime-sama.eu/catalogue/";
     const chap = String(manga.chapitre_manga).replace(".", "-");
     const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc" : ""}/vf/`;
     // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
@@ -296,7 +296,7 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
 
     const embed = new EmbedBuilder()
         .setTitle(mangas[0].name_manga.replaceAll("-", " "))
-        .setURL(`https://anime-sama.fr/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
+        .setURL(`https://anime-sama.eu/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
         .setDescription(`
         ***chapitre n°${mangas[0]?.chapitre_manga}***
         description:
@@ -345,7 +345,7 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
             description:
             ${manga?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
         `)
-            .setURL(`https://anime-sama.fr/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
+            .setURL(`https://anime-sama.eu/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
             .setTimestamp()
             .setImage(img)
 
@@ -378,7 +378,7 @@ export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
     let name = "";
     if (RELOUDEMERDE.has(mangas.name_manga!)) name = RELOUDEMERDE.get(mangas.name_manga!)!;
     else name = upperCaseFirstLetter(mangas.name_manga!);
-    const url = `https://anime-sama.fr/s2/scans/${name}/${chap}/`;
+    const url = `https://anime-sama.eu/s2/scans/${name}/${chap}/`;
 
     const res = new jsPDF({
         orientation: "landscape",
