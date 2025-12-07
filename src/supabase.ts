@@ -24,10 +24,11 @@ class supabase{
     public static instance:supabase;
 
     constructor(){
-        if (supabase.instance !== undefined || supabase.instance !== null ) {
-            return supabase.instance;
-        } else {
-            supabase.instance = this;
+        // if (supabase.instance !== undefined || supabase.instance !== null ) {
+            
+        //     return supabase.instance;
+        // } else {
+            // supabase.instance = this;
 
             dotenv.config()
             this.url = process.env.SUPABASE_URL!
@@ -41,7 +42,8 @@ class supabase{
                 password: process.env.SUPABASE_PASSWORD!
             })
             return this;
-        }
+        // }
+
     }
 
     async getMangas(){
