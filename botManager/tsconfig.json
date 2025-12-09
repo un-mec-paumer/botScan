@@ -27,7 +27,7 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "html/script/*.ts"
-  ],
+, "html/script/signIn.js", "html/script/profil.js", "html/script/Manga.js", "html/script/main.js", "html/script/contact.js", "html/script/addmanga.js"  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

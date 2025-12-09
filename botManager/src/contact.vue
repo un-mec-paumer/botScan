@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { api } from './Api.ts';
+    import { api } from './Api';
     import barreTache from './components/barreTache.vue';
     import { ref } from 'vue';
 

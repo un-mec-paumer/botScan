@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "webpack --config webpack.config.cjs",
     "start": "vite preview"
   },
   "dependencies": {
@@ -14,9 +14,15 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.3",
-    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/compiler-sfc": "^3.5.25",
+    "copy-webpack-plugin": "^13.0.1",
+    "css-loader": "^7.1.2",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.6.5",
+    "style-loader": "^4.0.0",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5",
-    "vue-tsc": "^1.8.5"
+    "vue-loader": "^17.4.2",
+    "vue-tsc": "^3.1.8",
+    "webpack": "^5.103.0"
   }
 }

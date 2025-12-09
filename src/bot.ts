@@ -9,6 +9,7 @@ import { BDD } from "./supabase";
 import mangaRouter from "./routes/manga";
 import subRouter from "./routes/subsribe";
 import userRouter from "./routes/user";
+import path from "path";
 // import { Player } from "discord-player";
 
 dotenv.config()
@@ -47,7 +48,7 @@ app.use(Express.json());
 
 
 app.use((req:Request, res:Response, next:NextFunction ) => {
-    res.header('Access-Control-Allow-Origin', "*");
+    res.header('Access-Control-Allow-Origin', "same-origin");
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
@@ -61,20 +62,12 @@ app.listen(PORT, () => {
     console.log("Server started! Listening on port " + PORT);
 });
 
-
+app.use(Express.static(path.join(__dirname, 'public')));
 
 app.get("/", (req: Request, res: Response) => {
-    res.send(`
-        <div style="flex-direction: column; text-align: center;">
-            <h1>gros troll</h1>
-            <img src="https://steamuserimages-a.akamaihd.net/ugc/1728794025257896721/642346AD0CC7D58B5BE103F05108F057427DD163/" alt="troll" width="300px">
-
-            <p> oui c un troll :) </p>
-        </div>
-
-    `);
+    res.sendFile(__dirname + "/public/html/index.html");
 });
 
-app.use("/manga", mangaRouter);
+app.use("/mangas", mangaRouter);
 app.use("/subs", subRouter);
 app.use("/user", userRouter);
