@@ -68,7 +68,7 @@ export const AddManga: Command = {
 
         //console.log("verif ");
         // const page = interaction.options.get("page")?.value;
-        const url = `https://anime-sama.eu/catalogue/${nom}/`;
+        const url = `https://anime-sama.si/catalogue/${nom}/`;
 
         const {browser, page: page2} = await initBrowser();
         const $ = await getCherrioText(url, page2);

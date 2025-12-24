@@ -74,7 +74,7 @@ export async function initBrowser() {
 async function finder(manga: Manga, client: Client, page: Page) /*Promise<boolean>*/ {
 
     const RELOUDEMERDE = ["one-piece"]
-    const urlBase = "https://anime-sama.eu/catalogue/";
+    const urlBase = "https://anime-sama.si/catalogue/";
     const chap = String(manga.chapitre_manga).replace(".", "-");
     const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc" : ""}/vf/`;
     // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
