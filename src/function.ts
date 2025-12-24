@@ -296,7 +296,7 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
 
     const embed = new EmbedBuilder()
         .setTitle(mangas[0].name_manga.replaceAll("-", " "))
-        .setURL(`https://anime-sama.eu/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
+        .setURL(`https://anime-sama.si/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
         .setDescription(`
         ***chapitre n°${mangas[0]?.chapitre_manga}***
         description:
@@ -345,7 +345,7 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
             description:
             ${manga?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
         `)
-            .setURL(`https://anime-sama.eu/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
+            .setURL(`https://anime-sama.si/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
             .setTimestamp()
             .setImage(img)
 
