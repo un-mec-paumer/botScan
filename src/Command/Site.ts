@@ -12,7 +12,7 @@ export const Site: Command = {
         // console.log(interaction.options.get("site")?.value);
         interaction.followUp({
             ephemeral: true,
-            content: "https://anime-sama.si/"
+            content: "https://anime-sama.tv/"
         });
     },
 };

@@ -7,7 +7,7 @@ const mangaRouter = Router();
 
 mangaRouter.get("/", async (req: Request, res: Response) => {
     const data = await BDD.getMangas();
-    res.send(data);
+    res.send(data?.map((e) => e.toJSON()) );
 });
 
 mangaRouter.post("/mangaImg", async (req: Request, res: Response) => {
@@ -38,12 +38,12 @@ mangaRouter.post("/mangasByToken", async (req: Request, res: Response) => {
 
 mangaRouter.post("/mangaByid", async (req: Request, res: Response) => {
     const data = await BDD.getMangaById(parseInt(req.body.id));
-    res.send(data);
+    res.send(data?.map((e) => e.toJSON()) );
 });
 
 mangaRouter.post("/", async (req: Request, res: Response) => {
     const data = await BDD.getManga(req.body.name);
-    res.send(data);
+    res.send(data?.map((e) => e.toJSON()) );
 });
 
 mangaRouter.post("/addManga", async (req: Request, res: Response) => {

@@ -5,19 +5,11 @@ import * as cheerio from 'cheerio';
 import puppeteer, { Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
 import { jsPDF, jsPDFAPI } from "jspdf";
-import e from "express";
-
+import Manga from "./model/manga";
 
 dotenv.config()
 
-type Manga = {
-    id_manga?: number,
-    name_manga?: string,
-    chapitre_manga?: number,
-    page?: boolean,
-    img?: string,
-    synopsis?: string
-};
+
 
 const userAgents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -45,12 +37,12 @@ export async function initBrowser() {
             '--disable-setuid-sandbox',
             '--disable-blink-features=AutomationControlled',
             '--disable-extensions',
-            '--enable-gpu'
+            // '--enable-gpu'
         ],
         executablePath: process.env.CHROME_PATH,
         // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         // ignoreHTTPSErrors: true,
-        protocolTimeout: 60000,
+        // protocolTimeout: 60000,
     });
 
     const page = await browser.newPage();
@@ -66,27 +58,15 @@ export async function initBrowser() {
     });
 
     await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
-    await page.setViewport({ width: 1920, height: 1080 });
+    // await page.setViewport({ width: 1920, height: 1080 });
     // await page.setDefaultNavigationTimeout(0);
     return { browser, page }
 }
 
 async function finder(manga: Manga, client: Client, page: Page) /*Promise<boolean>*/ {
 
-    const RELOUDEMERDE = ["one-piece"]
-    const urlBase = "https://anime-sama.si/catalogue/";
-    const chap = String(manga.chapitre_manga).replace(".", "-");
-    const url: string = `${urlBase + manga.name_manga}/scan${RELOUDEMERDE.includes(manga.name_manga!) ? "_noir-et-blanc" : ""}/vf/`;
-    // const url: string = `${urlBase + manga.name_manga}/chapitre-1099-vf/1000000/`;
-    // console.log(url);
-
-
-    // console.log(manga.name_manga);
-
-
-
     try {
-        const $ = await getCherrioText(url, page);
+        const $ = await getCherrioText(manga.getLink(), page);
         // console.log($.html());
         const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
             const nbChap = parseFloat(element!.split(" ")[1])
@@ -100,14 +80,14 @@ async function finder(manga: Manga, client: Client, page: Page) /*Promise<boolea
             return false;
         }
 
-        await BDD.updateChapitre(manga.name_manga!, newChap[newChap.length - 1]);
-        const userBDD = await BDD.getLien(manga.id_manga!);
+        await BDD.updateChapitre(manga.name_manga, newChap[newChap.length - 1]);
+        const userBDD = await BDD.getLien(manga.id_manga);
 
-        const img = (await BDD.getImgFromTest(manga.name_manga!)).publicUrl ?? null;
+        const img = (await BDD.getImgFromTest(manga.name_manga)).publicUrl ?? null;
 
         const message = new EmbedBuilder()
-            .setTitle(manga.name_manga!.replaceAll("-", " "))
-            .setURL(url)
+            .setTitle(manga.name_manga.replaceAll("-", " "))
+            .setURL(manga.getLink())
             .setImage(img)
             .setFooter({
                 text: "dev " + (await client.users.fetch(process.env.DEV!)).username,
@@ -118,14 +98,14 @@ async function finder(manga: Manga, client: Client, page: Page) /*Promise<boolea
             const userDiscord = await client.users.fetch(user.id_user);
 
             const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
-            if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
+            // if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
 
             if (userDiscord === null) return;
             if (userDiscord.dmChannel === null) await userDiscord.createDM();
             let messageText = '';
-            if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga!.replaceAll("-", " ")} est sorti !\n${url}`;
-            else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
-            else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga!.replaceAll("-", " ")} sont sortis !\n${url}`;
+            if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga.replaceAll("-", " ")} est sorti !\n${manga.getLink()}`;
+            else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${manga.getLink()}`;
+            else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${manga.getLink()}`;
 
             message.setDescription(messageText);
             console.log(messageText);
@@ -288,19 +268,18 @@ export async function endErasmus(client: Client): Promise<void> {
 }
 // endErasmus();
 
-export async function getEmbedListeMangas(mangas: any[], interaction: CommandInteraction): Promise<void> {
-    const RELOUDEMERDE = ["one-piece"]
+export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandInteraction): Promise<void> {
     const dev = await interaction.client.users.fetch(process.env.DEV!);
     mangas = mangas.sort((a, b) => a.name_manga.localeCompare(b.name_manga));
-    const img = (await BDD.getImgFromTest(mangas[0].name_manga!)).publicUrl ?? null;
+    const img = (await BDD.getImgFromTest(mangas[0].name_manga)).publicUrl ?? null;
 
     const embed = new EmbedBuilder()
         .setTitle(mangas[0].name_manga.replaceAll("-", " "))
-        .setURL(`https://anime-sama.si/catalogue/${mangas[0].name_manga}/scan${RELOUDEMERDE.includes(mangas[0].name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
+        .setURL(mangas[0].getLink())
         .setDescription(`
-        ***chapitre n°${mangas[0]?.chapitre_manga}***
+        ***chapitre n°${mangas[0].chapitre_manga}***
         description:
-        ${mangas[0]?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}   
+        ${mangas[0].synopsis.split(" ").slice(0, 30).join(" ") + " ..."}   
     `)
         .setImage(img)
         .setTimestamp()
@@ -336,16 +315,17 @@ export async function getEmbedListeMangas(mangas: any[], interaction: CommandInt
         const value = i.values[0];
 
         const manga = mangas.find((manga) => manga.id_manga === parseInt(value));
-        const img = (await BDD.getImgFromTest(manga.name_manga!))?.publicUrl ?? null;
+        if (!manga) return;
+        const img = (await BDD.getImgFromTest(manga.name_manga))?.publicUrl ?? null;
         // console.log(img)
         const newEmbed = new EmbedBuilder()
-            .setTitle(manga?.name_manga.replaceAll("-", " "))
+            .setTitle(manga.name_manga.replaceAll("-", " "))
             .setDescription(`
-            ***chapitre n°${manga?.chapitre_manga}***
+            ***chapitre n°${manga.chapitre_manga}***
             description:
-            ${manga?.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
+            ${manga.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
         `)
-            .setURL(`https://anime-sama.si/catalogue/${manga?.name_manga}/scan${RELOUDEMERDE.includes(manga?.name_manga!) ? "_noir-et-blanc" : ""}/vf/`)
+            .setURL(manga.getLink())
             .setTimestamp()
             .setImage(img)
 
