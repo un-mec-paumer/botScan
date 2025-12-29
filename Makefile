@@ -8,7 +8,7 @@ docker-build:
 
 docker-run:	
 	@echo "running docker image..."
-	docker compose up -d
+	docker compose up --build -d
 
 docker-stop:
 	@echo "stopping docker image..."

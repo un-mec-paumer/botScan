@@ -63,8 +63,9 @@ export async function initBrowser() {
     return { browser, page }
 }
 
-async function finder(manga: Manga, client: Client, page: Page) /*Promise<boolean>*/ {
+async function finder(manga: Manga, client: Client, page: Page): Promise<boolean> {
 
+    
     try {
         const $ = await getCherrioText(manga.getLink(), page);
         // console.log($.html());

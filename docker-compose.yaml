@@ -4,7 +4,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - .:/botScan
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src
+          target: /app/src
+          ignore: 
+            - ./node_modules/
+        - action: rebuild
+          path: package.json
+          target: /app/package.json
+
     ports:
       - "3003:3003"
