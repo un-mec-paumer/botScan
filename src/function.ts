@@ -2,7 +2,7 @@ import { ActionRowBuilder, Client, CommandInteraction, ComponentType, EmbedBuild
 import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
-import puppeteer, { Page } from 'puppeteer-core';
+import puppeteer, { Browser, Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
 import { jsPDF, jsPDFAPI } from "jspdf";
 import Manga from "./model/manga";
@@ -34,15 +34,15 @@ export async function initBrowser() {
         headless: true,
         args: [
             '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-blink-features=AutomationControlled',
-            '--disable-extensions',
+            // '--disable-setuid-sandbox',
+            // '--disable-blink-features=AutomationControlled',
+            // '--disable-extensions',
             // '--enable-gpu'
         ],
         executablePath: process.env.CHROME_PATH,
         // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         // ignoreHTTPSErrors: true,
-        // protocolTimeout: 60000,
+        protocolTimeout: 60000,
     });
 
     const page = await browser.newPage();
@@ -57,29 +57,31 @@ export async function initBrowser() {
         }
     });
 
-    await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
     // await page.setViewport({ width: 1920, height: 1080 });
     // await page.setDefaultNavigationTimeout(0);
     return { browser, page }
 }
 
-async function finder(manga: Manga, client: Client, page: Page): Promise<boolean> {
+async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
 
     
     try {
-        const $ = await getCherrioText(manga.getLink(), page);
-        // console.log($.html());
-        const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
-            const nbChap = parseFloat(element!.split(" ")[1])
-            return nbChap > manga.chapitre_manga!
-        }).map((element) => { return parseFloat(element!.split(" ")[1]) });
-
-        // console.log(newChap);
-
-        if (newChap.length === 0) {
-            // console.log(`nextUrl : ${nextUrl}`);
-            return false;
-        }
+        const pages: Page[] = await Promise.all(Array(manga.nbSites()).fill(null).map(async () => {
+            const page = await browser.newPage();
+            await page.setRequestInterception(true);
+            page.on('request', (req) => {
+                const resourceType = req.resourceType();
+                const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
+                if (expectedResourceTypes.includes(resourceType)) {
+                    req.abort();
+                } else {
+                    req.continue();
+                }
+            });
+            return page;
+        }));
+        const { tabChap: newChap, linkManga } = await manga.visiteAllSite(pages);
+        if (newChap.length === 0) return false;
 
         await BDD.updateChapitre(manga.name_manga, newChap[newChap.length - 1]);
         const userBDD = await BDD.getLien(manga.id_manga);
@@ -88,7 +90,7 @@ async function finder(manga: Manga, client: Client, page: Page): Promise<boolean
 
         const message = new EmbedBuilder()
             .setTitle(manga.name_manga.replaceAll("-", " "))
-            .setURL(manga.getLink())
+            .setURL(linkManga)
             .setImage(img)
             .setFooter({
                 text: "dev " + (await client.users.fetch(process.env.DEV!)).username,
@@ -104,9 +106,9 @@ async function finder(manga: Manga, client: Client, page: Page): Promise<boolean
             if (userDiscord === null) return;
             if (userDiscord.dmChannel === null) await userDiscord.createDM();
             let messageText = '';
-            if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga.replaceAll("-", " ")} est sorti !\n${manga.getLink()}`;
-            else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${manga.getLink()}`;
-            else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${manga.getLink()}`;
+            if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga.replaceAll("-", " ")} est sorti !\n${linkManga}`;
+            else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
+            else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
 
             message.setDescription(messageText);
             console.log(messageText);
@@ -142,7 +144,7 @@ export async function finderAll(client: Client): Promise<boolean> {
                 browser = browser2;
                 page = page2;
             }
-            res = await finder(manga, client, page);
+            res = await finder(manga, client, browser);
             // if(!res) console.log(`Pas de nouveau chapitre pour ${manga.name_manga}`);
         } catch (error) {
             console.error("pb avec ça: ");
@@ -152,7 +154,7 @@ export async function finderAll(client: Client): Promise<boolean> {
             browser = browser2;
             page = page2;
 
-            res = await finder(manga, client, page);
+            res = await finder(manga, client, browser);
         }
         resultRes.push(res);
     }
@@ -194,6 +196,7 @@ export function tabin(message: string, tab: Array<string>): boolean {
 export async function getCherrioText(url: string, page: Page) {
     try {
         // console.log("url: ", url);
+        await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
         const test = await page.goto(url, {
             waitUntil: 'networkidle2',
             // timeout: 45000
@@ -211,8 +214,6 @@ export async function getCherrioText(url: string, page: Page) {
         }
         // await page.waitForSelector('#selectChapitres');
         const html = await page.content();
-        // console.log(html);
-
         return cheerio.load(html);
     } catch (error) {
         console.error(error);

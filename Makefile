@@ -10,6 +10,10 @@ docker-run:
 	@echo "running docker image..."
 	docker compose up --build -d
 
+dev:
+	@echo "starting development server..."
+	docker compose up --build --watch
+
 docker-stop:
 	@echo "stopping docker image..."
 	docker compose down

@@ -2,8 +2,12 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import { randomInt } from 'crypto'
 import Manga from './model/manga';
-import MangaRelou from './model/mangaRelou';
-import specRelou from './model/specRelou';
+import MangaRelou from './model/manga/mangaRelou';
+import specRelou from './model/manga/specRelou';
+
+import AnimeSama from './model/site/AnimeSama';
+import MangaMoins from './model/site/MangaMoins';
+import MangaPlus from './model/site/MangaPlus';
 
 
 export function randomString() {
@@ -49,12 +53,16 @@ class supabase {
 
     }
 
-    convertAnytoManga(data: any): Manga {
+    private convertAnytoManga(data: any): Manga {
         switch (data.id_manga) {
             case 52:
-                return new MangaRelou(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, new specRelou('noir-et-blanc'));
+                return new MangaRelou(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaMoins(), new MangaPlus()], new specRelou('_noir-et-blanc'));
+            case 64:
+                return new Manga(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaPlus()]);
+            case 70:
+                return new MangaRelou(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaPlus()], new specRelou('-modulo'));   
             default:
-                return new Manga(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis)
+                return new Manga(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama()])
         }
     }
 
