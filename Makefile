@@ -2,11 +2,11 @@ all:
 	@echo "starting build..."
 	npm start
 
-docker-build:
+build:
 	@echo "building docker image..."
 	docker build -t bot-scan:latest ./
 
-docker-run:	
+run:	
 	@echo "running docker image..."
 	docker compose up --build -d
 
