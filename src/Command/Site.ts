@@ -1,5 +1,6 @@
 import { Command } from "../Command";
 import { Client, ChatInputCommandInteraction } from "discord.js";
+import { animeSamaUrl } from "../variables";
 
 export const Site: Command = {
     name: "site",
@@ -12,7 +13,7 @@ export const Site: Command = {
         // console.log(interaction.options.get("site")?.value);
         interaction.followUp({
             ephemeral: true,
-            content: "https://anime-sama.tv/"
+            content: `${animeSamaUrl}/` // Idk if the / is important or not
         });
     },
 };

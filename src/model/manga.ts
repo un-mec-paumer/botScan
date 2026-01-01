@@ -1,6 +1,7 @@
 import { Page } from "puppeteer-core";
 import Site from "./site";
 import { console } from "inspector";
+import { animeSamaUrl } from "../variables";
 export default class Manga {
     public id_manga: number;
     public name_manga: string;
@@ -30,7 +31,7 @@ export default class Manga {
     }
 
     public getBaseURL(): string {
-        return `https://anime-sama.tv/catalogue/${this.name_manga}`;
+        return `${animeSamaUrl}/catalogue/${this.name_manga}`;
     }
 
     public getLink(): string {
