@@ -1,6 +1,5 @@
 import { Page } from "puppeteer-core";
 import Site from "./site";
-import { console } from "inspector";
 import { animeSamaUrl } from "../variables";
 export default class Manga {
     public id_manga: number;
