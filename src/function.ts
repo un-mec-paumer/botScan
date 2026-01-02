@@ -1,34 +1,14 @@
 import { ActionRowBuilder, Client, CommandInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel } from "discord.js";
-import { writeFileSync, PathOrFileDescriptor } from 'fs';
+import { writeFileSync, PathOrFileDescriptor } from 'node:fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
 import puppeteer, { Browser, Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
-import { jsPDF, jsPDFAPI } from "jspdf";
+import { jsPDF } from "jspdf";
 import Manga from "./model/manga";
 import { animeSamaUrl } from "./variables";
 
 dotenv.config()
-
-
-
-const userAgents = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/115.0",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/114.0",
-    "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0",
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-    "Mozilla/5.0 (iPad; CPU OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
-    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (Linux; Android 12; Samsung Galaxy S21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/118.0.2088.46",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Version/15.2 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Opera/91.0.4472.106",
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
-];
 
 export async function initBrowser() {
     const browser = await puppeteer.launch({
@@ -65,9 +45,8 @@ export async function initBrowser() {
 
 async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
 
-    
     try {
-        const pages: Page[] = await Promise.all(Array(manga.nbSites()).fill(null).map(async () => {
+        const response = [manga.nbSites()].fill(null).map(async () => {
             const page = await browser.newPage();
             await page.setRequestInterception(true);
             page.on('request', (req) => {
@@ -80,7 +59,9 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
                 }
             });
             return page;
-        }));
+        });
+
+        const pages: Page[] = await Promise.all(response);
         const { tabChap: newChap, linkManga } = await manga.visiteAllSite(pages);
         if (newChap.length === 0) return false;
 
@@ -120,7 +101,7 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
 
     } catch (error) {
         console.log("Veux pas");
-        console.error(manga.name_manga!);
+        console.error(manga.name_manga);
         console.error('Error:', error);
         return false;
     }
@@ -190,11 +171,25 @@ export async function downloadImg(imgStr: string, name_manga: string): Promise<v
     await BDD.addImgToTest(name_manga + ".png", img);
 }
 
-export function tabin(message: string, tab: Array<string>): boolean {
-    return tab.filter((element) => { return element === message }).length === 1;
-}
-
 export async function getCherrioText(url: string, page: Page) {
+    const userAgents = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/115.0",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/114.0",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (iPad; CPU OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 12; Samsung Galaxy S21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/118.0.2088.46",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Version/15.2 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Opera/91.0.4472.106",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
+    ];
+
     try {
         // console.log("url: ", url);
         await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
@@ -349,18 +344,18 @@ function upperCaseFirstLetter(str: string): string {
 
 
 export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
-    const RELOUDEMERDE = new Map<string, string>()
-    .set("hunter-x-hunter", "Hunter%20x%20Hunter")
-    .set("kaiju-n8", "Kaiju%20N°8")
-    .set("shangri-la-frontier", "Shangri-La%20Frontier")
-    .set("the-beginning-after-the-end", "The%20Beginning%20After%20the%20End")
-    .set("the-max-level-player-100th-regression", "The%20Max-Level%20Player's%20100th%20Regression")
-    .set("unordinary", "unOrdinary")
-    .set("valkyrie-apocalypse", "Valkyrie%20apocalypse")
 
-    let name = "";
-    if (RELOUDEMERDE.has(mangas.name_manga!)) name = RELOUDEMERDE.get(mangas.name_manga!)!;
-    else name = upperCaseFirstLetter(mangas.name_manga!);
+    const RELOUDEMERDE: Record<string, string> = {
+        "hunter-x-hunter": "Hunter%20x%20Hunter",
+        "kaiju-n8": "Kaiju%20N°8",
+        "shangri-la-frontier": "Shangri-La%20Frontier",
+        "the-beginning-after-the-end": "The%20Beginning%20After%20the%20End",
+        "the-max-level-player-100th-regression": "The%20Max-Level%20Player's%20100th%20Regression",
+        "unordinary": "unOrdinary",
+        "valkyrie-apocalypse": "Valkyrie%20apocalypse",
+    }
+
+    const name = RELOUDEMERDE[mangas.name_manga] ?? upperCaseFirstLetter(mangas.name_manga);
     const url = `${animeSamaUrl}/s2/scans/${name}/${chap}/`;
 
     const res = new jsPDF({

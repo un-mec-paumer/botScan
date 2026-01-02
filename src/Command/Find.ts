@@ -1,5 +1,4 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client } from "discord.js";
 import { finderAll } from "../function";
 
 export const Find: Command = {

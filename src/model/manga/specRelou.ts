@@ -4,5 +4,4 @@ export default class specRelou {
     constructor(content: string) {
         this.content = content;
     }
-
 }
