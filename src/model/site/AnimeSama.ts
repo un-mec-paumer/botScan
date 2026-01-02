@@ -2,11 +2,12 @@ import Site from "../site";
 import Manga from "../manga";
 import { Page } from "puppeteer-core";
 import { getCherrioText } from "../../function";
+import { animeSamaUrl } from "../../variables";
 
 
 export default class AnimeSama implements Site {
     name = "Anime-Sama";
-    link = "https://anime-sama.tv";
+    link = animeSamaUrl!;
 
 
     async visitSite(page: Page, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
@@ -19,7 +20,7 @@ export default class AnimeSama implements Site {
             return nbChap > manga.chapitre_manga
         }).map((element) => { return parseFloat(element!.split(" ")[1]) });
 
-        // console.log(`Anime-Sama: Found new chapters for ${manga.name_manga}: ${newChap}`);
+        // console.log(`${this.name}: Found new chapters for ${manga.name_manga}: ${newChap}`);
         return {tabChap: newChap, linkManga: manga.getLink()};
     }
 }

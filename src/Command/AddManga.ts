@@ -3,6 +3,7 @@ import { CommandInteraction, Client, ApplicationCommandOptionType, ApplicationCo
 import { BDD } from "../supabase";
 import { downloadImg, tabin, getCherrioText, initBrowser} from "../function";
 import fs from "fs";
+import { animeSamaUrl } from "../variables";
 
 export const AddManga: Command = {
     name: "addmanga",
@@ -68,7 +69,7 @@ export const AddManga: Command = {
 
         //console.log("verif ");
         // const page = interaction.options.get("page")?.value;
-        const url = `https://anime-sama.si/catalogue/${nom}/`;
+        const url = `${animeSamaUrl}/catalogue/${nom}/`;
 
         const {browser, page: page2} = await initBrowser();
         const $ = await getCherrioText(url, page2);
@@ -79,7 +80,7 @@ export const AddManga: Command = {
         if($("#coverOeuvre").attr("src") === undefined) {
             interaction.followUp({
                 ephemeral: true,
-                content: "Manga non trouvable sur le site anime-sama.fr"
+                content: `Manga non trouvable sur le site ${animeSamaUrl}`
             });
             return;
         }

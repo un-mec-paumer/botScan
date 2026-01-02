@@ -6,6 +6,7 @@ import puppeteer, { Browser, Page } from 'puppeteer-core';
 import * as dotenv from 'dotenv';
 import { jsPDF, jsPDFAPI } from "jspdf";
 import Manga from "./model/manga";
+import { animeSamaUrl } from "./variables";
 
 dotenv.config()
 
@@ -223,7 +224,7 @@ export async function getCherrioText(url: string, page: Page) {
 
 // (async() => {
 //     const {browser, page} = await initBrowser();
-//     const url = "https://anime-sama.fr/catalogue/marchen-crown/";
+//     const url = `${animeSamaUrl}/catalogue/marchen-crown/`;
 //     const $ = await getCherrioText(url, page);
 //     console.log($.html());
 
@@ -360,7 +361,7 @@ export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
     let name = "";
     if (RELOUDEMERDE.has(mangas.name_manga!)) name = RELOUDEMERDE.get(mangas.name_manga!)!;
     else name = upperCaseFirstLetter(mangas.name_manga!);
-    const url = `https://anime-sama.eu/s2/scans/${name}/${chap}/`;
+    const url = `${animeSamaUrl}/s2/scans/${name}/${chap}/`;
 
     const res = new jsPDF({
         orientation: "landscape",
