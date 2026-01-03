@@ -46,7 +46,7 @@ export async function initBrowser() {
 async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
 
     try {
-        const response = [manga.nbSites()].fill(null).map(async () => {
+        const response = [manga.nbSites()].fill(0).map(async () => {
             const page = await browser.newPage();
             await page.setRequestInterception(true);
             page.on('request', (req) => {
