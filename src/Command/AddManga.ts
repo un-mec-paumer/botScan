@@ -1,8 +1,7 @@
 import { Command } from "../Command";
-import { CommandInteraction, Client, ApplicationCommandOptionType, ApplicationCommandOptionChoiceData, ChatInputCommandInteraction } from "discord.js";
+import { Client, ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { BDD } from "../supabase";
-import { downloadImg, tabin, getCherrioText, initBrowser} from "../function";
-import fs from "fs";
+import { downloadImg, getCherrioText, initBrowser} from "../function";
 import { animeSamaUrl } from "../variables";
 
 export const AddManga: Command = {

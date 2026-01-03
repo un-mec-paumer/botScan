@@ -1,7 +1,6 @@
 import { Client, EmbedBuilder} from "discord.js";
 import dotenv from "dotenv";
-import { randomInt } from "crypto";
-import { tabin } from "../function";
+import { randomInt } from "node:crypto";
 
 export default (client: Client): void => {
     dotenv.config();
@@ -34,14 +33,14 @@ export default (client: Client): void => {
         // console.log(end);
 
         if(messageContent.filter((element) => {return element === "oui"}).length === 2) {
-            message.reply(`**AVEC SONT GROS TAXI !** \nhttps://youtu.be/6vlY1vdkPf4`);
+            message.reply(`**AVEC SON GROS TAXI !** \nhttps://youtu.be/6vlY1vdkPf4`);
             return;
         }
         
-        if(tabin(end, ["quoi","koi","koa","quoa","koua", "qu oi", "qu oa", "k oi", "k oa"])) {
-            //console.log("feur")
+        if (["quoi", "koi", "koa", "quoa", "koua", "qu oi", "qu oa", "k oi", "k oa"].includes(end)) {
+            console.log("feur")
             
-            //message.reply("feur");
+            message.reply("feur");
             message.react("🇫");
             message.react("🇪");
             message.react("🇺");
@@ -50,12 +49,12 @@ export default (client: Client): void => {
                 .setTitle("feur")
                 .setImage("https://media.tenor.com/SVRGZaisSqsAAAAC/quoifeur-feur.gif");
             message.reply({embeds: [rep]});
-            //message.author.send("ça t'apprendras à dire quoi");
+            //message.author.send("ça t'apprendra à dire quoi");
             
             return;
         }
 
-        if(tabin(end, ["oui", "ou i"])) {
+        if (["oui", "ou i"].includes(end)) {
             // message.reply("fi");
             const rep = new EmbedBuilder()
                 .setTitle("fi")
@@ -64,7 +63,7 @@ export default (client: Client): void => {
             return;
         }
 
-        if(tabin(end, ["non", "no n"])) {
+        if (["non", "no n"].includes(end)) {
             // message.reply("bril");
             const rep = new EmbedBuilder()
                 .setTitle("bril")
@@ -73,12 +72,12 @@ export default (client: Client): void => {
             return;
         }
 
-        if(tabin(end, ["dimitriou"])) {
+        if (["dimitriou"].includes(end)) {
             message.reply("mitriou");
             return;
         }
 
-        if(tabin(end, ["qui", "ki", "qu i", "q u i"])) {
+        if (["qui", "ki", "qu i", "q u i"].includes(end)) {
             message.react("🇨");
             message.react("🇭");
             message.react("🇪");
