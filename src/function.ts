@@ -44,9 +44,9 @@ export async function initBrowser() {
 }
 
 async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
-
+    // if (manga.id_manga !== XX) return false;
     try {
-        const response = [manga.nbSites()].fill(0).map(async () => {
+        const pages: Page[] = await Promise.all(Array(manga.nbSites()).fill(null).map(async () => {
             const page = await browser.newPage();
             await page.setRequestInterception(true);
             page.on('request', (req) => {
@@ -59,9 +59,8 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
                 }
             });
             return page;
-        });
+        }));
 
-        const pages: Page[] = await Promise.all(response);
         const { tabChap: newChap, linkManga } = await manga.visiteAllSite(pages);
         if (newChap.length === 0) return false;
 
@@ -80,6 +79,7 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
             })
 
         userBDD!.forEach(async (user) => {
+            // if (user.id_user !== process.env.DEV) return;
             const userDiscord = await client.users.fetch(user.id_user);
 
             const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
@@ -116,33 +116,14 @@ export async function finderAll(client: Client): Promise<boolean> {
     let { browser, page } = await initBrowser();
     const mangas = await BDD.getMangas() ?? [];
 
-    const resultRes = [];
-    for (const manga of mangas) {
-        let res = false;
-        try {
-            if (browser.connected === false || page.isClosed() === true) {
-                console.log("reconnexion");
-                const { browser: browser2, page: page2 } = await initBrowser();
-                browser = browser2;
-                page = page2;
-            }
-            res = await finder(manga, client, browser);
-            // if(!res) console.log(`Pas de nouveau chapitre pour ${manga.name_manga}`);
-        } catch (error) {
-            console.error("pb avec ça: ");
-            console.error(error);
-
-            const { browser: browser2, page: page2 } = await initBrowser();
-            browser = browser2;
-            page = page2;
-
-            res = await finder(manga, client, browser);
-        }
-        resultRes.push(res);
-    }
+    const resultRes = await Promise.all(mangas.map(async (manga) => {
+        const res = await finder(manga, client, browser);
+        return res;
+    }));
+    
 
 
-    await page.close();
+    // await page.close();
     // await browser.disconnect();
     await browser.close();
     return resultRes.includes(true);

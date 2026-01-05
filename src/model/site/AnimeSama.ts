@@ -14,7 +14,7 @@ export default class AnimeSama implements Site {
 
         const $ = await getCherrioText(manga.getLink(), page);
 
-        const newChap = $("#selectChapitres option").toArray().map((element) => { console.log($(element).text().trim());return $(element).attr("value") }).filter((element) => {
+        const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
             const nbChap = parseFloat(element!.split(" ")[1])
             // console.log(`Found chapter option: ${element}, parsed chapter number: ${nbChap}`);
             return nbChap > manga.chapitre_manga

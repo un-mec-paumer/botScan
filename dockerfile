@@ -33,4 +33,4 @@ ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium" \
 EXPOSE 3001
 
 # 10. Commande pour démarrer l'application
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

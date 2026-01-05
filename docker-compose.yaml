@@ -14,9 +14,9 @@ services:
         - action: rebuild
           path: package.json
           target: /app/package.json
-        - action: sync+restart
-          path: /src/bot.ts
-          target: /app/dist/bot.js
+        # - action: sync+restart
+        #   path: /src/bot.ts
+        #   target: /app/dist/bot.js
           
     ports:
       - "3003:3003"
