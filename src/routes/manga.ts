@@ -82,9 +82,8 @@ mangaRouter.post("/addManga", async (req: Request, res: Response) => {
     }
 
     const url = `https://fr-scan.com/manga/${name}/`;
-    const {browser, page} = await initBrowser();
-    const $ = await getCherrioText(url, page);
-    await page.close();
+    const browser = await initBrowser();
+    const $ = await getCherrioText(url, browser);
     await browser.close();
 
 

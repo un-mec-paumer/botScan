@@ -40,28 +40,14 @@ export async function initBrowser() {
 
     // await page.setViewport({ width: 1920, height: 1080 });
     // await page.setDefaultNavigationTimeout(0);
-    return { browser, page }
+    // return { browser, page }
+    return browser;
 }
 
 async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
     // if (manga.id_manga !== XX) return false;
     try {
-        const pages: Page[] = await Promise.all(Array(manga.nbSites()).fill(null).map(async () => {
-            const page = await browser.newPage();
-            await page.setRequestInterception(true);
-            page.on('request', (req) => {
-                const resourceType = req.resourceType();
-                const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
-                if (expectedResourceTypes.includes(resourceType)) {
-                    req.abort();
-                } else {
-                    req.continue();
-                }
-            });
-            return page;
-        }));
-
-        const { tabChap: newChap, linkManga } = await manga.visiteAllSite(pages);
+        const { tabChap: newChap, linkManga } = await manga.visiteAllSite(browser);
         if (newChap.length === 0) return false;
 
         await BDD.updateChapitre(manga.name_manga, newChap[newChap.length - 1]);
@@ -113,7 +99,7 @@ export async function finderAll(client: Client): Promise<boolean> {
     const time = new Date();
     console.log("temps: ", (time.getHours().toString().split("").length === 1 ? "0" : "") + time.getHours() + "h" + (time.getMinutes().toString().split("").length === 1 ? "0" : "") + time.getMinutes() + "min");
     //const userID = "452370867758956554";
-    let { browser, page } = await initBrowser();
+    let browser = await initBrowser();
     const mangas = await BDD.getMangas() ?? [];
 
     const resultRes = await Promise.all(mangas.map(async (manga) => {
@@ -152,7 +138,7 @@ export async function downloadImg(imgStr: string, name_manga: string): Promise<v
     await BDD.addImgToTest(name_manga + ".png", img);
 }
 
-export async function getCherrioText(url: string, page: Page) {
+export async function getCherrioText(url: string, browser: Browser) {
     const userAgents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
@@ -173,6 +159,19 @@ export async function getCherrioText(url: string, page: Page) {
 
     try {
         // console.log("url: ", url);
+        const page = await browser.newPage();
+
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            const resourceType = req.resourceType();
+            const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
+            if (expectedResourceTypes.includes(resourceType)) {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
+
         await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
         const test = await page.goto(url, {
             waitUntil: 'networkidle2',
@@ -191,6 +190,7 @@ export async function getCherrioText(url: string, page: Page) {
         }
         // await page.waitForSelector('#selectChapitres');
         const html = await page.content();
+        await page.close();
         return cheerio.load(html);
     } catch (error) {
         console.error(error);

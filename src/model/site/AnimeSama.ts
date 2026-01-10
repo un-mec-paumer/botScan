@@ -1,6 +1,6 @@
 import Site from "../site";
 import Manga from "../manga";
-import { Page } from "puppeteer-core";
+import { Browser } from "puppeteer-core";
 import { getCherrioText } from "../../function";
 import { animeSamaUrl } from "../../variables";
 
@@ -10,9 +10,9 @@ export default class AnimeSama implements Site {
     link = animeSamaUrl!;
 
 
-    async visitSite(page: Page, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSite(browser: Browser, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
 
-        const $ = await getCherrioText(manga.getLink(), page);
+        const $ = await getCherrioText(manga.getLink(), browser);
 
         const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
             const nbChap = parseFloat(element!.split(" ")[1])

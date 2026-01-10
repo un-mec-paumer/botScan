@@ -1,14 +1,14 @@
 import Site from "../site";
 import Manga from "../manga";
-import { Page } from "puppeteer-core";
+import { Browser } from "puppeteer-core";
 import { getCherrioText } from "../../function";
 export default class MangaMoins implements Site {
     name = "MangaMoins";
     link = "https://mangamoins.com/";
     
-    async visitSite(page: Page, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSite(browser: Browser, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
         
-        const $ = await getCherrioText(this.link, page);
+        const $ = await getCherrioText(this.link, browser);
 
         const newChap = $('.sortie').toArray().filter((element) => { 
             return $(element).text().toLocaleLowerCase().includes(manga.name_manga.replaceAll('-', ' '));

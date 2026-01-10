@@ -70,9 +70,8 @@ export const AddManga: Command = {
         // const page = interaction.options.get("page")?.value;
         const url = `${animeSamaUrl}/catalogue/${nom}/`;
 
-        const {browser, page: page2} = await initBrowser();
-        const $ = await getCherrioText(url, page2);
-        await page2.close();
+        const browser = await initBrowser();
+        const $ = await getCherrioText(url, browser);
         await browser.close();
 
 
