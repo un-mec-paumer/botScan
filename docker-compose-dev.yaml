@@ -1,0 +1,23 @@
+services:
+  bot:
+    image: bot-scan:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore: 
+            - ./node_modules/
+        - action: rebuild
+          path: package.json
+          target: /app/package.json
+        # - action: sync+restart
+        #   path: /src/bot.ts
+        #   target: /app/dist/bot.js
+          
+    ports:
+      - "3003:3003"
