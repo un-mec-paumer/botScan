@@ -1,9 +1,8 @@
 import { Client, EmbedBuilder} from "discord.js";
-import dotenv from "dotenv";
 import { randomInt } from "node:crypto";
+import { DEV } from "../variables";
 
 export default (client: Client): void => {
-    dotenv.config();
     client.on("messageCreate", async (message) => {
         
         if(message.content.toLowerCase().trim().startsWith("$harcelement ")){
@@ -25,7 +24,7 @@ export default (client: Client): void => {
         // console.log(message);
         // console.log("message est ", message.content);
         return;
-        if(message.author.bot || /*message.author.id === process.env.DEV! ||*/ message.content[0] === '$') return;
+        if(message.author.bot || /*message.author.id === DEV ||*/ message.content[0] === '$') return;
         if(randomInt(0, 100) === 3) message.reply("Bonjour c'est une fonctionnalité (de merde) qui a été demandée par @tani_soe (je ne suis pas responsable)");
         const messageContent = message.content.toLowerCase().replaceAll("?","").replaceAll("!","").replaceAll(".","").trim().split(" ");
         const end = messageContent[messageContent.length - 1];

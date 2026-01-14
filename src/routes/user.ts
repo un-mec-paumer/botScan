@@ -2,9 +2,7 @@ import { Request, Response, Router } from "express";
 import { BDD } from "../supabase";
 import { User } from "discord.js";
 import { client } from "../bot";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { DEV } from "../variables";
 
 const userRouter = Router();
 
@@ -90,7 +88,7 @@ userRouter.post("/sendMessage", async (req: Request, res: Response) => {
     const userDiscord: User|void = await client.users.fetch(response![0].user_id);
 
 
-    client.users.fetch(process.env.DEV!).then((user:User) => {
+    client.users.fetch(DEV).then((user:User) => {
         user.send(`Message de ${userDiscord!.username} : ${req.body.text}`);
     }).then(() => {
         res.send({res:true});

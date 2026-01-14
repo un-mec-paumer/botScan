@@ -1,5 +1,4 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
-import * as dotenv from 'dotenv'
 import { randomInt } from 'crypto'
 import Manga from './model/manga';
 import MangaRelou from './model/manga/mangaRelou';
@@ -8,6 +7,8 @@ import specRelou from './model/manga/specRelou';
 import AnimeSama from './model/site/AnimeSama';
 import MangaMoins from './model/site/MangaMoins';
 import MangaPlus from './model/site/MangaPlus';
+
+import { SUPABASE_EMAIL, SUPABASE_KEY, SUPABASE_PASSWORD, SUPABASE_URL } from './variables';
 
 
 export function randomString() {
@@ -37,16 +38,15 @@ class supabase {
         // } else {
         // supabase.instance = this;
 
-        dotenv.config()
-        this.url = process.env.SUPABASE_URL!
-        this.key = process.env.SUPABASE_KEY!
+        this.url = SUPABASE_URL!
+        this.key = SUPABASE_KEY!
 
         //console.log(this.url, this.key)
         this.client = createClient(this.url, this.key)
 
         this.client.auth.signInWithPassword({
-            email: process.env.SUPABASE_EMAIL!,
-            password: process.env.SUPABASE_PASSWORD!
+            email: SUPABASE_EMAIL!,
+            password: SUPABASE_PASSWORD!
         })
         return this;
         // }

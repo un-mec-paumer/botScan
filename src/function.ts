@@ -3,12 +3,10 @@ import { writeFileSync, PathOrFileDescriptor } from 'node:fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
 import puppeteer, { Browser, Page } from 'puppeteer-core';
-import * as dotenv from 'dotenv';
 import { jsPDF } from "jspdf";
 import Manga from "./model/manga";
-import { animeSamaUrl } from "./variables";
+import { animeSamaUrl, BROWSER_PATH, DEV } from "./variables";
 
-dotenv.config()
 
 export async function initBrowser() {
     const browser = await puppeteer.launch({
@@ -20,7 +18,7 @@ export async function initBrowser() {
             // '--disable-extensions',
             // '--enable-gpu'
         ],
-        executablePath: process.env.CHROME_PATH,
+        executablePath: BROWSER_PATH,
         // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         // ignoreHTTPSErrors: true,
         protocolTimeout: 60000,
@@ -60,12 +58,12 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
             .setURL(linkManga)
             .setImage(img)
             .setFooter({
-                text: "dev " + (await client.users.fetch(process.env.DEV!)).username,
-                iconURL: (await client.users.fetch(process.env.DEV!)).displayAvatarURL()
+                text: "dev " + (await client.users.fetch(DEV)).username,
+                iconURL: (await client.users.fetch(DEV)).displayAvatarURL()
             })
 
         userBDD!.forEach(async (user) => {
-            // if (user.id_user !== process.env.DEV) return;
+            // if (user.id_user !== DEV) return;
             const userDiscord = await client.users.fetch(user.id_user);
 
             const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
@@ -223,8 +221,8 @@ export async function endErasmus(client: Client): Promise<void> {
     // console.log(usersReaction);
 
     for (let id of usersReaction) {
-        // console.log(id, process.env.DEV);
-        if (id !== process.env.DEV) continue;
+        // console.log(id, DEV);
+        if (id !== DEV) continue;
         const user = await client.users.fetch(id);
         // console.log(user.globalName);
         if (user.dmChannel === null) await user.createDM();
@@ -248,7 +246,7 @@ export async function endErasmus(client: Client): Promise<void> {
 // endErasmus();
 
 export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandInteraction): Promise<void> {
-    const dev = await interaction.client.users.fetch(process.env.DEV!);
+    const dev = await interaction.client.users.fetch(DEV);
     mangas = mangas.sort((a, b) => a.name_manga.localeCompare(b.name_manga));
     const img = (await BDD.getImgFromTest(mangas[0].name_manga)).publicUrl ?? null;
 
