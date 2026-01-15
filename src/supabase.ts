@@ -56,13 +56,13 @@ class supabase {
     private convertAnytoManga(data: any): Manga {
         switch (data.id_manga) {
             case 52:
-                return new MangaRelou(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaMoins(), new MangaPlus()], new specRelou('_noir-et-blanc'));
+                return new MangaRelou(data, [new AnimeSama(), new MangaMoins(), new MangaPlus()], new specRelou('_noir-et-blanc'));
             case 64:
-                return new Manga(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaPlus()]);
+                return new Manga(data, [new AnimeSama(), new MangaPlus()]);
             case 70:
-                return new MangaRelou(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaPlus()], new specRelou('-modulo'));   
+                return new MangaRelou(data, [new AnimeSama(), new MangaPlus()], new specRelou('-modulo'));   
             default:
-                return new Manga(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama()])
+                return new Manga(data, [new AnimeSama()])
         }
     }
 

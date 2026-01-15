@@ -4,8 +4,8 @@ import specRelou from './specRelou';
 export default class MangaRelou extends Manga {
     special: specRelou;
     
-    constructor(id_manga: number, name_manga: string, chapitre_manga: number, image: string, synopsis: string, sites: Site[], special: specRelou) {
-        super(id_manga, name_manga, chapitre_manga, image, synopsis, sites);
+    constructor(manga: any, sites: Site[], special: specRelou) {
+        super(manga, sites);
         this.special = special;
     }
 

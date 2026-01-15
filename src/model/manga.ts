@@ -9,12 +9,12 @@ export default class Manga {
     public synopsis: string;
     private sites: Site[];
 
-    constructor(id_manga: number, name_manga: string, chapitre_manga: number, image: string, synopsis: string, sites: Site[]) {
-        this.id_manga = id_manga;
-        this.name_manga = name_manga;
-        this.chapitre_manga = chapitre_manga;
-        this.image = image;
-        this.synopsis = synopsis;
+    constructor(manga: any, sites: Site[]) {
+        this.id_manga = manga.id_manga;
+        this.name_manga = manga.name_manga;
+        this.chapitre_manga = manga.chapitre_manga;
+        this.image = manga.image;
+        this.synopsis = manga.synopsis;
         this.sites = sites;
     }
 
