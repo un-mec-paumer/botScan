@@ -2,7 +2,7 @@ import { ActionRowBuilder, Client, CommandInteraction, ComponentType, EmbedBuild
 import { writeFileSync, PathOrFileDescriptor } from 'node:fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
-import puppeteer, { Browser, Page } from 'puppeteer-core';
+import puppeteer, { Browser } from 'puppeteer-core';
 import { jsPDF } from "jspdf";
 import Manga from "./model/manga";
 import { animeSamaUrl, BROWSER_PATH, DEV } from "./variables";
@@ -24,21 +24,6 @@ export async function initBrowser() {
         protocolTimeout: 60000,
     });
 
-    const page = await browser.newPage();
-    await page.setRequestInterception(true);
-    page.on('request', (req) => {
-        const resourceType = req.resourceType();
-        const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
-        if (expectedResourceTypes.includes(resourceType)) {
-            req.abort();
-        } else {
-            req.continue();
-        }
-    });
-
-    // await page.setViewport({ width: 1920, height: 1080 });
-    // await page.setDefaultNavigationTimeout(0);
-    // return { browser, page }
     return browser;
 }
 
@@ -62,24 +47,9 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
                 iconURL: (await client.users.fetch(DEV)).displayAvatarURL()
             })
 
-        userBDD!.forEach(async (user) => {
-            // if (user.id_user !== DEV) return;
-            const userDiscord = await client.users.fetch(user.id_user);
-
-            const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
-            // if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
-
-            if (userDiscord === null) return;
-            if (userDiscord.dmChannel === null) await userDiscord.createDM();
-            let messageText = '';
-            if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga.replaceAll("-", " ")} est sorti !\n${linkManga}`;
-            else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
-            else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
-
-            message.setDescription(messageText);
-            console.log(messageText);
-            await userDiscord.send({ embeds: [message] });
-        });
+        for (let user of userBDD!) {
+            sendNotifToUser(client, message, user.id_user, manga, newChap, linkManga);
+        }
 
         return true;
 
@@ -89,6 +59,26 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
         console.error('Error:', error);
         return false;
     }
+}
+
+async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: any, manga: Manga, newChap: number[], linkManga: string): Promise<void> {
+    // if (user.id_user !== DEV) return;
+    const userDiscord = await client.users.fetch(id_user);
+
+    const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
+    // if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
+
+    if (userDiscord === null) return;
+    if (userDiscord.dmChannel === null) await userDiscord.createDM();
+    let messageText = '';
+    if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga.replaceAll("-", " ")} est sorti !\n${linkManga}`;
+    else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
+    else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
+
+    message.setDescription(messageText);
+    // console.log(messageText);
+    const res = await userDiscord.send({ embeds: [message] });
+    await res.react('👍');
 }
 
 
@@ -110,7 +100,7 @@ export async function finderAll(client: Client): Promise<boolean> {
     // await page.close();
     // await browser.disconnect();
     await browser.close();
-    return resultRes.includes(true);
+    return resultRes.reduce((acc, curr) => acc || curr, false);
 }
 //* inutilisé
 export function sauvegarder(data: string/*, path:PathOrFileDescriptor*/): boolean {
@@ -274,8 +264,7 @@ export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandI
                     .setLabel(manga.name_manga.replaceAll("-", " "))
                     .setValue(String(manga.id_manga))
                     .setDescription(manga.synopsis.split(" ").slice(0, 10).join(" ") + " ...")
-            }
-            )
+            })
         )
 
     const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)

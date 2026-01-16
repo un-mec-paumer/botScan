@@ -25,7 +25,7 @@ export default class Manga {
         else return {tabChap: [], linkManga: ""};
     }
 
-    public nbSites(): number {
+    get nbSites(): number {
         return this.sites.length;
     }
 

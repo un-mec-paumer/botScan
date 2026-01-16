@@ -2,7 +2,6 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { randomInt } from 'crypto'
 import Manga from './model/manga';
 import MangaRelou from './model/manga/mangaRelou';
-import specRelou from './model/manga/specRelou';
 
 import AnimeSama from './model/site/AnimeSama';
 import MangaMoins from './model/site/MangaMoins';
@@ -28,39 +27,35 @@ class supabase {
     private key!: string;
 
     private client!: SupabaseClient;
+    protected static Instance: supabase;
 
-    public static instance: supabase;
+    public static get instance(): supabase {
+        if (supabase.Instance === undefined || supabase.Instance === null) {
+            supabase.Instance = new supabase();
+        }
+        return supabase.Instance;
+    }
 
-    constructor() {
-        // if (supabase.instance !== undefined || supabase.instance !== null ) {
-
-        //     return supabase.instance;
-        // } else {
-        // supabase.instance = this;
-
+    private constructor() {
         this.url = SUPABASE_URL!
         this.key = SUPABASE_KEY!
 
-        //console.log(this.url, this.key)
         this.client = createClient(this.url, this.key)
 
         this.client.auth.signInWithPassword({
             email: SUPABASE_EMAIL!,
             password: SUPABASE_PASSWORD!
         })
-        return this;
-        // }
-
     }
 
     private convertAnytoManga(data: any): Manga {
         switch (data.id_manga) {
             case 52:
-                return new MangaRelou(data, [new AnimeSama(), new MangaMoins(), new MangaPlus()], new specRelou('_noir-et-blanc'));
+                return new MangaRelou(data, [new AnimeSama(), new MangaMoins(), new MangaPlus()], '_noir-et-blanc');
             case 64:
                 return new Manga(data, [new AnimeSama(), new MangaPlus()]);
             case 70:
-                return new MangaRelou(data, [new AnimeSama(), new MangaPlus()], new specRelou('-modulo'));   
+                return new MangaRelou(data, [new AnimeSama(), new MangaPlus()], '-modulo');   
             default:
                 return new Manga(data, [new AnimeSama()])
         }
@@ -357,4 +352,4 @@ class supabase {
 
 }
 
-export const BDD = new supabase()
+export const BDD = supabase.instance

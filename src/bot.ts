@@ -4,7 +4,6 @@ import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
 import { finderAll } from "./function";
 import Express, { Request, Response, NextFunction } from "express";
-import { BDD } from "./supabase";
 import mangaRouter from "./routes/manga";
 import subRouter from "./routes/subsribe";
 import userRouter from "./routes/user";
@@ -12,9 +11,6 @@ import { PORT, TOKEN } from "./variables";
 // import { Player } from "discord-player";
 
 
-function ntm() {
-    BDD.verifTokens()
-}
 
 console.log("Bot is starting...");
 
