@@ -7,9 +7,9 @@ BotScan is a tool designed to scan and analyze bots for various platforms. This 
 - [Usage](#usage)
 
 
-## Installation
+## dev
 
-To install BotScan, follow these steps:
+To dev on your verson BotScan, follow these steps:
 
 1. Clone the repository:
     ```sh
@@ -19,14 +19,17 @@ To install BotScan, follow these steps:
     ```sh
     cd botScan
     ```
-3. Install the required dependencies:
+3. run into docker:
     ```sh
-    npm install
+    docker compose -f docker-compose-dev up -d (--build) (--watch) / make dev
     ```
-
+you can enable the watch or the build when you add the option
 ## Usage
 
 To use BotScan, run the following command:
 ```sh
-npm start
+    docker compose -f docker-compose-prod up -d (--build) (--watch)  make start
 ``` 
+
+## env file
+to see what put into .env file see ./src/variable.ts
