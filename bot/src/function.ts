@@ -28,18 +28,18 @@ export async function initBrowser() {
 }
 
 async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
-    // if (![XX, XX].includes(manga.id_manga)) return false;
+    // if (![XX, XX].includes(manga.id)) return false;
     try {
         const { tabChap: newChap, linkManga } = await manga.visiteAllSite(browser);
         if (newChap.length === 0) return false;
 
-        await BDD.updateChapitre(manga.id_manga, newChap[newChap.length - 1]);
-        const userBDD = await BDD.getLien(manga.id_manga);
+        await BDD.updateChapitre(manga.id, newChap[newChap.length - 1]);
+        const userBDD = await BDD.getLien(manga.id);
 
-        const img = (await BDD.getImgFromTest(manga.name_manga)).publicUrl ?? null;
+        const img = (await BDD.getImgFromTest(manga.name)).publicUrl ?? null;
 
         const message = new EmbedBuilder()
-            .setTitle(manga.name_manga.replaceAll("-", " "))
+            .setTitle(manga.name.replaceAll("-", " "))
             .setURL(linkManga)
             .setImage(img)
             .setFooter({
@@ -55,7 +55,7 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
 
     } catch (error) {
         console.log("Veux pas");
-        console.error(manga.name_manga);
+        console.error(manga.name);
         console.error('Error:', error);
         return false;
     }
@@ -71,9 +71,9 @@ async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: 
     if (userDiscord === null) return;
     if (userDiscord.dmChannel === null) await userDiscord.createDM();
     let messageText = '';
-    if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga.replaceAll("-", " ")} est sorti !\n${linkManga}`;
-    else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
-    else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
+    if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name.replaceAll("-", " ")} est sorti !\n${linkManga}`;
+    else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
+    else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
 
     message.setDescription(messageText);
     // console.log(messageText);
@@ -237,14 +237,14 @@ export async function endErasmus(client: Client): Promise<void> {
 
 export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandInteraction): Promise<void> {
     const dev = await interaction.client.users.fetch(DEV);
-    mangas = mangas.sort((a, b) => a.name_manga.localeCompare(b.name_manga));
-    const img = (await BDD.getImgFromTest(mangas[0].name_manga)).publicUrl ?? null;
+    mangas = mangas.sort((a, b) => a.name.localeCompare(b.name));
+    const img = (await BDD.getImgFromTest(mangas[0].name)).publicUrl ?? null;
 
     const embed = new EmbedBuilder()
-        .setTitle(mangas[0].name_manga.replaceAll("-", " "))
+        .setTitle(mangas[0].name.replaceAll("-", " "))
         .setURL(mangas[0].getLink())
         .setDescription(`
-        ***chapitre n°${mangas[0].chapitre_manga}***
+        ***chapitre n°${mangas[0].chapitre}***
         description:
         ${mangas[0].synopsis.split(" ").slice(0, 30).join(" ") + " ..."}   
     `)
@@ -261,8 +261,8 @@ export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandI
         .addOptions(
             mangas.map((manga) => {
                 return new StringSelectMenuOptionBuilder()
-                    .setLabel(manga.name_manga.replaceAll("-", " "))
-                    .setValue(String(manga.id_manga))
+                    .setLabel(manga.name.replaceAll("-", " "))
+                    .setValue(String(manga.id))
                     .setDescription(manga.synopsis.split(" ").slice(0, 10).join(" ") + " ...")
             })
         )
@@ -280,14 +280,14 @@ export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandI
 
         const value = i.values[0];
 
-        const manga = mangas.find((manga) => manga.id_manga === parseInt(value));
+        const manga = mangas.find((manga) => manga.id === parseInt(value));
         if (!manga) return;
-        const img = (await BDD.getImgFromTest(manga.name_manga))?.publicUrl ?? null;
+        const img = (await BDD.getImgFromTest(manga.name))?.publicUrl ?? null;
         // console.log(img)
         const newEmbed = new EmbedBuilder()
-            .setTitle(manga.name_manga.replaceAll("-", " "))
+            .setTitle(manga.name.replaceAll("-", " "))
             .setDescription(`
-            ***chapitre n°${manga.chapitre_manga}***
+            ***chapitre n°${manga.chapitre}***
             description:
             ${manga.synopsis.split(" ").slice(0, 30).join(" ") + " ..."}    
         `)
@@ -323,7 +323,7 @@ export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
         "valkyrie-apocalypse": "Valkyrie%20apocalypse",
     }
 
-    const name = RELOUDEMERDE[mangas.name_manga] ?? upperCaseFirstLetter(mangas.name_manga);
+    const name = RELOUDEMERDE[mangas.name] ?? upperCaseFirstLetter(mangas.name);
     const url = `${animeSamaUrl}/s2/scans/${name}/${chap}/`;
 
     const res = new jsPDF({
@@ -373,7 +373,7 @@ export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
             }
         }
     }
-    res.save(`./test/${mangas.name_manga}-${chap}.pdf`);
+    res.save(`./test/${mangas.name}-${chap}.pdf`);
 }
 
 function getImageSize(buffer: Uint8Array): { width: number, height: number, type: string } | null {
@@ -422,14 +422,13 @@ function getImageSize(buffer: Uint8Array): { width: number, height: number, type
 // (async () => {
 //     // const manga = await BDD.getMangas() ?? [];
 //     // for (let i = 0; i < manga.length; i++) {
-//     //     try { await getImgToPdf(manga[i], manga[i].chapitre_manga!);}
+//     //     try { await getImgToPdf(manga[i], manga[i].chapitre!);}
             
 //     //     catch (error) {
 //     //         console.error(error);
-//     //         console.error(manga[i].name_manga);
+//     //         console.error(manga[i].name);
 //     //     }
 //     // }   
 
 //     await getImgToPdf({name_manga: "magic-emperor", chapitre_manga: 587}, 587);
 // })()
-

@@ -14,17 +14,17 @@ export default class MangaPlus implements SiteManga {
     }
 
     async visitSiteManga(browser: Browser, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
-        const url = `${this.link}/titles/${this.idMangaPlus[manga.id_manga]}`
+        const url = `${this.link}/titles/${this.idMangaPlus[manga.id]}`
         const $ = await getCherrioText(url, browser);
 
         const newChap = $(".ChapterListItem-module_name_3h9dj").toArray().map((element) => { 
             const text = $(element).text();
             return parseFloat(text.replace("#", "").trim());
         }).filter((nbChap) => {
-            return nbChap > manga.chapitre_manga
+            return nbChap > manga.chapitre
         });
 
-        // console.log(`MangaPlus: Found new chapters for ${manga.name_manga}: ${newChap}`);
+        // console.log(`MangaPlus: Found new chapters for ${manga.name}: ${newChap}`);
         
         return {tabChap: newChap, linkManga: url};
     }

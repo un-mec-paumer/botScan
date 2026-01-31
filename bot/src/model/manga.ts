@@ -3,17 +3,17 @@ import { SiteManga } from "./site";
 import { animeSamaUrl } from "../variables";
 
 export default class Manga {
-    public id_manga: number;
-    public name_manga: string;
-    public chapitre_manga: number;
+    public id: number;
+    public name: string;
+    public chapitre: number;
     public image: string;
     public synopsis: string;
     private sites: SiteManga[];
 
     constructor(manga: any, sites: SiteManga[]) {
-        this.id_manga = manga.id_manga;
-        this.name_manga = manga.name_manga;
-        this.chapitre_manga = manga.chapitre_manga;
+        this.id = manga.id;
+        this.name = manga.name;
+        this.chapitre = manga.chapitre;
         this.image = manga.image;
         this.synopsis = manga.synopsis;
         this.sites = sites;
@@ -31,7 +31,7 @@ export default class Manga {
     }
 
     public getBaseURL(): string {
-        return `${animeSamaUrl}/catalogue/${this.name_manga}`;
+        return `${animeSamaUrl}/catalogue/${this.name}`;
     }
 
     public getLink(): string {
@@ -39,14 +39,14 @@ export default class Manga {
     }
 
     public toString(): string {
-        return `Manga [ID: ${this.id_manga}, Name: ${this.name_manga}, Chapter: ${this.chapitre_manga}]`;
+        return `Manga [ID: ${this.id}, Name: ${this.name}, Chapter: ${this.chapitre}]`;
     }
     
     public toJSON(): object {
         return {
-            id_manga: this.id_manga,
-            name_manga: this.name_manga,
-            chapitre_manga: this.chapitre_manga,
+            id: this.id,
+            name: this.name,
+            chapitre: this.chapitre,
             image: this.image,
             synopsis: this.synopsis
         };

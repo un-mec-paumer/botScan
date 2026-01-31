@@ -18,10 +18,10 @@ export default class AnimeSama implements SiteManga, SiteAnime {
         const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
             const nbChap = parseFloat(element!.split(" ")[1])
             // console.log(`Found chapter option: ${element}, parsed chapter number: ${nbChap}`);
-            return nbChap > manga.chapitre_manga
+            return nbChap > manga.chapitre
         }).map((element) => { return parseFloat(element!.split(" ")[1]) });
 
-        // console.log(`${this.name}: Found new chapters for ${manga.name_manga}: ${newChap}`);
+        // console.log(`${this.name}: Found new chapters for ${manga.name}: ${newChap}`);
         return {tabChap: newChap, linkManga: manga.getLink()};
     }
 
@@ -34,7 +34,7 @@ export default class AnimeSama implements SiteManga, SiteAnime {
             return nbEp > anime.episode
         }).map((element) => { return parseFloat(element!.split(" ")[1]) });
 
-        // console.log(`${this.name}: Found new chapters for ${manga.name_manga}: ${newChap}`);
+        // console.log(`${this.name}: Found new chapters for ${manga.name}: ${newChap}`);
         return {tabChap: newEp, linkManga: anime.getLink()};
     }
 }

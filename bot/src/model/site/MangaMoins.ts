@@ -11,15 +11,15 @@ export default class MangaMoins implements SiteManga {
         const $ = await getCherrioText(this.link, browser);
 
         const newChap = $('.sortie').toArray().filter((element) => { 
-            return $(element).text().toLocaleLowerCase().includes(manga.name_manga.replaceAll('-', ' '));
+            return $(element).text().toLocaleLowerCase().includes(manga.name.replaceAll('-', ' '));
         }).map((element) => {
             const text = $(element).find('h3').text();
             return parseFloat(text.replace('#', "").trim());
         }).filter((nbChap) => {
-            return nbChap > manga.chapitre_manga
+            return nbChap > manga.chapitre
         });
 
-        // console.log(`MangaMoins: Found new chapters for ${manga.name_manga}: ${newChap}`);
+        // console.log(`MangaMoins: Found new chapters for ${manga.name}: ${newChap}`);
         
         return {tabChap: newChap, linkManga: this.link};
     }
