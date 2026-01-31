@@ -1,8 +1,44 @@
 services:
+  postgres:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: botscan
+      POSTGRES_PASSWORD: botscan_pass
+      POSTGRES_DB: botscan_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - '8080:8080'
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://botscan:botscan_pass@postgres:5432/botscan_db
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./config/jwt:/app/config/jwt:ro
+    command: sh -c "npx prisma migrate deploy && npx tsx src/main/server.ts"
+
   bot:
     image: bot-scan:latest
     build:
-      context: .
+      context: ./bot
       dockerfile: Dockerfile
     develop:
       watch:
@@ -20,3 +56,6 @@ services:
           
     ports:
       - "3003:3003"
+
+volumes:
+  postgres_data:
