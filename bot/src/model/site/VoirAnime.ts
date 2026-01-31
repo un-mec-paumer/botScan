@@ -1,5 +1,4 @@
 import { SiteAnime } from "../site";
-import Anime from "../anime";
 import { Browser } from "puppeteer-core";
 import { getCherrioText } from "../../function";
 

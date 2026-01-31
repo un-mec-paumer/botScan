@@ -1,8 +1,6 @@
 import Oeuvre from "./oeuvre";
-import puppeteer, { Browser } from "puppeteer-core";
-import { animeSamaUrl, BROWSER_PATH } from "../variables";
+import { Browser } from "puppeteer-core";
 import { SiteAnime } from "./site";
-import AnimeSama from "./site/AnimeSama";
 
 export default class Anime extends Oeuvre {
     public episode: number;

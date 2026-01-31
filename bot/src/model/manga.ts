@@ -1,6 +1,7 @@
-import { Browser, Page } from "puppeteer-core";
+import { Browser } from "puppeteer-core";
 import { SiteManga } from "./site";
 import { animeSamaUrl } from "../variables";
+
 export default class Manga {
     public id_manga: number;
     public name_manga: string;

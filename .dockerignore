@@ -9,3 +9,7 @@ coverage
 .gitignore
 .vscode
 .idea
+Dockerfile
+docker-compose.yml
+Procfile
+README.md
