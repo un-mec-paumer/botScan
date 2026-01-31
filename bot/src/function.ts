@@ -28,12 +28,12 @@ export async function initBrowser() {
 }
 
 async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
-    // if (manga.id_manga !== XX) return false;
+    // if (![XX, XX].includes(manga.id_manga)) return false;
     try {
         const { tabChap: newChap, linkManga } = await manga.visiteAllSite(browser);
         if (newChap.length === 0) return false;
 
-        await BDD.updateChapitre(manga.name_manga, newChap[newChap.length - 1]);
+        await BDD.updateChapitre(manga.id_manga, newChap[newChap.length - 1]);
         const userBDD = await BDD.getLien(manga.id_manga);
 
         const img = (await BDD.getImgFromTest(manga.name_manga)).publicUrl ?? null;
@@ -61,11 +61,11 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
     }
 }
 
-async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: any, manga: Manga, newChap: number[], linkManga: string): Promise<void> {
-    // if (user.id_user !== DEV) return;
+async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: string, manga: Manga, newChap: number[], linkManga: string): Promise<void> {
+    // if (id_user !== DEV) return;
     const userDiscord = await client.users.fetch(id_user);
 
-    const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
+    // const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
     // if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
 
     if (userDiscord === null) return;

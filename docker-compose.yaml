@@ -40,19 +40,8 @@ services:
     build:
       context: ./bot
       dockerfile: Dockerfile
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /app/src
-          ignore: 
-            - ./node_modules/
-        - action: rebuild
-          path: package.json
-          target: /app/package.json
-        # - action: sync+restart
-        #   path: /src/bot.ts
-        #   target: /app/dist/bot.js
+    volumes:
+      - ./bot/src:/app/src
           
     ports:
       - "3003:3003"

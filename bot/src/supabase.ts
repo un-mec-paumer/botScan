@@ -50,13 +50,13 @@ class supabase {
 
     private convertAnytoManga(data: any): Manga {
         switch (data.id_manga) {
-            case 52:
+            case 52: // c'est pour one piece
                 return new MangaRelou(data, [new AnimeSama(), new MangaMoins(), new MangaPlus()], '_noir-et-blanc');
-            case 64:
+            case 64: /// ça c'est ruri
                 return new Manga(data, [new AnimeSama(), new MangaPlus()]);
-            case 70:
+            case 70: // ça c'est jjk mais modulo
                 return new MangaRelou(data, [new AnimeSama(), new MangaPlus()], '-modulo');   
-            default:
+            default: // le reste
                 return new Manga(data, [new AnimeSama()])
         }
     }
@@ -139,11 +139,11 @@ class supabase {
         return data
     }
 
-    async updateChapitre(name: string, chap: number) {
+    async updateChapitre(id_manga: number, chap: number) {
         const { data, error } = await this.client
             .from('mangas')
             .update({ chapitre_manga: chap })
-            .match({ name_manga: name })
+            .match({ id_manga: id_manga })
         return data
     }
 
