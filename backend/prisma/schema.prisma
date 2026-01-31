@@ -7,27 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  user
-  admin
-  moderator
-  tester
-}
-
 model User {
   id            String           @id @default(uuid())
   email         String           @unique
   passwordHash  String
   username      String?          @unique
-  role          Role             @default(user)     
-  isVerified    Boolean          @default(false)
+  picture       Bytes?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   lastLogin     DateTime?
   deletedAt     DateTime?
 
+  AuthToken     AuthToken[]
+  MangaAlerts   MangaAlert[]
+  AnimeAlerts   AnimeAlert[]
+
   @@map("users")
-  AuthToken AuthToken[]
 }
 
 model AuthToken {
@@ -43,4 +38,63 @@ model AuthToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("auth_tokens")
+}
+
+model Work {
+  id       Int     @id @default(autoincrement())
+  name     String
+  synopsis String?
+  imgUrl   String?
+
+  Mangas   Manga[]
+  Animes   Anime[]
+
+  @@map("works")
+}
+
+model Manga {
+  id      Int    @id @default(autoincrement())
+  source  String
+  chapter String
+  workId Int
+
+  work   Work    @relation(fields: [workId], references: [id])
+  MangaAlerts   MangaAlert[]
+
+  @@map("mangas")
+}
+
+model Anime {
+  id      Int    @id @default(autoincrement())
+  source  String
+  season  String
+  episode String
+  workId  Int
+
+  work   Work    @relation(fields: [workId], references: [id])
+  AnimeAlerts   AnimeAlert[]
+
+  @@map("animes")
+}
+
+model MangaAlert {
+  userId  String
+  mangaId Int
+
+  User    User  @relation(fields: [userId], references: [id])
+  Manga   Manga @relation(fields: [mangaId], references: [id])
+
+  @@id([userId, mangaId])
+  @@map("manga_alerts")
+}
+
+model AnimeAlert {
+  userId  String
+  animeId Int
+
+  User    User  @relation(fields: [userId], references: [id])
+  Anime   Anime @relation(fields: [animeId], references: [id])
+
+  @@id([userId, animeId])
+  @@map("anime_alerts")
 }
