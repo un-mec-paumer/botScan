@@ -1,9 +1,9 @@
 import Manga from '../manga';
-import Site from '../site';
+import {SiteManga} from '../site';
 export default class MangaRelou extends Manga {
     special: string;
     
-    constructor(manga: any, sites: Site[], special: string) {
+    constructor(manga: any, sites: SiteManga[], special: string) {
         super(manga, sites);
         this.special = special;
     }

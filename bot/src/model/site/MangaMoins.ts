@@ -1,12 +1,12 @@
-import Site from "../site";
+import { SiteManga } from "../site";
 import Manga from "../manga";
 import { Browser } from "puppeteer-core";
 import { getCherrioText } from "../../function";
-export default class MangaMoins implements Site {
+export default class MangaMoins implements SiteManga {
     name = "MangaMoins";
     link = "https://mangamoins.com/";
     
-    async visitSite(browser: Browser, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(browser: Browser, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
         
         const $ = await getCherrioText(this.link, browser);
 

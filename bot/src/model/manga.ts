@@ -1,5 +1,5 @@
 import { Browser, Page } from "puppeteer-core";
-import Site from "./site";
+import { SiteManga } from "./site";
 import { animeSamaUrl } from "../variables";
 export default class Manga {
     public id_manga: number;
@@ -7,9 +7,9 @@ export default class Manga {
     public chapitre_manga: number;
     public image: string;
     public synopsis: string;
-    private sites: Site[];
+    private sites: SiteManga[];
 
-    constructor(manga: any, sites: Site[]) {
+    constructor(manga: any, sites: SiteManga[]) {
         this.id_manga = manga.id_manga;
         this.name_manga = manga.name_manga;
         this.chapitre_manga = manga.chapitre_manga;
@@ -19,7 +19,7 @@ export default class Manga {
     }
 
     public async visiteAllSite(browser: Browser) : Promise<{tabChap: number[], linkManga: string}> {
-        const results = await Promise.all(this.sites.map((site, i) => site.visitSite(browser, this)));
+        const results = await Promise.all(this.sites.map((site, i) => site.visitSiteManga(browser, this)));
         const resultFinal = results.filter((result) => result.tabChap.length > 0).sort((a, b) => b.tabChap[b.tabChap.length - 1] - a.tabChap[a.tabChap.length - 1]);
         if (resultFinal.length > 0) return resultFinal[0];
         else return {tabChap: [], linkManga: ""};
@@ -35,10 +35,6 @@ export default class Manga {
 
     public getLink(): string {
         return `${this.getBaseURL()}/scan/vf`;
-    }
-
-    public getMangaInfo(): string {
-        return `${this.name_manga} (Chapter: ${this.chapitre_manga}) - ${this.synopsis}`;
     }
 
     public toString(): string {
