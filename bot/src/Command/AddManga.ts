@@ -44,7 +44,7 @@ export const AddManga: Command = {
         const user = await BDD.getUser(interaction.user.id);
         if(manga!.length === 1) {
             //* nom de variable mofifié car bancale (précédemment user) et en conflit avec la déclaration du dessus qui empêche d'en faire une constante
-            const userLien = await BDD.getLien(manga![0].id_manga);
+            const userLien = await BDD.getLien(manga![0].id);
 
             if(userLien!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
                 interaction.followUp({
@@ -58,7 +58,7 @@ export const AddManga: Command = {
                 await BDD.addUser(interaction.user.id, interaction.user.username, interaction.user.avatarURL()!);
             }
 
-            await BDD.addLien(manga![0].id_manga, interaction.user.id);
+            await BDD.addLien(manga![0].id, interaction.user.id);
             interaction.followUp({
                 ephemeral: true,
                 content: "Manga déjà présent, vous avez été ajouté à la liste des personnes à prévenir"
@@ -110,7 +110,7 @@ export const AddManga: Command = {
         }
         const newManga = await BDD.getManga(nom as string);
 
-        await BDD.addLien(newManga![0].id_manga, interaction.user.id);
+        await BDD.addLien(newManga![0].id, interaction.user.id);
         interaction.followUp({
             ephemeral: true,
             content: "Manga ajouté avec succès"

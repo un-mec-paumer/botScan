@@ -59,7 +59,7 @@ mangaRouter.post("/addManga", async (req: Request, res: Response) => {
 
     if(manga!.length === 1) {
 
-        const userTest = await BDD.getLien(manga![0].id_manga);
+        const userTest = await BDD.getLien(manga![0].id);
         if(userTest!.find(id_user => id_user.id_user == id_user) !== undefined){
             res.send({
                 res: true,
@@ -72,7 +72,7 @@ mangaRouter.post("/addManga", async (req: Request, res: Response) => {
             await BDD.addUser(id_user, userDiscord.username, userDiscord.avatarURL()!);
         }
 
-        await BDD.addLien(manga![0].id_manga, id_user);
+        await BDD.addLien(manga![0].id, id_user);
 
         res.send({
             res: true,
@@ -109,7 +109,7 @@ mangaRouter.post("/addManga", async (req: Request, res: Response) => {
             text: "Manga ajouté avec succès"
         });
     }
-    await BDD.addLien(manga![0].id_manga, userDiscord.id);
+    await BDD.addLien(manga![0].id, userDiscord.id);
 
     res.send({
         res: true,

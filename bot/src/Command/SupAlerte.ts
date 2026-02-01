@@ -35,19 +35,19 @@ export const SupAlerte: Command = {
             return;
         }
 
-        const error = await BDD.supprimerLien(manga![0].id_manga, interaction.user.id);
+        const error = await BDD.supprimerLien(manga![0].id, interaction.user.id);
 
         if(error){
             interaction.followUp({
                 ephemeral: true,
-                content: `Vous n'êtes pas dans la liste des personnes à prévenir de ${manga![0].name_manga.replaceAll("-", " ")}`
+                content: `Vous n'êtes pas dans la liste des personnes à prévenir de ${manga![0].name.replaceAll("-", " ")}`
             });
             return;
         }
 
         interaction.followUp({
             ephemeral: true,
-            content: `Vous avez été supprimé de la liste des personnes à prévenir de ${manga![0].name_manga.replaceAll("-", " ")}`
+            content: `Vous avez été supprimé de la liste des personnes à prévenir de ${manga![0].name.replaceAll("-", " ")}`
         });
     }
 };

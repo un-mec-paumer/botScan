@@ -50,8 +50,8 @@ export const SupManga: Command = {
             return;
         }
 
-        await BDD.supprimerManga(manga![0].name_manga);
-        await BDD.supImgFromTest(manga![0].name_manga);
+        await BDD.supprimerManga(manga![0].name);
+        await BDD.supImgFromTest(manga![0].name);
 
         interaction.followUp({
             ephemeral: true,

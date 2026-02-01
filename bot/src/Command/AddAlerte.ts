@@ -37,7 +37,7 @@ export const AddAlerte: Command = {
         }
 
         //* nom de variable car bancale (précédemment user) et en conflit avec la déclaration du dessus qui empêche d'en faire une constante
-        const userTest = await BDD.getLien(manga![0].id_manga);
+        const userTest = await BDD.getLien(manga![0].id);
         // console.log(user, interaction.user.id);
         if(userTest!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
             interaction.followUp({
@@ -53,10 +53,10 @@ export const AddAlerte: Command = {
             await BDD.addUser(interaction.user.id, interaction.user.username, useravatar!);
         }
 
-        await BDD.addLien(manga![0].id_manga, interaction.user.id)
+        await BDD.addLien(manga![0].id, interaction.user.id)
         interaction.followUp({
             ephemeral: true,
-            content: `Vous avez été ajouté à la liste des personnes à prévenir de ${manga![0].name_manga.replaceAll("-", " ")}`
+            content: `Vous avez été ajouté à la liste des personnes à prévenir de ${manga![0].name.replaceAll("-", " ")}`
         });
     }
 };
