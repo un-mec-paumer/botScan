@@ -5,7 +5,10 @@ WORKDIR /app
 COPY package*.json ./
 COPY config ./
 
-RUN npm install
+RUN apt-get update \
+    && apt-get install -y libssl-dev openssl \
+    && npm install 
+    # && prisma generate
 
 COPY . .
 

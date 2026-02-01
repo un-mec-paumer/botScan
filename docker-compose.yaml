@@ -32,7 +32,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./config/jwt:/app/config/jwt:ro
+      - ./backend/config/jwt:/app/config/jwt:ro
     command: sh -c "npx prisma migrate deploy && npx tsx src/main/server.ts"
 
   bot:

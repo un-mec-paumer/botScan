@@ -1,23 +1,19 @@
 import { Browser } from "puppeteer-core";
 import { SiteManga } from "./site";
 import { animeSamaUrl } from "../variables";
+import Oeuvre from "./oeuvre";
 
-export default class Manga {
-    public id: number;
-    public name: string;
+export default class Manga extends Oeuvre {
     public chapitre: number;
-    public image: string;
-    public synopsis: string;
     private sites: SiteManga[];
 
     constructor(manga: any, sites: SiteManga[]) {
-        this.id = manga.id;
-        this.name = manga.name;
-        this.chapitre = manga.chapitre;
-        this.image = manga.image;
-        this.synopsis = manga.synopsis;
+        const aChangerDansPasLongTemps = {id: manga.id_manga, name: manga.name_manga, image: manga.img, synopsis: manga.synopsis};
+        super(aChangerDansPasLongTemps);
+        this.chapitre = manga.chapitre_manga; // a changer avec la nouvelle BDD
         this.sites = sites;
     }
+
 
     public async visiteAllSite(browser: Browser) : Promise<{tabChap: number[], linkManga: string}> {
         const results = await Promise.all(this.sites.map((site, i) => site.visitSiteManga(browser, this)));
