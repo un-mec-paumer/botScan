@@ -50,37 +50,10 @@ docker compose up --build
 - Les migrations Prisma sont appliquées automatiquement au démarrage du container backend.
 
 
-
-
-
-
-Generate jwt keys (in backend project) (copy/paste in terminal) :
-
-node -e "
-const { generateKeyPairSync } = require('crypto');
-const fs = require('fs');
-
-const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-  modulusLength: 4096,
-  publicKeyEncoding: {
-    type: 'pkcs1',
-    format: 'pem'
-  },
-  privateKeyEncoding: {
-    type: 'pkcs1',
-    format: 'pem'
-  }
-});
-
-if (!fs.existsSync('./config')) fs.mkdirSync('./config');
-if (!fs.existsSync('./config/jwt')) fs.mkdirSync('./config/jwt');
-const path = './config/jwt/';
-
-
-fs.writeFileSync(path + 'private.pem', privateKey);
-fs.writeFileSync(path + 'public.pem', publicKey);
-console.log('JWT keys generated');
-"
+If you're missing jwt keys (e.g. config directory not exists)
+```bash
+npm run generate-jwt-keys
+```
 
 
 
