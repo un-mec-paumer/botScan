@@ -14,7 +14,7 @@ const { values } = parseArgs({
 
 const force = values.force;
 
-function main(): void {
+export default function generateJwtKeys(forceGeneration: boolean = false): void {
 
     const basePath = path.resolve('config/jwt');
     const privatePath = path.join(basePath, 'private.pem');
@@ -25,7 +25,7 @@ function main(): void {
     }
 
     const keysAlreadyExists = fs.existsSync(privatePath) && fs.existsSync(publicPath);
-    if (keysAlreadyExists && !force) {
+    if (keysAlreadyExists && !forceGeneration) {
         console.log('JWT keys already exist');
         return;
     }
@@ -42,5 +42,5 @@ function main(): void {
     console.log('JWT keys generated');
 }
 
-main();
+generateJwtKeys(force);
 
