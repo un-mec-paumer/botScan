@@ -1,6 +1,14 @@
 node_modules
+npm-debug.log
+.DS_Store
 dist
+build
+coverage
+.env
 .git
+.gitignore
+.vscode
+.idea
 Dockerfile
 docker-compose.yml
 Procfile
