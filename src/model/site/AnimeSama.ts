@@ -13,9 +13,6 @@ export default class AnimeSama implements Site {
     async visitSite(manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
 
         const $ = await getCherrioText(manga.getLink());
-        console.log(`${this.name}: Visiting ${manga.getLink()}`);
-        console.log(`${this.name}: Current chapter for ${manga.name_manga} is ${manga.chapitre_manga}`);
-        console.log(`${this.name}: Extracted chapter number from page: ${$("#selectChapitres option").toArray().toString()}`);
         const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
             const nbChap = parseFloat(element!.split(" ")[1])
             // console.log(`Found chapter option: ${element}, parsed chapter number: ${nbChap}`);

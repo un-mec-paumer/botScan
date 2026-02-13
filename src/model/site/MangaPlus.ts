@@ -1,6 +1,5 @@
 import Site from "../site";
 import Manga from "../manga";
-import { Browser } from "puppeteer-core";
 import { getCherrioText } from "../../function";
 
 export default class MangaPlus implements Site {
@@ -20,7 +19,7 @@ export default class MangaPlus implements Site {
         const newChap = $(".ChapterListItem-module_name_3h9dj").toArray().map((element) => { 
             const text = $(element).text();
             return parseFloat(text.replace("#", "").trim());
-        }).filter((nbChap) => {
+        }).filter((nbChap: number) => {
             return nbChap > manga.chapitre_manga
         });
 

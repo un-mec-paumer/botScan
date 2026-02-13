@@ -17,19 +17,20 @@ func search(w http.ResponseWriter, r *http.Request, browser playwright.Browser) 
 	fmt.Println("Received URL:", url)
 	if url == "" {
 		http.Error(w, "Missing query parameter 'url'", http.StatusBadRequest)
+		fmt.Println("Missing query parameter 'url'")
 		return
 	}
 
 	html, err := fetcher(browser, url)
 	if err != nil {
 		http.Error(w, "Failed to fetch URL", http.StatusInternalServerError)
+		fmt.Println("Failed to fetch Error: ", err)
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	response := map[string]string{"result": html}
 	json.NewEncoder(w).Encode(response)
-	// w.Write([]byte(html))
-	// w.Header().Set("Content-Type", "text/html")
 }
 
 func main() {

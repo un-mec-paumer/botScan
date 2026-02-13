@@ -28,13 +28,12 @@ export async function initBrowser() {
 }
 
 async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
-    if (manga.id_manga !== 52) return false;
+    // if (manga.id_manga !== 52) return false;
     try {
-        manga.chapitre_manga = manga.chapitre_manga - 1;
         const { tabChap: newChap, linkManga } = await manga.visiteAllSite(browser);
         if (newChap.length === 0) return false;
 
-        // await BDD.updateChapitre(manga.id_manga, newChap[newChap.length - 1]);
+        await BDD.updateChapitre(manga.id_manga, newChap[newChap.length - 1]);
         const userBDD = await BDD.getLien(manga.id_manga);
 
         const img = (await BDD.getImgFromTest(manga.name_manga)).publicUrl ?? null;
@@ -49,7 +48,7 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
             })
 
         for (let user of userBDD!) {
-            // sendNotifToUser(client, message, user.id_user, manga, newChap, linkManga);
+            sendNotifToUser(client, message, user.id_user, manga, newChap, linkManga);
         }
 
         return true;
@@ -63,7 +62,7 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
 }
 
 async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: any, manga: Manga, newChap: number[], linkManga: string): Promise<void> {
-    if (id_user !== DEV) return;
+    // if (id_user !== DEV) return;
     const userDiscord = await client.users.fetch(id_user);
 
     const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
@@ -127,20 +126,30 @@ export async function downloadImg(imgStr: string, name_manga: string): Promise<v
     await BDD.addImgToTest(name_manga + ".png", img);
 }
 
-export async function getCherrioText(url: string) {
-    const response = await fetch("http://websearch:8080/search?url=" + encodeURIComponent(url), {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    }).then((res) => {
-        return res.json() as Promise<{ result: string }>;
-    }).catch((error) => {
+export async function getCherrioText(url: string): Promise<cheerio.CheerioAPI> {
+    try {
+        const response = await fetch("http://webSearch:8080/search?url=" + encodeURIComponent(url), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        console.log(`Fetched data from websearch for URL: ${url}, Status: ${response.status}`);
+
+        if (!response.ok) {
+            // On lit le texte de l'erreur renvoyé par le serveur
+            const errorText = await response.text(); 
+            throw new Error(`Le serveur a renvoyé une erreur ${response.status} : ${errorText}`);
+        }
+
+        const data = await response.json() as {result: string};
+        return cheerio.load(data.result);
+    } catch (error) {
         console.error('Error fetching data:', error);
-        throw error;
-    });
-    // console.log(response.result);
-    return cheerio.load(response!.result ?? "");
+        // Gérer l'erreur ici (par exemple, afficher un message à l'utilisateur)
+        return cheerio.load('');
+    }
 }
 
 // (async() => {
