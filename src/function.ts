@@ -28,12 +28,13 @@ export async function initBrowser() {
 }
 
 async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
-    // if (manga.id_manga !== XX) return false;
+    if (manga.id_manga !== 52) return false;
     try {
+        manga.chapitre_manga = manga.chapitre_manga - 1;
         const { tabChap: newChap, linkManga } = await manga.visiteAllSite(browser);
         if (newChap.length === 0) return false;
 
-        await BDD.updateChapitre(manga.name_manga, newChap[newChap.length - 1]);
+        // await BDD.updateChapitre(manga.id_manga, newChap[newChap.length - 1]);
         const userBDD = await BDD.getLien(manga.id_manga);
 
         const img = (await BDD.getImgFromTest(manga.name_manga)).publicUrl ?? null;
@@ -48,7 +49,7 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
             })
 
         for (let user of userBDD!) {
-            sendNotifToUser(client, message, user.id_user, manga, newChap, linkManga);
+            // sendNotifToUser(client, message, user.id_user, manga, newChap, linkManga);
         }
 
         return true;
@@ -62,7 +63,7 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
 }
 
 async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: any, manga: Manga, newChap: number[], linkManga: string): Promise<void> {
-    // if (user.id_user !== DEV) return;
+    if (id_user !== DEV) return;
     const userDiscord = await client.users.fetch(id_user);
 
     const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
@@ -126,74 +127,26 @@ export async function downloadImg(imgStr: string, name_manga: string): Promise<v
     await BDD.addImgToTest(name_manga + ".png", img);
 }
 
-export async function getCherrioText(url: string, browser: Browser) {
-    const userAgents = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/115.0",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/114.0",
-        "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0",
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-        "Mozilla/5.0 (iPad; CPU OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
-        "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-        "Mozilla/5.0 (Linux; Android 12; Samsung Galaxy S21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/118.0.2088.46",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Version/15.2 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Opera/91.0.4472.106",
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
-    ];
-
-    try {
-        // console.log("url: ", url);
-        const page = await browser.newPage();
-
-        await page.setRequestInterception(true);
-        page.on('request', (req) => {
-            const resourceType = req.resourceType();
-            const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
-            if (expectedResourceTypes.includes(resourceType)) {
-                req.abort();
-            } else {
-                req.continue();
-            }
-        });
-
-        await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
-        const test = await page.goto(url, {
-            waitUntil: 'networkidle2',
-            // timeout: 45000
-        });
-
-        // console.log(test?.ok(), ' sur le site: ', url);
-
-        // console.log("console: ", test?.ok(), ' sur le site: ', url);
-        // console.log(test?.status(), " ", test?.statusText());
-        // console.log(test?.remoteAddress());
-
-        if (!test?.ok()) {
-            console.error("error coté serveur ou puppeteer");
-            return cheerio.load("");
-        }
-        // await page.waitForSelector('#selectChapitres');
-        const html = await page.content();
-        await page.close();
-        return cheerio.load(html);
-    } catch (error) {
-        console.error(error);
-        return cheerio.load("");
-    }
+export async function getCherrioText(url: string) {
+    const response = await fetch("http://websearch:8080/search?url=" + encodeURIComponent(url), {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }).then((res) => {
+        return res.json() as Promise<{ result: string }>;
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+        throw error;
+    });
+    // console.log(response.result);
+    return cheerio.load(response!.result ?? "");
 }
 
 // (async() => {
-//     const {browser, page} = await initBrowser();
 //     const url = `${animeSamaUrl}/catalogue/marchen-crown/`;
-//     const $ = await getCherrioText(url, page);
+//     const $ = await getCherrioText(url);
 //     console.log($.html());
-
-//     await page.close();
-//     await browser.close();
 // })()
 
 export async function endErasmus(client: Client): Promise<void> {

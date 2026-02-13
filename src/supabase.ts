@@ -139,11 +139,11 @@ class supabase {
         return data
     }
 
-    async updateChapitre(name: string, chap: number) {
+    async updateChapitre(id_manga: number, chap: number) {
         const { data, error } = await this.client
             .from('mangas')
             .update({ chapitre_manga: chap })
-            .match({ name_manga: name })
+            .match({ id_manga: id_manga })
         return data
     }
 

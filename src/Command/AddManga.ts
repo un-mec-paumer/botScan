@@ -1,7 +1,7 @@
 import { Command } from "../Command";
 import { Client, ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { BDD } from "../supabase";
-import { downloadImg, getCherrioText, initBrowser} from "../function";
+import { downloadImg, getCherrioText } from "../function";
 import { animeSamaUrl } from "../variables";
 
 export const AddManga: Command = {
@@ -70,9 +70,9 @@ export const AddManga: Command = {
         // const page = interaction.options.get("page")?.value;
         const url = `${animeSamaUrl}/catalogue/${nom}/`;
 
-        const browser = await initBrowser();
-        const $ = await getCherrioText(url, browser);
-        await browser.close();
+        // const browser = await initBrowser();
+        const $ = await getCherrioText(url);
+        // await browser.close();
 
 
         if($("#coverOeuvre").attr("src") === undefined) {

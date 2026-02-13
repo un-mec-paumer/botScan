@@ -6,9 +6,9 @@ export default class MangaMoins implements Site {
     name = "MangaMoins";
     link = "https://mangamoins.com/";
     
-    async visitSite(browser: Browser, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSite(manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
         
-        const $ = await getCherrioText(this.link, browser);
+        const $ = await getCherrioText(this.link);
 
         const newChap = $('.sortie').toArray().filter((element) => { 
             return $(element).text().toLocaleLowerCase().includes(manga.name_manga.replaceAll('-', ' '));
