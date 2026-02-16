@@ -22,6 +22,6 @@ FROM debian:bookworm-slim
 COPY --from=builder /go/bin/playwright /bin/myapp /
 RUN apt-get update && apt-get install -y ca-certificates tzdata \
     # Install dependencies and all browsers (or specify one)
-    && /playwright install --with-deps \
+    && /playwright install chromium --with-deps \
     && rm -rf /var/lib/apt/lists/*
 CMD ["/myapp"]
