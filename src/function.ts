@@ -2,35 +2,34 @@ import { ActionRowBuilder, Client, CommandInteraction, ComponentType, EmbedBuild
 import { writeFileSync, PathOrFileDescriptor } from 'node:fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
-import puppeteer, { Browser } from 'puppeteer-core';
 import { jsPDF } from "jspdf";
 import Manga from "./model/manga";
-import { animeSamaUrl, BROWSER_PATH, DEV } from "./variables";
+import { animeSamaUrl, DEV } from "./variables";
 
 
-export async function initBrowser() {
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--no-sandbox',
-            // '--disable-setuid-sandbox',
-            // '--disable-blink-features=AutomationControlled',
-            // '--disable-extensions',
-            // '--enable-gpu'
-        ],
-        executablePath: BROWSER_PATH,
-        // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        // ignoreHTTPSErrors: true,
-        protocolTimeout: 60000,
-    });
+// export async function initBrowser() {
+//     const browser = await puppeteer.launch({
+//         headless: true,
+//         args: [
+//             '--no-sandbox',
+//             // '--disable-setuid-sandbox',
+//             // '--disable-blink-features=AutomationControlled',
+//             // '--disable-extensions',
+//             // '--enable-gpu'
+//         ],
+//         executablePath: BROWSER_PATH,
+//         // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+//         // ignoreHTTPSErrors: true,
+//         protocolTimeout: 60000,
+//     });
 
-    return browser;
-}
+//     return browser;
+// }
 
-async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
+async function finder(manga: Manga, client: Client): Promise<boolean> {
     // if (manga.id_manga !== 52) return false;
     try {
-        const { tabChap: newChap, linkManga } = await manga.visiteAllSite(browser);
+        const { tabChap: newChap, linkManga } = await manga.visiteAllSite();
         if (newChap.length === 0) return false;
 
         await BDD.updateChapitre(manga.id_manga, newChap[newChap.length - 1]);
@@ -87,11 +86,11 @@ export async function finderAll(client: Client): Promise<boolean> {
     const time = new Date();
     console.log("temps: ", (time.getHours().toString().split("").length === 1 ? "0" : "") + time.getHours() + "h" + (time.getMinutes().toString().split("").length === 1 ? "0" : "") + time.getMinutes() + "min");
     //const userID = "452370867758956554";
-    let browser = await initBrowser();
+    // let browser = await initBrowser();
     const mangas = await BDD.getMangas() ?? [];
 
     const resultRes = await Promise.all(mangas.map(async (manga) => {
-        const res = await finder(manga, client, browser);
+        const res = await finder(manga, client);
         return res;
     }));
     
@@ -99,7 +98,7 @@ export async function finderAll(client: Client): Promise<boolean> {
 
     // await page.close();
     // await browser.disconnect();
-    await browser.close();
+    // await browser.close();
     return resultRes.reduce((acc, curr) => acc || curr, false);
 }
 //* inutilisé
