@@ -1,0 +1,9 @@
+services:
+  bot:
+    image: bot-scan:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "3003:3003"

@@ -8,12 +8,12 @@ build:
 
 run:	
 	@echo "running docker image..."
-	docker compose up --build -d
+	docker compose -f docker-compose-prod.yaml up --build -d
 
 dev:
 	@echo "starting development server..."
-	docker compose up --build --watch
-
+	docker compose -f docker-compose-dev.yaml up --build --watch
 stop:
 	@echo "stopping docker image..."
-	docker compose down
+	docker compose -f docker-compose-prod.yaml down
+	docker compose -f docker-compose-dev.yaml down
