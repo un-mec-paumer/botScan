@@ -4,5 +4,5 @@ import Manga from "./manga";
 export default interface Site {
     name: string;
     link: string;
-    visitSite(browser: Browser, manga:Manga): Promise<{tabChap: number[], linkManga: string}>;
+    visitSite(manga:Manga): Promise<{tabChap: number[], linkManga: string}>;
 }

@@ -1,13 +1,13 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
-import * as dotenv from 'dotenv'
 import { randomInt } from 'crypto'
 import Manga from './model/manga';
 import MangaRelou from './model/manga/mangaRelou';
-import specRelou from './model/manga/specRelou';
 
 import AnimeSama from './model/site/AnimeSama';
 import MangaMoins from './model/site/MangaMoins';
 import MangaPlus from './model/site/MangaPlus';
+
+import { SUPABASE_EMAIL, SUPABASE_KEY, SUPABASE_PASSWORD, SUPABASE_URL } from './variables';
 
 
 export function randomString() {
@@ -27,42 +27,37 @@ class supabase {
     private key!: string;
 
     private client!: SupabaseClient;
+    protected static Instance: supabase;
 
-    public static instance: supabase;
+    public static get instance(): supabase {
+        if (supabase.Instance === undefined || supabase.Instance === null) {
+            supabase.Instance = new supabase();
+        }
+        return supabase.Instance;
+    }
 
-    constructor() {
-        // if (supabase.instance !== undefined || supabase.instance !== null ) {
+    private constructor() {
+        this.url = SUPABASE_URL!
+        this.key = SUPABASE_KEY!
 
-        //     return supabase.instance;
-        // } else {
-        // supabase.instance = this;
-
-        dotenv.config()
-        this.url = process.env.SUPABASE_URL!
-        this.key = process.env.SUPABASE_KEY!
-
-        //console.log(this.url, this.key)
         this.client = createClient(this.url, this.key)
 
         this.client.auth.signInWithPassword({
-            email: process.env.SUPABASE_EMAIL!,
-            password: process.env.SUPABASE_PASSWORD!
+            email: SUPABASE_EMAIL!,
+            password: SUPABASE_PASSWORD!
         })
-        return this;
-        // }
-
     }
 
     private convertAnytoManga(data: any): Manga {
         switch (data.id_manga) {
             case 52:
-                return new MangaRelou(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaMoins(), new MangaPlus()], new specRelou('_noir-et-blanc'));
+                return new MangaRelou(data, [new AnimeSama(), new MangaMoins(), new MangaPlus()], '_noir-et-blanc');
             case 64:
-                return new Manga(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaPlus()]);
+                return new Manga(data, [new AnimeSama(), new MangaPlus()]);
             case 70:
-                return new MangaRelou(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama(), new MangaPlus()], new specRelou('-modulo'));   
+                return new MangaRelou(data, [new AnimeSama(), new MangaPlus()], '-modulo');   
             default:
-                return new Manga(data.id_manga, data.name_manga, data.chapitre_manga, data.img, data.synopsis, [new AnimeSama()])
+                return new Manga(data, [new AnimeSama()])
         }
     }
 
@@ -144,11 +139,11 @@ class supabase {
         return data
     }
 
-    async updateChapitre(name: string, chap: number) {
+    async updateChapitre(id_manga: number, chap: number) {
         const { data, error } = await this.client
             .from('mangas')
             .update({ chapitre_manga: chap })
-            .match({ name_manga: name })
+            .match({ id_manga: id_manga })
         return data
     }
 
@@ -357,4 +352,4 @@ class supabase {
 
 }
 
-export const BDD = new supabase()
+export const BDD = supabase.instance

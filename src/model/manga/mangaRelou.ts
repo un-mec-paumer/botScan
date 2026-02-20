@@ -1,15 +1,14 @@
 import Manga from '../manga';
 import Site from '../site';
-import specRelou from './specRelou';
 export default class MangaRelou extends Manga {
-    special: specRelou;
+    special: string;
     
-    constructor(id_manga: number, name_manga: string, chapitre_manga: number, image: string, synopsis: string, sites: Site[], special: specRelou) {
-        super(id_manga, name_manga, chapitre_manga, image, synopsis, sites);
+    constructor(manga: any, sites: Site[], special: string) {
+        super(manga, sites);
         this.special = special;
     }
 
-    getLink(): string {
-        return `${this.getBaseURL()}/scan${this.special.content}/vf/`;
+    getLink(): string { // Override getLink method so decorated link is correct
+        return `${this.getBaseURL()}/scan${this.special}/vf/`;
     }
 }

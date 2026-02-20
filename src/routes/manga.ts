@@ -1,7 +1,7 @@
 import { Request, Response, Router} from "express";
 import { BDD } from "../supabase";
 import { client } from "../bot";
-import { downloadImg, getCherrioText, initBrowser } from "../function";
+import { downloadImg, getCherrioText } from "../function";
 
 const mangaRouter = Router();
 
@@ -82,9 +82,9 @@ mangaRouter.post("/addManga", async (req: Request, res: Response) => {
     }
 
     const url = `https://fr-scan.com/manga/${name}/`;
-    const browser = await initBrowser();
-    const $ = await getCherrioText(url, browser);
-    await browser.close();
+    // const browser = await initBrowser();
+    const $ = await getCherrioText(url);
+    // await browser.close();
 
 
 

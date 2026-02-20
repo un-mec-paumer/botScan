@@ -2,55 +2,37 @@ import { ActionRowBuilder, Client, CommandInteraction, ComponentType, EmbedBuild
 import { writeFileSync, PathOrFileDescriptor } from 'node:fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
-import puppeteer, { Browser, Page } from 'puppeteer-core';
-import * as dotenv from 'dotenv';
 import { jsPDF } from "jspdf";
 import Manga from "./model/manga";
-import { animeSamaUrl } from "./variables";
+import { animeSamaUrl, DEV } from "./variables";
 
-dotenv.config()
 
-export async function initBrowser() {
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--no-sandbox',
-            // '--disable-setuid-sandbox',
-            // '--disable-blink-features=AutomationControlled',
-            // '--disable-extensions',
-            // '--enable-gpu'
-        ],
-        executablePath: process.env.CHROME_PATH,
-        // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        // ignoreHTTPSErrors: true,
-        protocolTimeout: 60000,
-    });
+// export async function initBrowser() {
+//     const browser = await puppeteer.launch({
+//         headless: true,
+//         args: [
+//             '--no-sandbox',
+//             // '--disable-setuid-sandbox',
+//             // '--disable-blink-features=AutomationControlled',
+//             // '--disable-extensions',
+//             // '--enable-gpu'
+//         ],
+//         executablePath: BROWSER_PATH,
+//         // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+//         // ignoreHTTPSErrors: true,
+//         protocolTimeout: 60000,
+//     });
 
-    const page = await browser.newPage();
-    await page.setRequestInterception(true);
-    page.on('request', (req) => {
-        const resourceType = req.resourceType();
-        const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
-        if (expectedResourceTypes.includes(resourceType)) {
-            req.abort();
-        } else {
-            req.continue();
-        }
-    });
+//     return browser;
+// }
 
-    // await page.setViewport({ width: 1920, height: 1080 });
-    // await page.setDefaultNavigationTimeout(0);
-    // return { browser, page }
-    return browser;
-}
-
-async function finder(manga: Manga, client: Client, browser: Browser): Promise<boolean> {
-    // if (manga.id_manga !== XX) return false;
+async function finder(manga: Manga, client: Client): Promise<boolean> {
+    // if (manga.id_manga !== 52) return false;
     try {
-        const { tabChap: newChap, linkManga } = await manga.visiteAllSite(browser);
+        const { tabChap: newChap, linkManga } = await manga.visiteAllSite();
         if (newChap.length === 0) return false;
 
-        await BDD.updateChapitre(manga.name_manga, newChap[newChap.length - 1]);
+        await BDD.updateChapitre(manga.id_manga, newChap[newChap.length - 1]);
         const userBDD = await BDD.getLien(manga.id_manga);
 
         const img = (await BDD.getImgFromTest(manga.name_manga)).publicUrl ?? null;
@@ -60,28 +42,13 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
             .setURL(linkManga)
             .setImage(img)
             .setFooter({
-                text: "dev " + (await client.users.fetch(process.env.DEV!)).username,
-                iconURL: (await client.users.fetch(process.env.DEV!)).displayAvatarURL()
+                text: "dev " + (await client.users.fetch(DEV)).username,
+                iconURL: (await client.users.fetch(DEV)).displayAvatarURL()
             })
 
-        userBDD!.forEach(async (user) => {
-            // if (user.id_user !== process.env.DEV) return;
-            const userDiscord = await client.users.fetch(user.id_user);
-
-            const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
-            // if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
-
-            if (userDiscord === null) return;
-            if (userDiscord.dmChannel === null) await userDiscord.createDM();
-            let messageText = '';
-            if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga.replaceAll("-", " ")} est sorti !\n${linkManga}`;
-            else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
-            else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
-
-            message.setDescription(messageText);
-            console.log(messageText);
-            await userDiscord.send({ embeds: [message] });
-        });
+        for (let user of userBDD!) {
+            sendNotifToUser(client, message, user.id_user, manga, newChap, linkManga);
+        }
 
         return true;
 
@@ -93,17 +60,37 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
     }
 }
 
+async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: any, manga: Manga, newChap: number[], linkManga: string): Promise<void> {
+    // if (id_user !== DEV) return;
+    const userDiscord = await client.users.fetch(id_user);
+
+    const lastMessage = await userDiscord.dmChannel?.messages.fetch({ limit: 1 })
+    // if (lastMessage?.last()?.content.includes(chap.replaceAll("-", " "))) return false;
+
+    if (userDiscord === null) return;
+    if (userDiscord.dmChannel === null) await userDiscord.createDM();
+    let messageText = '';
+    if (newChap.length === 1) messageText = `Le chapitre ${newChap[0]} de ${manga.name_manga.replaceAll("-", " ")} est sorti !\n${linkManga}`;
+    else if (newChap.length === 2) messageText = `Les chapitres ${newChap[0]} et ${newChap[1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
+    else messageText = `Les chapitres ${newChap[0]} à ${newChap[newChap.length - 1]} de ${manga.name_manga.replaceAll("-", " ")} sont sortis !\n${linkManga}`;
+
+    message.setDescription(messageText);
+    // console.log(messageText);
+    const res = await userDiscord.send({ embeds: [message] });
+    await res.react('👍');
+}
+
 
 export async function finderAll(client: Client): Promise<boolean> {
     console.log("finderAll");
     const time = new Date();
     console.log("temps: ", (time.getHours().toString().split("").length === 1 ? "0" : "") + time.getHours() + "h" + (time.getMinutes().toString().split("").length === 1 ? "0" : "") + time.getMinutes() + "min");
     //const userID = "452370867758956554";
-    let browser = await initBrowser();
+    // let browser = await initBrowser();
     const mangas = await BDD.getMangas() ?? [];
 
     const resultRes = await Promise.all(mangas.map(async (manga) => {
-        const res = await finder(manga, client, browser);
+        const res = await finder(manga, client);
         return res;
     }));
     
@@ -111,8 +98,8 @@ export async function finderAll(client: Client): Promise<boolean> {
 
     // await page.close();
     // await browser.disconnect();
-    await browser.close();
-    return resultRes.includes(true);
+    // await browser.close();
+    return resultRes.reduce((acc, curr) => acc || curr, false);
 }
 //* inutilisé
 export function sauvegarder(data: string/*, path:PathOrFileDescriptor*/): boolean {
@@ -138,74 +125,36 @@ export async function downloadImg(imgStr: string, name_manga: string): Promise<v
     await BDD.addImgToTest(name_manga + ".png", img);
 }
 
-export async function getCherrioText(url: string, browser: Browser) {
-    const userAgents = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/115.0",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/114.0",
-        "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0",
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-        "Mozilla/5.0 (iPad; CPU OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
-        "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-        "Mozilla/5.0 (Linux; Android 12; Samsung Galaxy S21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/118.0.2088.46",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Version/15.2 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Opera/91.0.4472.106",
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
-    ];
-
+export async function getCherrioText(url: string): Promise<cheerio.CheerioAPI> {
     try {
-        // console.log("url: ", url);
-        const page = await browser.newPage();
-
-        await page.setRequestInterception(true);
-        page.on('request', (req) => {
-            const resourceType = req.resourceType();
-            const expectedResourceTypes = ["image", "stylesheet", "font", "media"];
-            if (expectedResourceTypes.includes(resourceType)) {
-                req.abort();
-            } else {
-                req.continue();
-            }
+        const response = await fetch("http://webSearch:8080/search?url=" + encodeURIComponent(url), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
 
-        await page.setUserAgent(userAgents[Math.floor(Math.random() * userAgents.length)]);
-        const test = await page.goto(url, {
-            waitUntil: 'networkidle2',
-            // timeout: 45000
-        });
+        console.log(`Fetched data from websearch for URL: ${url}, Status: ${response.status}`);
 
-        // console.log(test?.ok(), ' sur le site: ', url);
-
-        // console.log("console: ", test?.ok(), ' sur le site: ', url);
-        // console.log(test?.status(), " ", test?.statusText());
-        // console.log(test?.remoteAddress());
-
-        if (!test?.ok()) {
-            console.error("error coté serveur ou puppeteer");
-            return cheerio.load("");
+        if (!response.ok) {
+            // On lit le texte de l'erreur renvoyé par le serveur
+            const errorText = await response.text(); 
+            throw new Error(`Le serveur a renvoyé une erreur ${response.status} : ${errorText}`);
         }
-        // await page.waitForSelector('#selectChapitres');
-        const html = await page.content();
-        await page.close();
-        return cheerio.load(html);
+
+        const data = await response.json() as {result: string};
+        return cheerio.load(data.result);
     } catch (error) {
-        console.error(error);
-        return cheerio.load("");
+        console.error('Error fetching data:', error);
+        // Gérer l'erreur ici (par exemple, afficher un message à l'utilisateur)
+        return cheerio.load('');
     }
 }
 
 // (async() => {
-//     const {browser, page} = await initBrowser();
 //     const url = `${animeSamaUrl}/catalogue/marchen-crown/`;
-//     const $ = await getCherrioText(url, page);
+//     const $ = await getCherrioText(url);
 //     console.log($.html());
-
-//     await page.close();
-//     await browser.close();
 // })()
 
 export async function endErasmus(client: Client): Promise<void> {
@@ -223,8 +172,8 @@ export async function endErasmus(client: Client): Promise<void> {
     // console.log(usersReaction);
 
     for (let id of usersReaction) {
-        // console.log(id, process.env.DEV);
-        if (id !== process.env.DEV) continue;
+        // console.log(id, DEV);
+        if (id !== DEV) continue;
         const user = await client.users.fetch(id);
         // console.log(user.globalName);
         if (user.dmChannel === null) await user.createDM();
@@ -248,7 +197,7 @@ export async function endErasmus(client: Client): Promise<void> {
 // endErasmus();
 
 export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandInteraction): Promise<void> {
-    const dev = await interaction.client.users.fetch(process.env.DEV!);
+    const dev = await interaction.client.users.fetch(DEV);
     mangas = mangas.sort((a, b) => a.name_manga.localeCompare(b.name_manga));
     const img = (await BDD.getImgFromTest(mangas[0].name_manga)).publicUrl ?? null;
 
@@ -276,8 +225,7 @@ export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandI
                     .setLabel(manga.name_manga.replaceAll("-", " "))
                     .setValue(String(manga.id_manga))
                     .setDescription(manga.synopsis.split(" ").slice(0, 10).join(" ") + " ...")
-            }
-            )
+            })
         )
 
     const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)

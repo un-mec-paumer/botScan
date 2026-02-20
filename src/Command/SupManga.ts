@@ -2,6 +2,7 @@ import { Command } from "../Command";
 import { Client, ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { BDD } from "../supabase";
 import dotenv from "dotenv";
+import { DEV } from "../variables";
 
 export const SupManga: Command = {
     name: "supmanga",
@@ -31,7 +32,7 @@ export const SupManga: Command = {
         dotenv.config();
 
 
-        if(interaction.user.id !== process.env.DEV!) {
+        if(interaction.user.id !== DEV) {
             interaction.followUp({
                 ephemeral: true,
                 content: "Vous n'avez pas les droits pour cette commande"

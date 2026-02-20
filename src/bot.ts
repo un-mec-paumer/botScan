@@ -1,21 +1,16 @@
 import { Client, GatewayIntentBits as Intents} from "discord.js";
-import * as dotenv from 'dotenv'
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
 import { finderAll } from "./function";
 import Express, { Request, Response, NextFunction } from "express";
-import { BDD } from "./supabase";
 import mangaRouter from "./routes/manga";
 import subRouter from "./routes/subsribe";
 import userRouter from "./routes/user";
+import { PORT, TOKEN } from "./variables";
 // import { Player } from "discord-player";
 
-dotenv.config()
 
-function ntm() {
-    BDD.verifTokens()
-}
 
 console.log("Bot is starting...");
 
@@ -39,7 +34,7 @@ interactionCreate(client);
 messageCreate(client);
 
 
-client.login(process.env.TOKEN);
+client.login(TOKEN);
 const interval = setInterval(finderAll, 1000 * 60 * 10, client);
 
 const app = Express();
@@ -55,7 +50,7 @@ app.use((req:Request, res:Response, next:NextFunction ) => {
 
 app.use(Express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 3000;
+
 
 app.listen(PORT, () => {
     console.log("Server started! Listening on port " + PORT);

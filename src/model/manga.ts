@@ -9,23 +9,25 @@ export default class Manga {
     public synopsis: string;
     private sites: Site[];
 
-    constructor(id_manga: number, name_manga: string, chapitre_manga: number, image: string, synopsis: string, sites: Site[]) {
-        this.id_manga = id_manga;
-        this.name_manga = name_manga;
-        this.chapitre_manga = chapitre_manga;
-        this.image = image;
-        this.synopsis = synopsis;
+    constructor(manga: any, sites: Site[]) {
+        this.id_manga = manga.id_manga;
+        this.name_manga = manga.name_manga;
+        this.chapitre_manga = manga.chapitre_manga;
+        this.image = manga.image;
+        this.synopsis = manga.synopsis;
         this.sites = sites;
     }
 
-    public async visiteAllSite(browser: Browser) : Promise<{tabChap: number[], linkManga: string}> {
-        const results = await Promise.all(this.sites.map((site, i) => site.visitSite(browser, this)));
+    public async visiteAllSite() : Promise<{tabChap: number[], linkManga: string}> {
+        const results = await Promise.all(this.sites.map((site, i) => site.visitSite(this)));
         const resultFinal = results.filter((result) => result.tabChap.length > 0).sort((a, b) => b.tabChap[b.tabChap.length - 1] - a.tabChap[a.tabChap.length - 1]);
+        
+        console.log(`Manga: ${this.name_manga}, Results:`, results);
         if (resultFinal.length > 0) return resultFinal[0];
         else return {tabChap: [], linkManga: ""};
     }
 
-    public nbSites(): number {
+    get nbSites(): number {
         return this.sites.length;
     }
 
