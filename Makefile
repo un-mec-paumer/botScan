@@ -12,7 +12,7 @@ run:
 
 dev:
 	@echo "starting development server..."
-	docker compose -f docker-compose-dev.yaml up --build --watch
+	docker compose -f docker-compose-dev.yaml up --build
 stop:
 	@echo "stopping docker image..."
 	docker compose -f docker-compose-prod.yaml down

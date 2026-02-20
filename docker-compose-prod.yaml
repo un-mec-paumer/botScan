@@ -1,9 +1,22 @@
 services:
   bot:
+    container_name: bot-scan
     image: bot-scan:latest
+    depends_on:
+      - websearch
     build:
       context: .
       dockerfile: Dockerfile
       target: production
+    env_file:
+      - .env
     ports:
       - "3003:3003"
+
+  websearch:
+    container_name: websearch
+    build:
+      context: ./webSearch
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
