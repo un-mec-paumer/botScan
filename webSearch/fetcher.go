@@ -1,7 +1,8 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
+
 	"github.com/playwright-community/playwright-go"
 )
 
@@ -38,6 +39,11 @@ func fetcher(browser playwright.Browser, url string) (string, error) {
 	htmlContent, err = page.Content()
 	if err != nil {
 		return "", err
+	}
+
+	if htmlContent == "" {
+		fmt.Printf("Failed to fetch content from %s\n", url)
+		return "", nil
 	}
 
 	return htmlContent, nil
