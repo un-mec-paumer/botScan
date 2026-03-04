@@ -1,0 +1,17 @@
+name: discord message
+on: 
+  push:
+    branches: [ master,  init-backend]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: send custom message
+        uses: appleboy/discord-action@v1.2.0
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          message: ${{ github.actor }} a ${{ github.event_name }} dans le repo ${{ github.repository }}  avec un commit sur la branche ${{ github.ref }}
+          username: botScan-Notification
+          
