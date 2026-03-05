@@ -28,12 +28,12 @@ services:
     environment:
       PORT: 3000
       DATABASE_URL: postgresql://botscan:botscan_pass@postgres:5432/botscan_db
-      NODE_ENV: production
+      NODE_ENV: development
     ports:
       - '3000:3000'
     volumes:
-      - ./backend/config/jwt:/app/config/jwt:ro
-    command: sh -c "npx prisma migrate deploy && npx tsx src/main/server.ts"
+      - ./backend:/app
+      - /app/node_modules
 
   bot:
     image: bot-scan:latest

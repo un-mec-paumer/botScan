@@ -4,8 +4,9 @@ import { AuthServiceError } from '../../errors/AuthServiceError';
 import {
   RefreshTokenRequestDto,
   RefreshTokenRequestDtoType,
-} from '../../dtos/RefreshTokenRequestDto';
+} from '../../dtos/auth/RefreshTokenRequestDto';
 import { z } from 'zod';
+import { ErrorDto } from '../../dtos/ErrorDto';
 
 const refreshRoute: FastifyPluginAsync = async (fastify) => {
   const authService = new AuthService(fastify.prisma);
@@ -19,12 +20,8 @@ const refreshRoute: FastifyPluginAsync = async (fastify) => {
       200: z.object({
         accessToken: z.string().describe('The new JWT access token'),
       }),
-      401: z.object({
-        error: z.string(),
-      }),
-      500: z.object({
-        error: z.string(),
-      }),
+      401: ErrorDto,
+      500: ErrorDto,
     },
   };
 

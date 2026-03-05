@@ -2,10 +2,11 @@ import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import {
   RegisterUserRequestDto,
   RegisterUserRequestDtoType,
-} from '../../dtos/RegisterUserRequestDto';
+} from '../../dtos/auth/RegisterUserRequestDto';
 import { AuthService } from '../../services/AuthService';
 import { AuthServiceError } from '../../errors/AuthServiceError';
 import { z } from 'zod';
+import { ErrorDto } from '../../dtos/ErrorDto';
 
 const registerRoute: FastifyPluginAsync = async (fastify) => {
   const authService = new AuthService(fastify.prisma);
@@ -25,9 +26,7 @@ const registerRoute: FastifyPluginAsync = async (fastify) => {
         error: z.string(),
         details: z.any().optional(),
       }),
-      409: z.object({
-        error: z.string(),
-      }),
+      409: ErrorDto,
     },
   };
 

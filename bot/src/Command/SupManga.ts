@@ -40,7 +40,7 @@ export const SupManga: Command = {
             return;
         }
 
-        const manga = await BDD.getManga(nom as string);
+        const manga = await BDD.getMangaByName(nom as string);
         // console.log(manga);
         if(manga!.length === 0){
             interaction.followUp({

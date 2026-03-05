@@ -25,7 +25,7 @@ export const SupAlerte: Command = {
         const name = interaction.options.getString("name", true)
                     ?.toString().toLowerCase().replaceAll(" ", "-");
 
-        const manga = await BDD.getManga(name!);
+        const manga = await BDD.getMangaByName(name!);
 
         if(manga!.length === 0){
             interaction.followUp({
@@ -35,7 +35,7 @@ export const SupAlerte: Command = {
             return;
         }
 
-        const error = await BDD.supprimerLien(manga![0].id, interaction.user.id);
+        const error = await BDD.deleteAlert(manga![0].id, interaction.user.id);
 
         if(error){
             interaction.followUp({

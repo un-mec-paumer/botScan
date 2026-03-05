@@ -16,7 +16,7 @@ export const ListeManga: Command = {
         // console.log("Hello world!");
         // console.log(interaction.user.id);
 
-        const mangas = await BDD.getMangaBylien(interaction.user.id);
+        const mangas = await BDD.getAlertsByUserId(interaction.user.id);
         
         // console.log("mangas", mangas);
         // interaction.followUp({ content: "Voici la liste des mangas que tu suis" });

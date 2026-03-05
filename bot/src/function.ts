@@ -6,6 +6,10 @@ import puppeteer, { Browser } from 'puppeteer-core';
 import { jsPDF } from "jspdf";
 import Manga from "./model/manga";
 import { animeSamaUrl, BROWSER_PATH, DEV } from "./variables";
+import MangaRelou from "./model/manga/mangaRelou";
+import AnimeSama from "./model/site/AnimeSama";
+import MangaMoins from "./model/site/MangaMoins";
+import MangaPlus from "./model/site/MangaPlus";
 
 
 export async function initBrowser() {
@@ -33,8 +37,8 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
         const { tabChap: newChap, linkManga } = await manga.visiteAllSite(browser);
         if (newChap.length === 0) return false;
 
-        await BDD.updateChapitre(manga.id, newChap[newChap.length - 1]);
-        const userBDD = await BDD.getLien(manga.id);
+        await BDD.updateChapter(manga.id, newChap[newChap.length - 1]);
+        const userBDD = await BDD.getAlertsByWorkId(manga.id);
 
         const img = (await BDD.getImgFromTest(manga.name)).publicUrl ?? null;
 
@@ -415,6 +419,19 @@ function getImageSize(buffer: Uint8Array): { width: number, height: number, type
     }
 
     return null;
+}
+
+export function convertAnytoManga(data: any): Manga {
+    switch (data.id_manga) {
+        case 52: // c'est pour one piece
+            return new MangaRelou(data, [new AnimeSama(), new MangaMoins(), new MangaPlus()], '_noir-et-blanc');
+        case 64: /// ça c'est ruri
+            return new Manga(data, [new AnimeSama(), new MangaPlus()]);
+        case 70: // ça c'est jjk mais modulo
+            return new MangaRelou(data, [new AnimeSama(), new MangaPlus()], '-modulo');   
+        default: // le reste
+            return new Manga(data, [new AnimeSama()])
+    }
 }
 
 

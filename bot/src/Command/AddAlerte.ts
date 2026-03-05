@@ -26,7 +26,7 @@ export const AddAlerte: Command = {
         const nameRaw = interaction.options.getString("name", true);
         const name = nameRaw.toLowerCase().replaceAll(" ", "-");
 
-        const manga = await BDD.getManga(name!)
+        const manga = await BDD.getMangaByName(name!)
         // console.log(manga);
         if (manga!.length == 0) {
             interaction.followUp({
@@ -37,7 +37,7 @@ export const AddAlerte: Command = {
         }
 
         //* nom de variable car bancale (précédemment user) et en conflit avec la déclaration du dessus qui empêche d'en faire une constante
-        const userTest = await BDD.getLien(manga![0].id);
+        const userTest = await BDD.getAlertsByWorkId(manga![0].id);
         // console.log(user, interaction.user.id);
         if(userTest!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
             interaction.followUp({
@@ -53,7 +53,7 @@ export const AddAlerte: Command = {
             await BDD.addUser(interaction.user.id, interaction.user.username, useravatar!);
         }
 
-        await BDD.addLien(manga![0].id, interaction.user.id)
+        await BDD.addMangaAlert(manga![0].id, interaction.user.id)
         interaction.followUp({
             ephemeral: true,
             content: `Vous avez été ajouté à la liste des personnes à prévenir de ${manga![0].name.replaceAll("-", " ")}`

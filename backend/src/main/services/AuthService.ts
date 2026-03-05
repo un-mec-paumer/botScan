@@ -46,8 +46,6 @@ export class AuthService {
   async registerUser(
     email: string,
     password: string,
-    nativeLanguage: string,
-    studyLanguage: string,
     username?: string
   ): Promise<User> {
     return this.prisma.$transaction(async (tx) => {

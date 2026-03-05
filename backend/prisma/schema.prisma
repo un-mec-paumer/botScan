@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -8,19 +9,18 @@ datasource db {
 }
 
 model User {
-  id            String           @id @default(uuid())
-  email         String           @unique
-  passwordHash  String
-  username      String?          @unique
+  id            String    @id @default(uuid())
+  email         String?   @unique
+  passwordHash  String?
+  username      String?   @unique
   picture       Bytes?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   lastLogin     DateTime?
   deletedAt     DateTime?
 
   AuthToken     AuthToken[]
-  MangaAlerts   MangaAlert[]
-  AnimeAlerts   AnimeAlert[]
+  Alerts        Alert[]
 
   @@map("users")
 }
@@ -41,60 +41,30 @@ model AuthToken {
 }
 
 model Work {
-  id       Int     @id @default(autoincrement())
-  name     String
-  synopsis String?
-  imgUrl   String?
+  id           Int     @id @default(autoincrement())
+  name         String
+  synopsis     String?
+  imgUrl       String?
+  mangaSource  String?
+  mangaChapter String?
+  animeSource  String?
+  animeSeason  String?
+  animeEpisode String?
 
-  Mangas   Manga[]
-  Animes   Anime[]
+  Alerts       Alert[]
 
   @@map("works")
 }
 
-model Manga {
-  id      Int    @id @default(autoincrement())
-  source  String
-  chapter String
-  workId Int
+model Alert {
+  userId     String
+  workId     Int
+  mangaAlert Boolean @default(false)
+  animeAlert Boolean @default(false)
 
-  work   Work    @relation(fields: [workId], references: [id])
-  MangaAlerts   MangaAlert[]
+  User       User    @relation(fields: [userId], references: [id])
+  Work       Work    @relation(fields: [workId], references: [id])
 
-  @@map("mangas")
-}
-
-model Anime {
-  id      Int    @id @default(autoincrement())
-  source  String
-  season  String
-  episode String
-  workId  Int
-
-  work   Work    @relation(fields: [workId], references: [id])
-  AnimeAlerts   AnimeAlert[]
-
-  @@map("animes")
-}
-
-model MangaAlert {
-  userId  String
-  mangaId Int
-
-  User    User  @relation(fields: [userId], references: [id])
-  Manga   Manga @relation(fields: [mangaId], references: [id])
-
-  @@id([userId, mangaId])
-  @@map("manga_alerts")
-}
-
-model AnimeAlert {
-  userId  String
-  animeId Int
-
-  User    User  @relation(fields: [userId], references: [id])
-  Anime   Anime @relation(fields: [animeId], references: [id])
-
-  @@id([userId, animeId])
-  @@map("anime_alerts")
+  @@id([userId, workId])
+  @@map("alerts")
 }

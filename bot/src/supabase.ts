@@ -8,6 +8,7 @@ import MangaMoins from './model/site/MangaMoins';
 import MangaPlus from './model/site/MangaPlus';
 
 import { SUPABASE_EMAIL, SUPABASE_KEY, SUPABASE_PASSWORD, SUPABASE_URL } from './variables';
+import { convertAnytoManga } from './function';
 
 
 export function randomString() {
@@ -22,18 +23,18 @@ export function randomString() {
     return result;
 }
 
-class supabase {
+class Supabase {
     private url!: string;
     private key!: string;
 
     private client!: SupabaseClient;
-    protected static Instance: supabase;
+    protected static Instance: Supabase;
 
-    public static get instance(): supabase {
-        if (supabase.Instance === undefined || supabase.Instance === null) {
-            supabase.Instance = new supabase();
+    public static get instance(): Supabase {
+        if (Supabase.Instance === undefined || Supabase.Instance === null) {
+            Supabase.Instance = new Supabase();
         }
-        return supabase.Instance;
+        return Supabase.Instance;
     }
 
     private constructor() {
@@ -48,29 +49,16 @@ class supabase {
         })
     }
 
-    private convertAnytoManga(data: any): Manga {
-        switch (data.id_manga) {
-            case 52: // c'est pour one piece
-                return new MangaRelou(data, [new AnimeSama(), new MangaMoins(), new MangaPlus()], '_noir-et-blanc');
-            case 64: /// ça c'est ruri
-                return new Manga(data, [new AnimeSama(), new MangaPlus()]);
-            case 70: // ça c'est jjk mais modulo
-                return new MangaRelou(data, [new AnimeSama(), new MangaPlus()], '-modulo');   
-            default: // le reste
-                return new Manga(data, [new AnimeSama()])
-        }
-    }
-
     async getMangas(): Promise<Manga[] | null> {
         const { data, error } = await this.client
             .from('mangas')
             .select('*')
 
         if (error) console.error(error)
-        return data?.map((e) => this.convertAnytoManga(e)) || null;
+        return data?.map((e) => convertAnytoManga(e)) || null;
     }
 
-    async getManga(name: string): Promise<Manga[] | null> {
+    async getMangaByName(name: string): Promise<Manga[] | null> {
         const { data, error } = await this.client
             .from('mangas')
             .select('*')
@@ -82,7 +70,7 @@ class supabase {
         //     e.img = this.client.storage.from('mangas').createSignedUrl(e.img, 60 * 60 * 24)
         // })
         //console.log(data)
-        return data?.map((e) => this.convertAnytoManga(e)) || null;
+        return data?.map((e) => convertAnytoManga(e)) || null;
     }
 
     async getMangaById(id: number): Promise<Manga[] | null> {
@@ -90,10 +78,10 @@ class supabase {
             .from('mangas')
             .select('*')
             .match({ id_manga: id })
-        return data?.map((e) => this.convertAnytoManga(e)) || null;
+        return data?.map((e) => convertAnytoManga(e)) || null;
     }
 
-    async getMangaBylien(id: string) : Promise<Manga[] | null> {
+    async getAlertsByUserId(id: string) : Promise<Manga[] | null> {
         const res = await this.client
             .from('alerte')
             .select('id_manga')
@@ -111,7 +99,7 @@ class supabase {
         })
 
         // console.log(mangas)
-        return mangas?.map((e) => this.convertAnytoManga(e)) || null;
+        return mangas?.map((e) => convertAnytoManga(e)) || null;
     }
 
     async supprimerManga(name: string) {
@@ -131,15 +119,7 @@ class supabase {
         return data
     }
 
-    async getChapitre(name: string) {
-        const { data, error } = await this.client
-            .from('mangas')
-            .select('chapitre_manga')
-            .match({ name_manga: name })
-        return data
-    }
-
-    async updateChapitre(id_manga: number, chap: number) {
+    async updateChapter(id_manga: number, chap: number) {
         const { data, error } = await this.client
             .from('mangas')
             .update({ chapitre_manga: chap })
@@ -187,7 +167,7 @@ class supabase {
         return data
     }
 
-    async addLien(id_manga: number, id_user: string) {
+    async addMangaAlert(id_manga: number, id_user: string) {
         const { data, error } = await this.client
             .from('alerte')
             .insert([
@@ -197,7 +177,7 @@ class supabase {
 
     }
 
-    async getLien(id_manga: number) {
+    async getAlertsByWorkId(id_manga: number) {
         const { data, error } = await this.client
             .from('alerte')
             .select('id_user')
@@ -205,7 +185,7 @@ class supabase {
         return data
     }
 
-    async verfiLien(id_user: string, id_manga: number) {
+    async verifyAlert(id_user: string, id_manga: number) {
         const { data, error } = await this.client
             .from('alerte')
             .select('*')
@@ -213,14 +193,7 @@ class supabase {
         return data
     }
 
-    async getLiens() {
-        const { data, error } = await this.client
-            .from('alerte')
-            .select('*')
-        return data
-    }
-
-    async supprimerLien(id_manga: number, id_user: string) {
+    async deleteAlert(id_manga: number, id_user: string) {
         const { data, error } = await this.client
             .from('alerte')
             .delete()
@@ -242,69 +215,6 @@ class supabase {
         //if(error) console.error(error)
 
         return random;
-    }
-
-    async getUserByToken(token: string) {
-        const { data, error } = await this.client
-            .from('token')
-            .select('user_id')
-            .match({ token: token })
-        return data
-    }
-    async getMangasByToken(token: string) {
-        const { data, error } = await this.client
-            .rpc('get_mangas_with_token', { token_string: token })
-        return data
-    }
-
-    async addAlerteByToken(id_manga: number, token: string) {
-        this.getUserByToken(token).then((data) => {
-            //console.log(data)
-            if (data?.length == 0) return false;
-            this.addLien(id_manga, data![0].user_id)
-        })
-    }
-
-    async suppAlerteByToken(id_manga: number, token: string) {
-        this.getUserByToken(token).then((data) => {
-            //console.log(data)
-            if (data?.length == 0) return false;
-            this.supprimerLien(id_manga, data![0].user_id)
-        })
-    }
-
-    async getAlerteByToken(token: string, id_manga: number) {
-        const user = await this.getUserByToken(token);
-
-        if (user?.length == 0) return;
-        const { data, error } = await this.client
-            .from('alerte')
-            .select('*')
-            .match({ id_user: user![0].user_id, id_manga: id_manga })
-        if (error) console.error(error)
-        return data
-    }
-
-    async verifTokens() {
-
-        let { data, error } = await this.client
-            .rpc('delete_old_tokens')
-        if (error) console.error(error)
-        //else console.log(data)
-        return data
-    }
-
-    async getUserInfo(token: string) {
-        const res = await this.getUserByToken(token);
-
-        if (res?.length == 0) return;
-        const { data, error } = await this.client
-            .from('users')
-            .select('*')
-            .match({ id_user: res![0].user_id })
-
-        if (error) console.error(error)
-        return data
     }
 
     async getImgFromTest(name: string) {
@@ -352,4 +262,4 @@ class supabase {
 
 }
 
-export const BDD = supabase.instance
+export const BDD = Supabase.instance

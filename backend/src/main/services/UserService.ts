@@ -5,45 +5,48 @@ export class UserService {
   constructor(private readonly prisma: PrismaClient) {}
 
   /**
-   * Récupère les paramètres d'un utilisateur.
-   * @param userId L'ID de l'utilisateur.
+   * Récupère un utilisateur.
+   * @param id L'ID de l'utilisateur.
    */
-  async getUserSettings(userId: string) {
-    const settings = await this.prisma.userSettings.findUnique({
-      where: { userId },
+  async getUser(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
     });
 
-    if (!settings) {
-      // Les settings sont censés être créés à l'inscription. Ne pas les trouver est une erreur.
-      throw new UserServiceError('User settings not found.', 404);
+    if (!user) {
+      throw new UserServiceError('User not found.', 404);
     }
 
-    return settings;
+    return user;
   }
 
   /**
-   * Met à jour les paramètres d'un utilisateur.
-   * @param userId L'ID de l'utilisateur.
-   * @param data Les données à mettre à jour.
+   * Récupère un utilisateur.
+   * @param id L'ID de l'utilisateur.
    */
-  async updateUserSettings(
-    userId: string,
-    data: Partial<{
-      nativeLanguageCode: string;
-      interfaceLanguageCode: string;
-      preferredStudyLanguage: string | null;
-      defaultIaModel: string | null;
-    }>
-  ) {
-    try {
-      const updatedSettings = await this.prisma.userSettings.update({
-        where: { userId },
-        data,
-      });
-      return updatedSettings;
-    } catch (error) {
-      console.error('Failed to update user settings:', error);
-      throw new UserServiceError('Could not update user settings.', 500);
+  async addUser(id: string) {
+    const user = await this.prisma.user.create({
+      data: {
+        id
+      }
+    });
+
+    if (!user) {
+      throw new UserServiceError('User already exists.', 409);
     }
+
+    return user;
+  }
+
+  /**
+   * Récupère la liste d'alerte d'un utilisateur.
+   * @param id L'ID de l'utilisateur.
+   */
+  async getUserAlerts(id: string) {
+    const mangas = await this.prisma.alert.findMany({
+      where: { userId: id },
+    });
+
+    return mangas;
   }
 }

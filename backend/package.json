@@ -16,6 +16,7 @@
     "test": "NODE_ENV=test tsx --test src/test/**/*.test.ts",
     "test:cov": "NODE_ENV=test c8 tsx --test src/test/**/*.test.ts",
     "dev": "nodemon",
+    "dev2": "npx tsx src/main/server.ts",
     "db:connect": "docker exec -it backend-postgres-1 psql -U botscan -d botscan_db",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
