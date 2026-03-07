@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/playwright-community/playwright-go"
 )
@@ -32,6 +33,9 @@ func fetcher(browser playwright.Browser, url string) (string, error) {
 		WaitUntil: playwright.WaitUntilStateNetworkidle,
 		Timeout:   playwright.Float(60000),
 	})
+
+	// time.Sleep(3 * time.Second)
+
 	if err != nil {
 		return "", err
 	}
@@ -43,6 +47,14 @@ func fetcher(browser playwright.Browser, url string) (string, error) {
 
 	if htmlContent == "" {
 		fmt.Printf("Failed to fetch content from %s\n", url)
+		return "", nil
+	}
+
+	if strings.Contains(htmlContent, "captcha") ||
+		strings.Contains(htmlContent, "Please verify you're a human") ||
+		strings.Contains(htmlContent, "Just a moment...") {
+
+		fmt.Printf("Captcha detected on %s, skipping...\n", url)
 		return "", nil
 	}
 
