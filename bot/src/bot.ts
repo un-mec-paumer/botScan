@@ -4,9 +4,9 @@ import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
 import { finderAll } from "./function";
 import Express, { Request, Response, NextFunction } from "express";
-import mangaRouter from "./routes/manga";
-import subRouter from "./routes/subsribe";
-import userRouter from "./routes/user";
+// import mangaRouter from "./routes/manga";
+// import subRouter from "./routes/subsribe";
+// import userRouter from "./routes/user";
 import { PORT, TOKEN } from "./variables";
 // import { Player } from "discord-player";
 
@@ -70,6 +70,6 @@ app.get("/", (req: Request, res: Response) => {
     `);
 });
 
-app.use("/manga", mangaRouter);
-app.use("/subs", subRouter);
-app.use("/user", userRouter);
+// app.use("/manga", mangaRouter);
+// app.use("/subs", subRouter);
+// app.use("/user", userRouter);
