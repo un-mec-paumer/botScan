@@ -11,6 +11,7 @@ func fetcher(browser playwright.Browser, url string) (string, error) {
 	var htmlContent string
 
 	page, err := browser.NewPage()
+
 	if err != nil {
 		return "", err
 	}
@@ -33,8 +34,6 @@ func fetcher(browser playwright.Browser, url string) (string, error) {
 		WaitUntil: playwright.WaitUntilStateNetworkidle,
 		Timeout:   playwright.Float(60000),
 	})
-
-	// time.Sleep(3 * time.Second)
 
 	if err != nil {
 		return "", err
