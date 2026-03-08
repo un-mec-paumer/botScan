@@ -1,13 +1,13 @@
-import { Client, GatewayIntentBits as Intents} from "discord.js";
+import { Client, GatewayIntentBits as Intents, EmbedBuilder} from "discord.js";
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageCreate from "./listeners/messageCreate";
-import { finderAll } from "./function";
+import { finderAll, sendNotifToUser } from "./function";
 import Express, { Request, Response, NextFunction } from "express";
 // import mangaRouter from "./routes/manga";
 // import subRouter from "./routes/subsribe";
 // import userRouter from "./routes/user";
-import { PORT, TOKEN } from "./variables";
+import { PORT, TOKEN, DEV } from "./variables";
 // import { Player } from "discord-player";
 
 
@@ -69,6 +69,22 @@ app.get("/", (req: Request, res: Response) => {
 
     `);
 });
+
+app.post("/message", async (req: Request, res: Response) => {
+    const { manga, linkManga, newChap, img } = req.body;
+
+    const message = new EmbedBuilder()
+        .setTitle(manga.name.replaceAll("-", " "))
+        .setURL(linkManga)
+        .setImage(img)
+        .setFooter({
+            text: "dev " + (await client.users.fetch(DEV)).username,
+            iconURL: (await client.users.fetch(DEV)).displayAvatarURL()
+        })
+
+    await sendNotifToUser(client, message, DEV, manga, newChap, linkManga);
+});
+
 
 // app.use("/manga", mangaRouter);
 // app.use("/subs", subRouter);

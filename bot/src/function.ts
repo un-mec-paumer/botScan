@@ -65,7 +65,7 @@ async function finder(manga: Manga, client: Client, browser: Browser): Promise<b
     }
 }
 
-async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: string, manga: Manga, newChap: number[], linkManga: string): Promise<void> {
+export async function sendNotifToUser (client: Client, message: EmbedBuilder, id_user: string, manga: Manga, newChap: number[], linkManga: string): Promise<void> {
     // if (id_user !== DEV) return;
     const userDiscord = await client.users.fetch(id_user);
 
