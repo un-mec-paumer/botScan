@@ -6,39 +6,41 @@ import { DisplayAlertDto } from '../../dtos/alerts/DisplayAlertDto';
 import { ErrorDto } from '../../dtos/ErrorDto';
 
 const getAlertsByWorkIdRoute: FastifyPluginAsync = async (fastify) => {
-  const alertService = new AlertService(fastify.prisma);
+    const alertService = new AlertService(fastify.prisma);
 
-  const schema: FastifySchema = {
-    summary: "Get alerts by work id",
-    description: "Get alerts by work id",
-    tags: ['alerts'],
-    security: [{ bearerAuth: [] }],
-    response: {
-      200: z.array(DisplayAlertDto),
-      401: ErrorDto,
-    },
-  };
+    const schema: FastifySchema = {
+        summary: 'Get alerts by work id',
+        description: 'Get alerts by work id',
+        tags: ['alerts'],
+        security: [{ bearerAuth: [] }],
+        response: {
+            200: z.array(DisplayAlertDto),
+            401: ErrorDto,
+        },
+    };
 
-  fastify.get(
-    '/work-id/:workId',
-    {
-      schema,
-    },
-    async (request, reply) => {
-      try {
-        const { workId } = request.params as { workId: number };
+    fastify.get(
+        '/work-id/:workId',
+        {
+            schema,
+        },
+        async (request, reply) => {
+            try {
+                const { workId } = request.params as { workId: number };
 
-        const alerts = await alertService.getAlertsByWorkId(workId);
+                const alerts = await alertService.getAlertsByWorkId(workId);
 
-        return reply.code(200).send(alerts);
-      } catch (err) {
-        if (err instanceof AlertServiceError) {
-          return reply.code(err.statusCode).send({ error: err.message });
+                return reply.code(200).send(alerts);
+            } catch (err) {
+                if (err instanceof AlertServiceError) {
+                    return reply
+                        .code(err.statusCode)
+                        .send({ error: err.message });
+                }
+                throw err;
+            }
         }
-        throw err;
-      }
-    }
-  );
+    );
 };
 
 export default getAlertsByWorkIdRoute;

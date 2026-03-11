@@ -9,7 +9,7 @@ import type { FastifyPluginAsync } from 'fastify';
  */
 
 const sensiblePlugin: FastifyPluginAsync = async (fastify) => {
-  fastify.register(sensible);
+    fastify.register(sensible);
 };
 
 export default fp(sensiblePlugin, { name: 'sensible' });

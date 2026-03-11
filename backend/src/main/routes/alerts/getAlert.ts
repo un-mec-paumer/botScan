@@ -6,39 +6,44 @@ import { DisplayAlertDto } from '../../dtos/alerts/DisplayAlertDto';
 import { ErrorDto } from '../../dtos/ErrorDto';
 
 const getAlertRoute: FastifyPluginAsync = async (fastify) => {
-  const alertService = new AlertService(fastify.prisma);
+    const alertService = new AlertService(fastify.prisma);
 
-  const schema: FastifySchema = {
-    summary: "Get alert by work and user ids",
-    description: "Get alert by work and user ids",
-    tags: ['alerts'],
-    security: [{ bearerAuth: [] }],
-    response: {
-      200: z.array(DisplayAlertDto),
-      404: ErrorDto,
-    },
-  };
+    const schema: FastifySchema = {
+        summary: 'Get alert by work and user ids',
+        description: 'Get alert by work and user ids',
+        tags: ['alerts'],
+        security: [{ bearerAuth: [] }],
+        response: {
+            200: z.array(DisplayAlertDto),
+            404: ErrorDto,
+        },
+    };
 
-  fastify.get(
-    '/:userId/:workId',
-    {
-      schema,
-    },
-    async (request, reply) => {
-      try {
-        const { userId, workId } = request.body as { userId: string, workId: number };
+    fastify.get(
+        '/:userId/:workId',
+        {
+            schema,
+        },
+        async (request, reply) => {
+            try {
+                const { userId, workId } = request.body as {
+                    userId: string;
+                    workId: number;
+                };
 
-        const alert = await alertService.getAlert(userId, workId);
+                const alert = await alertService.getAlert(userId, workId);
 
-        return reply.code(200).send(alert);
-      } catch (err) {
-        if (err instanceof AlertServiceError) {
-          return reply.code(err.statusCode).send({ error: err.message });
+                return reply.code(200).send(alert);
+            } catch (err) {
+                if (err instanceof AlertServiceError) {
+                    return reply
+                        .code(err.statusCode)
+                        .send({ error: err.message });
+                }
+                throw err;
+            }
         }
-        throw err;
-      }
-    }
-  );
+    );
 };
 
 export default getAlertRoute;

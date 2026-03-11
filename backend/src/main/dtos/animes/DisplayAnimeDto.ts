@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-export const DisplayAnimeDto = z
-  .object({
+export const DisplayAnimeDto = z.object({
     id: z.number().int(),
     name: z.string(),
     synospis: z.string(),
@@ -9,6 +8,6 @@ export const DisplayAnimeDto = z
     source: z.string(),
     season: z.string(),
     episode: z.string(),
-  });
+});
 
 export type DisplayAnimeDtoType = z.infer<typeof DisplayAnimeDto>;

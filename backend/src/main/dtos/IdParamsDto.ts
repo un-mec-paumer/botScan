@@ -5,4 +5,4 @@ import { z } from 'zod';
  * Exemple: `makeIdParamsDto('itemId')` -> { itemId: string }
  */
 export const makeIdParamsDto = (paramName: string) =>
-  z.object({ [paramName]: z.uuid({ message: `Wrong id format` }) });
+    z.object({ [paramName]: z.uuid({ message: `Wrong id format` }) });

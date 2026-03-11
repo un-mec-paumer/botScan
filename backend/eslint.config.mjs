@@ -43,7 +43,7 @@ export default [
       '@typescript-eslint/no-unsafe-argument': 'warn',
       'prettier/prettier': 'error',
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
-      indent: ['error', 2],
+      indent: ['error', 4],
     },
   },
   {
