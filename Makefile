@@ -12,8 +12,8 @@ run:
 
 dev:
 	@echo "starting development server..."
-	docker compose up --build --watch
+	docker compose up --build -d
 
 stop:
 	@echo "stopping docker image..."
-	docker compose down
+	docker compose down -v

@@ -9,6 +9,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
+      - ./backend/prisma/migrations/20260211202629_init:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
 
   adminer:

@@ -8,7 +8,7 @@ export class MangaService extends WorkService {
 
         this.selection = {
             ...this.selection,
-            animeSource: true,
+            // animeSource: true,
             animeSeason: true,
             animeEpisode: true,
         };

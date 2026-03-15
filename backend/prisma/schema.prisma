@@ -40,18 +40,20 @@ model AuthToken {
   @@map("auth_tokens")
 }
 
-model Work {
+model work {
   id           Int     @id @default(autoincrement())
   name         String
   synopsis     String?
   imgUrl       String?
-  mangaSource  String?
+  
   mangaChapter String?
-  animeSource  String?
+  
   animeSeason  String?
   animeEpisode String?
 
   Alerts       Alert[]
+  mangaSources manga_source_works[]
+  animeSources anime_source_works[]
 
   @@map("works")
 }
@@ -63,8 +65,48 @@ model Alert {
   animeAlert Boolean @default(false)
 
   User       User    @relation(fields: [userId], references: [id])
-  Work       Work    @relation(fields: [workId], references: [id])
+  Work       work    @relation(fields: [workId], references: [id])
 
   @@id([userId, workId])
   @@map("alerts")
+}
+
+model anime_source {
+    id     Int
+    name  String
+
+    @@id([id])
+    animeSources anime_source_works[]
+    @@map("anime_sources")
+}
+
+model manga_source {
+    id     Int
+    name  String
+
+    @@id([id])
+    mangaSources manga_source_works[]
+    @@map("manga_sources")
+}
+
+model manga_source_works {
+    mangaSourceId Int
+    workId        Int
+
+    mangaSource   manga_source @relation(fields: [mangaSourceId], references: [id])
+    Work          work        @relation(fields: [workId], references: [id])
+
+    @@id([mangaSourceId, workId])
+    @@map("manga_source_works")
+}
+
+model anime_source_works {
+    animeSourceId Int
+    workId        Int
+
+    animeSource   anime_source @relation(fields: [animeSourceId], references: [id])
+    Work          work        @relation(fields: [workId], references: [id])
+
+    @@id([animeSourceId, workId])
+    @@map("anime_source_works")
 }

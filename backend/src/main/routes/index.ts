@@ -6,9 +6,9 @@ import userRoutes from './users';
 import workRoutes from './works';
 
 const mainRoutes: FastifyPluginAsync = async (fastify) => {
-    /*if (process.env.NODE_ENV !== 'test') {
-    fastify.addHook('onRequest', fastify.authenticate);
-  }*/
+    // if (process.env.NODE_ENV !== 'test') {
+    //     fastify.addHook('onRequest', fastify.authenticate);
+    // }
 
     await fastify.register(authRoutes, { prefix: '/auth' });
     await fastify.register(apiRoutes, { prefix: '/' });

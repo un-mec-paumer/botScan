@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { WorkService } from './WorkService';
 import { MangaServiceError } from '../errors/MangaServiceError';
+import { th, tr } from 'zod/locales';
 
 export class MangaService extends WorkService {
     constructor(protected readonly prisma: PrismaClient) {
@@ -8,7 +9,16 @@ export class MangaService extends WorkService {
 
         this.selection = {
             ...this.selection,
-            mangaSource: true,
+            mangaSources: {
+                select: {
+                    mangaSource: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
+            },
             mangaChapter: true,
         };
     }
@@ -18,7 +28,12 @@ export class MangaService extends WorkService {
      * @param id L'id du manga.
      */
     async getMangaById(id: number) {
-        return await this.getWorkById(id);
+        const manga = await this.getWorkById(id);
+
+        if (!manga) {
+            throw new MangaServiceError('Manga not found.', 404);
+        }
+        return this.getMangasWithChapter(manga);
     }
 
     /**
@@ -26,14 +41,21 @@ export class MangaService extends WorkService {
      * @param id L'id du manga.
      */
     async getMangaByName(name: string) {
-        return await this.getWorkByName(name);
+        const manga = await this.getWorkByName(name);
+
+        if (!manga) {
+            throw new MangaServiceError('Manga not found.', 404);
+        }
+        return this.getMangasWithChapter(manga);
     }
 
     /**
      * Récupère les mangas
      */
     async getMangas() {
-        return await this.getWorks();
+        const mangas =  await this.getWorks();
+        const mangasWithChapter = mangas.map(this.getMangasWithChapter);
+        return mangasWithChapter;
     }
 
     /**
@@ -60,5 +82,12 @@ export class MangaService extends WorkService {
                 id: id,
             },
         });
+    }
+
+    private async getMangasWithChapter(manga: any) {
+        return {
+            ...manga,
+            chapter: manga.mangaChapter,
+        }
     }
 }

@@ -5,7 +5,7 @@ export const DisplayAnimeDto = z.object({
     name: z.string(),
     synospis: z.string(),
     imgUrl: z.string(),
-    source: z.string(),
+    // source: z.string(),
     season: z.string(),
     episode: z.string(),
 });

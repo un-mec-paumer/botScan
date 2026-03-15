@@ -24,9 +24,8 @@ const getMangaByIdRoute: FastifyPluginAsync = async (fastify) => {
         },
         async (request, reply) => {
             try {
-                const { id } = request.params as { id: number };
-
-                const manga = await mangaService.getMangaById(id);
+                const { id } = request.params as { id: string };
+                const manga = await mangaService.getMangaById(Number.parseInt(id));
 
                 return reply.code(200).send(manga);
             } catch (err) {

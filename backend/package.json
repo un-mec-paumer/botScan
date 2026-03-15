@@ -22,7 +22,7 @@
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
     "prisma": "prisma",
     "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate",
+    "db:generate": "npx prisma generate",
     "generate-jwt-keys": "tsx scripts/generateJwtKeys.ts"
   },
   "keywords": [],
