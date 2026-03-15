@@ -1,9 +1,9 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import { z } from 'zod';
-import { AlertService } from '../../services/AlertService';
-import { AlertServiceError } from '../../errors/AlertServiceError';
-import { DisplayAlertDto } from '../../dtos/alerts/DisplayAlertDto';
-import { ErrorDto } from '../../dtos/ErrorDto';
+import { AlertService } from '@services/AlertService';
+import { AlertServiceError } from '@errors/AlertServiceError';
+import { DisplayAlertDto } from '@dtos/alerts/DisplayAlertDto';
+import { ErrorDto } from '@dtos/ErrorDto';
 
 const getAlertRoute: FastifyPluginAsync = async (fastify) => {
     const alertService = new AlertService(fastify.prisma);

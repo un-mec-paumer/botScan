@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { UserServiceError } from '../errors/UserServiceError';
+import { UserServiceError } from '@errors/UserServiceError';
 
 export class UserService {
     constructor(private readonly prisma: PrismaClient) {}

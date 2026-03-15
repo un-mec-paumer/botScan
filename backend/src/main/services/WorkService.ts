@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { WorkServiceError } from '../errors/WorkServiceError';
+import { WorkServiceError } from '@errors/WorkServiceError';
 
 export abstract class WorkService {
     protected selection: object = {

@@ -1,8 +1,8 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
-import { UserService } from '../../services/UserService';
-import { UserServiceError } from '../../errors/UserServiceError';
-import { DisplayUserDto } from '../../dtos/users/DisplayUserDto';
-import { ErrorDto } from '../../dtos/ErrorDto';
+import { UserService } from '@services/UserService';
+import { UserServiceError } from '@errors/UserServiceError';
+import { DisplayUserDto } from '@dtos/users/DisplayUserDto';
+import { ErrorDto } from '@dtos/ErrorDto';
 
 const getUserRoute: FastifyPluginAsync = async (fastify) => {
     const userService = new UserService(fastify.prisma);

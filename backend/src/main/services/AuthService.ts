@@ -1,6 +1,6 @@
 import { PrismaClient, User } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import { AuthServiceError } from '../errors/AuthServiceError';
+import { AuthServiceError } from '@errors/AuthServiceError';
 import type { FastifyInstance } from 'fastify';
 
 export class AuthService {
@@ -101,7 +101,7 @@ export class AuthService {
             throw new AuthServiceError('User not found', 401);
         }
 
-        const isValid = await bcrypt.compare(password, user.passwordHash);
+        const isValid = await bcrypt.compare(password, user.passwordHash!);
         if (!isValid) {
             throw new AuthServiceError('Invalid credentials', 401);
         }

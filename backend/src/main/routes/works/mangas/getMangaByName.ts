@@ -1,8 +1,8 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
-import { MangaService } from '../../../services/MangaService';
-import { WorkServiceError } from '../../../errors/WorkServiceError';
-import { DisplayMangaDto } from '../../../dtos/mangas/DisplayMangaDto';
-import { ErrorDto } from '../../../dtos/ErrorDto';
+import { MangaService } from '@services/MangaService';
+import { WorkServiceError } from '@errors/WorkServiceError';
+import { DisplayMangaDto } from '@dtos/mangas/DisplayMangaDto';
+import { ErrorDto } from '@dtos/ErrorDto';
 
 const getMangaByNameRoute: FastifyPluginAsync = async (fastify) => {
     const mangaService = new MangaService(fastify.prisma);

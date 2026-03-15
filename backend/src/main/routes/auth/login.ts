@@ -2,11 +2,11 @@ import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import {
     LoginUserRequestDto,
     LoginUserRequestDtoType,
-} from '../../dtos/auth/LoginUserRequestDto';
-import { AuthService } from '../../services/AuthService';
-import { AuthServiceError } from '../../errors/AuthServiceError';
+} from '@dtos/auth/LoginUserRequestDto';
+import { AuthService } from '@services/AuthService';
+import { AuthServiceError } from '@errors/AuthServiceError';
 import { z } from 'zod';
-import { ErrorDto } from '../../dtos/ErrorDto';
+import { ErrorDto } from '@dtos/ErrorDto';
 
 const loginRoute: FastifyPluginAsync = async (fastify) => {
     const authService = new AuthService(fastify.prisma);

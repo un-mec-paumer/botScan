@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { WorkService } from './WorkService';
-import { AnimeServiceError } from '../errors/AnimeServiceError';
+import { AnimeServiceError } from '@errors/AnimeServiceError';
 
 export class MangaService extends WorkService {
     constructor(protected readonly prisma: PrismaClient) {

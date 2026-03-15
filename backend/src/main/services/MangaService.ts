@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { WorkService } from './WorkService';
-import { MangaServiceError } from '../errors/MangaServiceError';
-import { th, tr } from 'zod/locales';
+import { MangaServiceError } from '@errors/MangaServiceError';
 
 export class MangaService extends WorkService {
     constructor(protected readonly prisma: PrismaClient) {
@@ -54,7 +53,8 @@ export class MangaService extends WorkService {
      */
     async getMangas() {
         const mangas =  await this.getWorks();
-        const mangasWithChapter = mangas.map(this.getMangasWithChapter);
+        const mangasWithChapter = mangas.map(this.getMangasWithChapter.bind(this));
+        console.log(mangasWithChapter);
         return mangasWithChapter;
     }
 
@@ -84,7 +84,9 @@ export class MangaService extends WorkService {
         });
     }
 
-    private async getMangasWithChapter(manga: any) {
+    
+    
+    private getMangasWithChapter(manga: any)  {
         return {
             ...manga,
             chapter: manga.mangaChapter,

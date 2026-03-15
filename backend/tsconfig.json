@@ -11,8 +11,15 @@
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-    "outDir": "dist",
-    "rootDir": "src"
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": ".", // oui eslint casse les couilles mais on peut pas faire autrement
+    "paths": {
+        "@services/*": ["src/main/services/*"],
+        "@routes/*": ["src/main/routes/*"],
+        "@errors/*": ["src/main/errors/*"],
+        "@dtos/*": ["src/main/dtos/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/test/**/*.ts"],
   "exclude": ["node_modules", "dist"]

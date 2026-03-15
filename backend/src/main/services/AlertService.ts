@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { AlertServiceError } from '../errors/AlertServiceError';
+import { AlertServiceError } from '@errors/AlertServiceError';
 
 export class AlertService {
     constructor(private readonly prisma: PrismaClient) {}

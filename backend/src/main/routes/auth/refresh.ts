@@ -1,12 +1,12 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
-import { AuthService } from '../../services/AuthService';
-import { AuthServiceError } from '../../errors/AuthServiceError';
+import { AuthService } from '@services/AuthService';
+import { AuthServiceError } from '@errors/AuthServiceError';
 import {
     RefreshTokenRequestDto,
     RefreshTokenRequestDtoType,
-} from '../../dtos/auth/RefreshTokenRequestDto';
+} from '@dtos/auth/RefreshTokenRequestDto';
 import { z } from 'zod';
-import { ErrorDto } from '../../dtos/ErrorDto';
+import { ErrorDto } from '@dtos/ErrorDto';
 
 const refreshRoute: FastifyPluginAsync = async (fastify) => {
     const authService = new AuthService(fastify.prisma);
