@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { WorkService } from './WorkService';
 import { MangaServiceError } from '@errors/MangaServiceError';
+import { DisplayMangaDtoClass } from '@dtos/mangas/DisplayMangaDto';
 
 export class MangaService extends WorkService {
     constructor(protected readonly prisma: PrismaClient) {
@@ -26,7 +27,7 @@ export class MangaService extends WorkService {
      * Récupère un manga.
      * @param id L'id du manga.
      */
-    async getMangaById(id: number) {
+    async getMangaById(id: number): Promise<DisplayMangaDtoClass> {
         const manga = await this.getWorkById(id);
 
         if (!manga) {
@@ -39,7 +40,7 @@ export class MangaService extends WorkService {
      * Récupère un manga.
      * @param id L'id du manga.
      */
-    async getMangaByName(name: string) {
+    async getMangaByName(name: string): Promise<DisplayMangaDtoClass> {
         const manga = await this.getWorkByName(name);
 
         if (!manga) {
@@ -51,10 +52,9 @@ export class MangaService extends WorkService {
     /**
      * Récupère les mangas
      */
-    async getMangas() {
-        const mangas =  await this.getWorks();
+    async getMangas(): Promise<DisplayMangaDtoClass[]> {
+        const mangas = await this.getWorks();
         const mangasWithChapter = mangas.map(this.getMangasWithChapter.bind(this));
-        console.log(mangasWithChapter);
         return mangasWithChapter;
     }
 
@@ -73,8 +73,8 @@ export class MangaService extends WorkService {
     return manga;
   }*/
 
-    async updateChapter(id: number, chapter: string) {
-        return await this.prisma.work.update({
+    async updateChapter(id: number, chapter: string): Promise<DisplayMangaDtoClass> {
+        const manga = await this.prisma.work.update({
             data: {
                 mangaChapter: chapter,
             },
@@ -82,14 +82,15 @@ export class MangaService extends WorkService {
                 id: id,
             },
         });
+        return this.getMangasWithChapter(manga);
     }
 
     
     
-    private getMangasWithChapter(manga: any)  {
-        return {
+    private getMangasWithChapter(manga: any): DisplayMangaDtoClass {
+        return new DisplayMangaDtoClass({
             ...manga,
             chapter: manga.mangaChapter,
-        }
+        });
     }
 }

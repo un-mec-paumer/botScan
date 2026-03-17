@@ -3,7 +3,7 @@ import { writeFileSync, PathOrFileDescriptor } from 'node:fs';
 import { BDD } from "./supabase";
 import * as cheerio from 'cheerio';
 import puppeteer, { Browser } from 'puppeteer-core';
-import { jsPDF } from "jspdf";
+// import { jsPDF } from "jspdf";
 import Manga from "./model/manga";
 import { animeSamaUrl, BROWSER_PATH, DEV } from "./variables";
 import MangaRelou from "./model/manga/mangaRelou";
@@ -316,7 +316,7 @@ function upperCaseFirstLetter(str: string): string {
 
 
 export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
-
+    return;
     const RELOUDEMERDE: Record<string, string> = {
         "hunter-x-hunter": "Hunter%20x%20Hunter",
         "kaiju-n8": "Kaiju%20N°8",
@@ -330,15 +330,15 @@ export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
     const name = RELOUDEMERDE[mangas.name] ?? upperCaseFirstLetter(mangas.name);
     const url = `${animeSamaUrl}/s2/scans/${name}/${chap}/`;
 
-    const res = new jsPDF({
-        orientation: "landscape",
-        unit: "px",
-        format: [14400, 21600],
-        putOnlyUsedFonts: true,
-        floatPrecision: 16,
-        compress: true,
-    });
-    res.deletePage(1); // supprime la première page vide
+    // const res = new jsPDF({
+    //     orientation: "landscape",
+    //     unit: "px",
+    //     format: [14400, 21600],
+    //     putOnlyUsedFonts: true,
+    //     floatPrecision: 16,
+    //     compress: true,
+    // });
+    // res.deletePage(1); // supprime la première page vide
 
     for (let i = 1; i < 100; i++) {
         // console.log(i);
@@ -361,23 +361,23 @@ export async function getImgToPdf(mangas: any, chap: number): Promise<void> {
             break;
         }
         
-        if (size.type !== "AVI") {
-            if (size.width > 14400 || size.height > 14400) {
-                size.width = size.width / 8;
-                size.height = size.height / 8;
-            }
+    //     if (size.type !== "AVI") {
+    //         if (size.width > 14400 || size.height > 14400) {
+    //             size.width = size.width / 8;
+    //             size.height = size.height / 8;
+    //         }
     
-            if (size.width > size.height) {
-                res.addPage([size.height, size.width], "landscape");
-                res.addImage(img, size.type, 0, 0, size.width, size.height, undefined, 'FAST'); 
-            }
-            else {
-                res.addPage([size.height, size.width], "portrait");
-                res.addImage(img, size.type, 0, 0, size.width, size.height, undefined, 'FAST');
-            }
-        }
+    //         if (size.width > size.height) {
+    //             res.addPage([size.height, size.width], "landscape");
+    //             res.addImage(img, size.type, 0, 0, size.width, size.height, undefined, 'FAST'); 
+    //         }
+    //         else {
+    //             res.addPage([size.height, size.width], "portrait");
+    //             res.addImage(img, size.type, 0, 0, size.width, size.height, undefined, 'FAST');
+    //         }
+    //     }
     }
-    res.save(`./test/${mangas.name}-${chap}.pdf`);
+    // res.save(`./test/${mangas.name}-${chap}.pdf`);
 }
 
 function getImageSize(buffer: Uint8Array): { width: number, height: number, type: string } | null {
