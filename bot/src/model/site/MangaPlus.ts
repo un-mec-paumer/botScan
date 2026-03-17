@@ -1,6 +1,5 @@
 import { SiteManga } from "../site";
 import Manga from "../manga";
-import { Browser } from "puppeteer-core";
 import { getCherrioText } from "../../function";
 
 export default class MangaPlus implements SiteManga {
@@ -13,9 +12,9 @@ export default class MangaPlus implements SiteManga {
         70: '700036'
     }
 
-    async visitSiteManga(browser: Browser, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
         const url = `${this.link}/titles/${this.idMangaPlus[manga.id]}`
-        const $ = await getCherrioText(url, browser);
+        const $ = await getCherrioText(url);
 
         const newChap = $(".ChapterListItem-module_name_3h9dj").toArray().map((element) => { 
             const text = $(element).text();

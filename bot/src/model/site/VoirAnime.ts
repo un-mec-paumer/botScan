@@ -1,15 +1,14 @@
 import { SiteAnime } from "../site";
-import { Browser } from "puppeteer-core";
 import { getCherrioText } from "../../function";
 
 export default class VoirAnime implements SiteAnime {
     name = "VoirAnime";
     link = "https://voiranime.com";
 
-    async visitSiteAnime(browser: Browser, anime: any): Promise<{ tabChap: number[]; linkManga: string; }> {
+    async visitSiteAnime(anime: any): Promise<{ tabChap: number[]; linkManga: string; }> {
         const link = `${this.link}/anime/${anime.name}-${anime.saison > 1 ? anime.saison : ''}${anime.language === 'vf' ? '-vf' : ''}`;
         
-        const $ = await getCherrioText(link, browser);
+        const $ = await getCherrioText(link);
         
         const newEp = $('.wp-manga-chapter    ').toArray().map((element) => { return $(element).find('a').attr('href') })
         .map((title) => { 

@@ -1,7 +1,6 @@
 import { SiteManga, SiteAnime} from "../site";
 import Manga from "../manga";
 import Anime from "../anime";
-import { Browser } from "puppeteer-core";
 import { getCherrioText } from "../../function";
 import { animeSamaUrl } from "../../variables";
 
@@ -11,9 +10,9 @@ export default class AnimeSama implements SiteManga, SiteAnime {
     link = animeSamaUrl!;
 
 
-    async visitSiteManga(browser: Browser, manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
 
-        const $ = await getCherrioText(manga.getLink(), browser);
+        const $ = await getCherrioText(manga.getLink());
 
         const newChap = $("#selectChapitres option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
             const nbChap = parseFloat(element!.split(" ")[1])
@@ -25,8 +24,8 @@ export default class AnimeSama implements SiteManga, SiteAnime {
         return {tabChap: newChap, linkManga: manga.getLink()};
     }
 
-    async visitSiteAnime(browser: Browser, anime: Anime): Promise<{tabChap: number[], linkManga: string}> {
-        const $ = await getCherrioText(anime.getLink(), browser);
+    async visitSiteAnime(anime: Anime): Promise<{tabChap: number[], linkManga: string}> {
+        const $ = await getCherrioText(anime.getLink());
 
         const newEp = $("#selectEpisodes option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {
             const nbEp = parseFloat(element!.split(" ")[1])

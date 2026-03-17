@@ -42,8 +42,11 @@ export class DisplayMangaDtoClass implements DisplayMangaDtoType {
 
     public async visiteAllSite() : Promise<{tabChap: number[], linkManga: string}> {
         const results = await Promise.all(this.mangaSources.map(({ mangaSource }) => mangaSource.visitSiteManga(this)));
+        
         const resultFinal = results.filter((result) => result.tabChap.length > 0).sort((a, b) => b.tabChap[b.tabChap.length - 1] - a.tabChap[a.tabChap.length - 1]);
+        
         if (resultFinal.length > 0) return resultFinal[0];
+        
         else return {tabChap: [], linkManga: ""};
     }
 

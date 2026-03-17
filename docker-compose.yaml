@@ -47,5 +47,15 @@ services:
     ports:
       - "3003:3003"
 
+  scraper:
+    image: scraper-scan:latest
+    build:
+      context: ./scraper
+      dockerfile: Dockerfile
+    volumes:
+      - ./scraper:/app
+    ports:
+      - "3004:3000"
+
 volumes:
   postgres_data:

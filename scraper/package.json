@@ -1,24 +1,20 @@
 {
-    "name": "botscan",
-    "version": "1.5.0",
+    "name": "botscan-scraper",
+    "version": "1.0.0",
     "description": "bot qui va scrap des site de scan pour envoyer le scan sur discord",
     "main": "index.js",
     "scripts": {
-        "dev": "nodemon --exec ts-node src/bot.ts",
+        "dev": "nodemon --exec ts-node scraper.ts",
         "start": "node dist/bot.js",
         "build": "tsc",
         "start2": "npx ts-node src/bot.ts"
     },
     "author": "Antoine Ciric",
     "license": "ISC",
-    "module": "CommonJS",
+    "module": "ESNext",
     "dependencies": {
-        "@supabase/supabase-js": "^2.38.1",
-        "cheerio": "^1.0.0-rc.12",
-        "discord-api-types": "^0.37.65",
-        "discord.js": "^14.12.1",
-        "dotenv": "^16.3.1",
         "express": "^4.18.2",
+        "puppeteer": "^24.39.1",
         "ts-node": "^10.9.1"
     },
     "devDependencies": {
