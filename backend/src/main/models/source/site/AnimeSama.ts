@@ -1,8 +1,8 @@
-import { SourceDtoInterfaceAnime, SourceDtoInterfaceManga } from "./source";
-import { DisplayMangaDtoClass } from "@dtos/mangas/DisplayMangaDto";
-import { DisplayAnimeDtoType } from "@dtos/animes/DisplayAnimeDto";
+import { ModelSourceManga, ModelSourceAnime } from "../source";
+import { ModelManga } from "@models/works/manga";
+import { ModelAnime } from "@models/works/anime";
 
-export default class AnimeSama implements SourceDtoInterfaceManga, SourceDtoInterfaceAnime {
+export default class AnimeSama implements ModelSourceManga, ModelSourceAnime {
     id: number;
     name: string;
     link = "https://anime-sama.to/";
@@ -13,7 +13,7 @@ export default class AnimeSama implements SourceDtoInterfaceManga, SourceDtoInte
     }
 
 
-    async visitSiteManga(manga: DisplayMangaDtoClass): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}> {
 
         // const $ = await getCherrioText(manga.getLink(), browser);
 
@@ -27,7 +27,7 @@ export default class AnimeSama implements SourceDtoInterfaceManga, SourceDtoInte
         return {tabChap: [0], linkManga: this.link}; // TODO: mock a change plus tard
     }
 
-    async visitSiteAnime(anime: DisplayAnimeDtoType): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteAnime(anime: ModelAnime): Promise<{tabChap: number[], linkManga: string}> {
         // const $ = await getCherrioText(anime.getLink(), browser);
 
         // const newEp = $("#selectEpisodes option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {

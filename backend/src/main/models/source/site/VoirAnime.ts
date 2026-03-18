@@ -1,8 +1,8 @@
-import { SourceDtoInterfaceAnime } from "./source";
-import { DisplayAnimeDtoType } from "@dtos/animes/DisplayAnimeDto";
+import { ModelSourceAnime } from "../source";
+import { ModelAnime } from "@models/works/anime";
 
 
-export default class VoirAnime implements SourceDtoInterfaceAnime {
+export default class VoirAnime implements ModelSourceAnime {
     id: number;
     name: string;
     link = "https://voiranime.com";
@@ -12,7 +12,7 @@ export default class VoirAnime implements SourceDtoInterfaceAnime {
         this.name = data.name;
     }
 
-    async visitSiteAnime(anime: DisplayAnimeDtoType): Promise<{ tabChap: number[]; linkManga: string; }> {
+    async visitSiteAnime(anime: ModelAnime): Promise<{ tabChap: number[]; linkManga: string; }> {
         const link = `${this.link}/anime/${anime.name}-${anime.season > 1 ? anime.season : ''}${anime.language === 'vf' ? '-vf' : ''}`;
         
         // const $ = await getCherrioText(link);

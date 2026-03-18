@@ -18,7 +18,8 @@
         "@services/*": ["src/main/services/*"],
         "@routes/*": ["src/main/routes/*"],
         "@errors/*": ["src/main/errors/*"],
-        "@dtos/*": ["src/main/dtos/*"]
+        "@dtos/*": ["src/main/dtos/*"],
+        "@models/*": ["src/main/models/*"]
     }
   },
   "include": ["src/**/*.ts", "src/test/**/*.ts"],

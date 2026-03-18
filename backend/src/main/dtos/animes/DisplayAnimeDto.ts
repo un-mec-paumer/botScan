@@ -6,8 +6,8 @@ export const DisplayAnimeDto = z.object({
     synospis: z.string(),
     imgUrl: z.string(),
     // source: z.string(),
-    season: z.int(),
-    language: z.enum(['vf', 'vostfr']), // peut etre ajouté des langues 
+    season: z.string(),
+    language: z.string(), // peut etre ajouté des langues 
     episode: z.string(),
 });
 

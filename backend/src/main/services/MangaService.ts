@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import { WorkService } from './WorkService';
 import { MangaServiceError } from '@errors/MangaServiceError';
-import { DisplayMangaDtoClass } from '@dtos/mangas/DisplayMangaDto';
+import { ModelManga } from '@models/works/manga';
+import { DisplayMangaDtoType } from '@dtos/mangas/DisplayMangaDto';
 
 export class MangaService extends WorkService {
     constructor(protected readonly prisma: PrismaClient) {
@@ -27,7 +28,7 @@ export class MangaService extends WorkService {
      * Récupère un manga.
      * @param id L'id du manga.
      */
-    async getMangaById(id: number): Promise<DisplayMangaDtoClass> {
+    async getMangaById(id: number): Promise<ModelManga> {
         const manga = await this.getWorkById(id);
 
         if (!manga) {
@@ -40,21 +41,22 @@ export class MangaService extends WorkService {
      * Récupère un manga.
      * @param id L'id du manga.
      */
-    async getMangaByName(name: string): Promise<DisplayMangaDtoClass> {
+    async getMangaByName(name: string): Promise<ModelManga> {
         const manga = await this.getWorkByName(name);
 
         if (!manga) {
             throw new MangaServiceError('Manga not found.', 404);
         }
+
         return this.getMangasWithChapter(manga);
     }
 
     /**
      * Récupère les mangas
      */
-    async getMangas(): Promise<DisplayMangaDtoClass[]> {
+    async getMangas(): Promise<ModelManga[]> {
         const mangas = await this.getWorks();
-        const mangasWithChapter = mangas.map(this.getMangasWithChapter.bind(this));
+        const mangasWithChapter = mangas.map((manga) => this.getMangasWithChapter(manga));
         return mangasWithChapter;
     }
 
@@ -73,7 +75,7 @@ export class MangaService extends WorkService {
     return manga;
   }*/
 
-    async updateChapter(id: number, chapter: string): Promise<DisplayMangaDtoClass> {
+    async updateChapter(id: number, chapter: string): Promise<ModelManga> {
         const manga = await this.prisma.work.update({
             data: {
                 mangaChapter: chapter,
@@ -82,13 +84,19 @@ export class MangaService extends WorkService {
                 id: id,
             },
         });
+
+        if (!manga) {
+            throw new MangaServiceError('Manga not found.', 404);
+        }
+
+
         return this.getMangasWithChapter(manga);
     }
 
     
     
-    private getMangasWithChapter(manga: any): DisplayMangaDtoClass {
-        return new DisplayMangaDtoClass({
+    private getMangasWithChapter(manga: any): ModelManga { // oui pas de any mais jsp quel type mettre
+        return new ModelManga({
             ...manga,
             chapter: manga.mangaChapter,
         });

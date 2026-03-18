@@ -1,7 +1,7 @@
-import { SourceDtoInterfaceManga } from "./source";
-import { DisplayMangaDtoClass } from "@dtos/mangas/DisplayMangaDto";
+import { ModelSourceManga } from "../source";
+import { ModelManga } from "@models/works/manga";
 
-export default class MangaMoins implements SourceDtoInterfaceManga {
+export default class MangaMoins implements ModelSourceManga {
     id: number;
     name: string;
     link = "https://mangamoins.com/";
@@ -11,7 +11,7 @@ export default class MangaMoins implements SourceDtoInterfaceManga {
         this.name = data.name;
     }
     
-    async visitSiteManga(manga: DisplayMangaDtoClass): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}> {
         
             // const $ = await getCherrioText(this.link, browser);
 

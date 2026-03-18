@@ -1,12 +1,7 @@
-// import { SiteManga } from "../site";
-// import Manga from "../manga";
-// import { Browser } from "puppeteer-core";
-// import { getCherrioText } from "../../function";
+import { ModelSourceManga } from "../source";
+import { ModelManga } from "@models/works/manga";
 
-import { SourceDtoInterfaceManga } from "./source";
-import { DisplayMangaDtoClass } from "@dtos/mangas/DisplayMangaDto";
-
-export default class MangaPlus implements SourceDtoInterfaceManga {
+export default class MangaPlus implements ModelSourceManga {
     id: number;
     name: string;
     link = "https://mangaplus.shueisha.co.jp";
@@ -22,7 +17,7 @@ export default class MangaPlus implements SourceDtoInterfaceManga {
         70: '700036'
     }
 
-    async visitSiteManga(manga: DisplayMangaDtoClass): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}> {
         const url = `${this.link}/titles/${this.idMangaPlus[manga.id]}`
         // const $ = await getCherrioText(url, browser);
 
