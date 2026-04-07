@@ -1,18 +1,16 @@
 import type { FastifyPluginAsync } from 'fastify';
-import addAlertRoute from './addAlert';
-import deleteAlertRoute from './deleteAlert';
-import getAlertRoute from './getAlert';
-import getAlertsByUserIdRoute from './getAlertsByUserId';
-import getAlertsByWorkIdRoute from './getAlertsByWorkId';
-import updateAlertRoute from './updateAlert';
+import addMangaAlertRoute from './addMangaAlert';
+import deleteMangaAlertRoute from './deleteMangaAlert';
+import getMangaAlertRoute from './getMangaAlert';
+import getMangaAlertsByUserIdRoute from './getMangaAlertsByUserId';
+import getMangaAlertsByMangaIdRoute from './getMangaAlertsByMangaId';
 
 const alertRoutes: FastifyPluginAsync = async (fastify) => {
-    await fastify.register(addAlertRoute);
-    await fastify.register(deleteAlertRoute);
-    await fastify.register(getAlertRoute);
-    await fastify.register(getAlertsByUserIdRoute);
-    await fastify.register(getAlertsByWorkIdRoute);
-    await fastify.register(updateAlertRoute);
+    await fastify.register(addMangaAlertRoute);
+    await fastify.register(deleteMangaAlertRoute);
+    await fastify.register(getMangaAlertRoute);
+    await fastify.register(getMangaAlertsByUserIdRoute);
+    await fastify.register(getMangaAlertsByMangaIdRoute);
 };
 
 export default alertRoutes;

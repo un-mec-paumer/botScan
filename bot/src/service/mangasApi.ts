@@ -2,7 +2,7 @@ import { convertAnytoManga } from "../function";
 import Manga from "../model/manga";
 import { API_URL } from "../variables";
 import { deleteFetch, getFetch, patchFetch, postFetch } from "./fetch";
-const MANGA_BASE_URL = `${API_URL}/works/mangas`
+const MANGA_BASE_URL = `${API_URL}/mangas`
 
 export async function getMangas(): Promise<Manga[] | null> {
     const mangas = await getFetch(MANGA_BASE_URL);

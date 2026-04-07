@@ -1,10 +1,10 @@
 import { ModelSourceManga } from "../source";
-import { ModelManga } from "@models/works/manga";
+import { ModelManga } from "@models/manga";
 
 export default class MangaPlus implements ModelSourceManga {
     id: number;
     name: string;
-    link = "https://mangaplus.shueisha.co.jp";
+    link = "https://mangaplus.shueisha.co.jp"; // TODO in DB
    
     constructor(data: {id: number, name: string}) {
         this.id = data.id;

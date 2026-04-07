@@ -20,7 +20,8 @@ model User {
   deletedAt     DateTime?
 
   AuthToken     AuthToken[]
-  Alerts        Alert[]
+  mangaAlerts   MangaAlert[]
+  animeAlerts   AnimeAlert[]
 
   @@map("users")
 }
@@ -35,78 +36,94 @@ model AuthToken {
   userAgent        String?
   ipAddress        String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("auth_tokens")
 }
 
-model work {
+model Manga {
   id           Int     @id @default(autoincrement())
   name         String
   synopsis     String?
   imgUrl       String?
-  
-  mangaChapter String?
-  
-  animeSeason  String?
-  animeEpisode String?
+  chapter      String?
 
-  Alerts       Alert[]
-  mangaSources manga_source_works[]
-  animeSources anime_source_works[]
+  mangaSources MangaSource[]
+  mangaAlerts  MangaAlert[]
 
-  @@map("works")
+  @@map("mangas")
 }
 
-model Alert {
-  userId     String
-  workId     Int
-  mangaAlert Boolean @default(false)
-  animeAlert Boolean @default(false)
+model Anime {
+  id           Int     @id @default(autoincrement())
+  name         String
+  synopsis     String?
+  imgUrl       String?
+  season       String?
+  episode      String?
 
-  User       User    @relation(fields: [userId], references: [id])
-  Work       work    @relation(fields: [workId], references: [id])
+  animeSources AnimeSource[]
+  animeAlerts  AnimeAlert[]
 
-  @@id([userId, workId])
-  @@map("alerts")
+  @@map("animes")
 }
 
-model anime_source {
-    id     Int
+model MangaAlert {
+  userId  String
+  mangaId Int
+
+  User    User    @relation(fields: [userId], references: [id])
+  Manga   Manga    @relation(fields: [mangaId], references: [id])
+
+  @@id([userId, mangaId])
+  @@map("manga_alerts")
+}
+
+model AnimeAlert {
+  userId  String
+  animeId Int
+
+  User    User    @relation(fields: [userId], references: [id])
+  Anime   Anime   @relation(fields: [animeId], references: [id])
+
+  @@id([userId, animeId])
+  @@map("anime_alerts")
+}
+
+model GlobalMangaSource {
+    id    Int    @id @default(autoincrement())
     name  String
 
-    @@id([id])
-    animeSources anime_source_works[]
-    @@map("anime_sources")
+    mangaSources MangaSource[]
+    @@map("global_manga_sources")
 }
 
-model manga_source {
-    id     Int
+model GlobalAnimeSource {
+    id    Int    @id @default(autoincrement())
     name  String
 
-    @@id([id])
-    mangaSources manga_source_works[]
+    animeSources AnimeSource[]
+    @@map("global_anime_sources")
+}
+
+model MangaSource {
+    globalAnimeSourceId Int
+    mangaId             Int
+
+    mangaSource         GlobalMangaSource @relation(fields: [globalAnimeSourceId], references: [id])
+    Manga               Manga             @relation(fields: [mangaId], references: [id])
+
+    @@id([globalAnimeSourceId, mangaId])
     @@map("manga_sources")
 }
 
-model manga_source_works {
-    mangaSourceId Int
-    workId        Int
+model AnimeSource {
+    globalAnimeSourceId Int
+    animeId             Int
 
-    mangaSource   manga_source @relation(fields: [mangaSourceId], references: [id])
-    Work          work        @relation(fields: [workId], references: [id])
+    animeSource         GlobalAnimeSource @relation(fields: [globalAnimeSourceId], references: [id])
+    Anime               Anime             @relation(fields: [animeId], references: [id])
 
-    @@id([mangaSourceId, workId])
-    @@map("manga_source_works")
-}
-
-model anime_source_works {
-    animeSourceId Int
-    workId        Int
-
-    animeSource   anime_source @relation(fields: [animeSourceId], references: [id])
-    Work          work        @relation(fields: [workId], references: [id])
-
-    @@id([animeSourceId, workId])
-    @@map("anime_source_works")
+    @@id([globalAnimeSourceId, animeId])
+    @@map("anime_sources")
 }

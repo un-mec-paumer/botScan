@@ -5,9 +5,8 @@ export const DisplayAnimeDto = z.object({
     name: z.string(),
     synospis: z.string(),
     imgUrl: z.string(),
-    // source: z.string(),
     season: z.string(),
-    language: z.string(), // peut etre ajouté des langues 
+    language: z.string(), //TODO: peut-être ajouter des langues dans le futur
     episode: z.string(),
 });
 

@@ -1,12 +1,12 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import { z } from 'zod';
-import { AlertService } from '@services/AlertService';
-import { AlertServiceError } from '@errors/AlertServiceError';
-import { DisplayAlertDto } from '@dtos/alerts/DisplayAlertDto';
+import { MangaAlertService } from '@services/MangaAlertService';
+import { MangaAlertServiceError } from '@errors/MangaAlertServiceError';
+import { DisplayMangaAlertDto } from '@dtos/mangas/alerts/DisplayMangaAlertDto';
 import { ErrorDto } from '@dtos/ErrorDto';
 
-const getAlertsByUserIdRoute: FastifyPluginAsync = async (fastify) => {
-    const alertService = new AlertService(fastify.prisma);
+const getMangaAlertsByUserIdRoute: FastifyPluginAsync = async (fastify) => {
+    const mangaAlertService = new MangaAlertService(fastify.prisma);
 
     const schema: FastifySchema = {
         summary: 'Get alerts by user id',
@@ -14,7 +14,7 @@ const getAlertsByUserIdRoute: FastifyPluginAsync = async (fastify) => {
         tags: ['alerts'],
         security: [{ bearerAuth: [] }],
         response: {
-            200: z.array(DisplayAlertDto),
+            200: z.array(DisplayMangaAlertDto),
             401: ErrorDto,
         },
     };
@@ -28,11 +28,11 @@ const getAlertsByUserIdRoute: FastifyPluginAsync = async (fastify) => {
             try {
                 const { userId } = request.params as { userId: string };
 
-                const alerts = await alertService.getAlertsByUserId(userId);
+                const alerts = await mangaAlertService.getAlertsByUserId(userId);
 
                 return reply.code(200).send(alerts);
             } catch (err) {
-                if (err instanceof AlertServiceError) {
+                if (err instanceof MangaAlertServiceError) {
                     return reply
                         .code(err.statusCode)
                         .send({ error: err.message });
@@ -43,4 +43,4 @@ const getAlertsByUserIdRoute: FastifyPluginAsync = async (fastify) => {
     );
 };
 
-export default getAlertsByUserIdRoute;
+export default getMangaAlertsByUserIdRoute;

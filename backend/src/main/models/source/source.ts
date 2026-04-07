@@ -1,11 +1,12 @@
-import { ModelManga } from "@models/works/manga";
-import { ModelAnime } from "@models/works/anime";
+import { ModelManga } from "@models/manga";
+import { ModelAnime } from "@models/anime";
 
 interface ModelSource {
     id: number;
     name: string;
 }
 
+// Wtf is this ???
 export interface ModelSourceManga extends ModelSource {
     visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}>;
 }

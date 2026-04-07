@@ -1,8 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { WorkService } from './WorkService';
 import { MangaServiceError } from '@errors/MangaServiceError';
-import { ModelManga } from '@models/works/manga';
-import { DisplayMangaDtoType } from '@dtos/mangas/DisplayMangaDto';
+import { ModelManga } from '@models/manga';
 
 export class MangaService extends WorkService {
     constructor(protected readonly prisma: PrismaClient) {

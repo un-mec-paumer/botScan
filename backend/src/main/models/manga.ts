@@ -1,5 +1,5 @@
-import { ModelSourceAnime, ModelSourceManga } from "@models/source/source";
-import { SourceDtoType } from "@dtos/source/sourceDto";
+import { ModelSourceManga } from "@models/source/source";
+import { MangaSourceDtoType } from "@dtos/mangas/sources/MangaSourceDto";
 import { DisplayMangaDtoType } from "@dtos/mangas/DisplayMangaDto";
 
 import AnimeSama from '@models/source/site/AnimeSama';
@@ -12,9 +12,7 @@ export class ModelManga {
     synopsis: string;
     imgUrl: string;
     chapter: string;
-    mangaSources: {
-        mangaSource: ModelSourceManga;
-    }[];
+    mangaSources: ModelSourceManga[];
 
     constructor(data: DisplayMangaDtoType) {
         this.id = data.id;
@@ -22,11 +20,11 @@ export class ModelManga {
         this.synopsis = data.synopsis;
         this.imgUrl = data.imgUrl;
         this.chapter = data.chapter;
-        this.mangaSources = data.mangaSources.map((data) => this.mangaSourcesFactory(data.mangaSource));
+        this.mangaSources = data.sources.map(this.mangaSourcesFactory);
     }
 
     public async visiteAllSite() : Promise<{tabChap: number[], linkManga: string}> {
-        const results = await Promise.all(this.mangaSources.map(({ mangaSource }) => mangaSource.visitSiteManga(this)));
+        const results = await Promise.all(this.mangaSources.map((mangaSource) => mangaSource.visitSiteManga(this)));
         
         const resultFinal = results.filter((result) => result.tabChap.length > 0).sort((a, b) => b.tabChap[b.tabChap.length - 1] - a.tabChap[a.tabChap.length - 1]);
         
@@ -35,16 +33,16 @@ export class ModelManga {
         else return {tabChap: [], linkManga: ""};
     }
 
-    private mangaSourcesFactory(source: SourceDtoType): {mangaSource: ModelSourceManga} {
+    private mangaSourcesFactory(source: MangaSourceDtoType): ModelSourceManga {
         switch (source.name) {
             case "AnimeSama":
-                return { mangaSource: new AnimeSama(source) };
+                return new AnimeSama(source);
             case "MangaMoins":
-                return { mangaSource: new MangaMoins(source) };
+                return new MangaMoins(source);
             case "MangaPlus":
-                return { mangaSource: new MangaPlus(source) };
+                return new MangaPlus(source);
             default:
-                return { mangaSource: new AnimeSama(source) }; // TODO: throw an error or return a default source instead of AnimeSama
+                return new AnimeSama(source); // TODO: throw an error or return a default source instead of AnimeSama
         }
     }
 }

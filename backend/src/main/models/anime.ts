@@ -1,5 +1,5 @@
 import { DisplayAnimeDtoType } from "@dtos/animes/DisplayAnimeDto";
-import { SourceDtoType } from "@dtos/source/sourceDto";
+import { AnimeSourceDtoType } from "@dtos/animes/sources/AnimeSourceDto";
 
 import { ModelSourceAnime } from "@models/source/source";
 import AnimeSama from "@models/source/site/AnimeSama";
@@ -12,11 +12,9 @@ export class ModelAnime {
     name: string;
     synospis: string;
     imgUrl: string;
-    animeSources: {
-        mangaSource: ModelSourceAnime;
-    }[];
+    sources: ModelSourceAnime[];
     season: string;
-    language: string; // peut etre ajouté des langues 
+    language: string; //TODO: peut-être ajouter des langues dans le futur
     episode: string;
 
     constructor(data: DisplayAnimeDtoType) {
@@ -24,21 +22,20 @@ export class ModelAnime {
         this.name = data.name;
         this.synospis = data.synospis;
         this.imgUrl = data.imgUrl;
-        // this.source = data.source;
         this.season = data.season;
         this.language = data.language;
         this.episode = data.episode;
 
         // TODO: pour le moment on a que AnimeSama, mais il faudra ajouter les autres sources et faire une factory propre
-        this.animeSources =  [{mangaSource: {id: 1, name: "AnimeSama"}}].map((data) => this.animeSourcesFactory(data.mangaSource));
+        this.sources =  [{id: 1, name: "AnimeSama"}].map(this.animeSourcesFactory);
     }
 
-    private animeSourcesFactory(source: SourceDtoType): {mangaSource: ModelSourceAnime} {
+    private animeSourcesFactory(source: AnimeSourceDtoType): ModelSourceAnime {
         switch (source.name) {
             case "AnimeSama":
-                return { mangaSource: new AnimeSama(source) };
+                return new AnimeSama(source);
             default:
-                return { mangaSource: new AnimeSama(source) }; // TODO: throw an error or return a default source instead of AnimeSama
+                return new AnimeSama(source); // TODO: throw an error or return a default source instead of AnimeSama
         }
     }
 }

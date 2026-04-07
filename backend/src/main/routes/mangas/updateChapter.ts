@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import { MangaService } from '@services/MangaService';
-import { WorkServiceError } from '@errors/WorkServiceError';
+import { MangaServiceError } from '@errors/MangaServiceError';
 import { DisplayMangaDto } from '@dtos/mangas/DisplayMangaDto';
 import { ErrorDto } from '@dtos/ErrorDto';
 
@@ -32,7 +32,7 @@ const updateChapterRoute: FastifyPluginAsync = async (fastify) => {
 
                 return reply.code(200).send(manga);
             } catch (err) {
-                if (err instanceof WorkServiceError) {
+                if (err instanceof MangaServiceError) {
                     return reply
                         .code(err.statusCode)
                         .send({ error: err.message });

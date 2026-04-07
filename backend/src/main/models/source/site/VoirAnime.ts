@@ -1,5 +1,5 @@
 import { ModelSourceAnime } from "../source";
-import { ModelAnime } from "@models/works/anime";
+import { ModelAnime } from "@models/anime";
 
 
 export default class VoirAnime implements ModelSourceAnime {
@@ -13,7 +13,7 @@ export default class VoirAnime implements ModelSourceAnime {
     }
 
     async visitSiteAnime(anime: ModelAnime): Promise<{ tabChap: number[]; linkManga: string; }> {
-        const link = `${this.link}/anime/${anime.name}-${anime.season > 1 ? anime.season : ''}${anime.language === 'vf' ? '-vf' : ''}`;
+        const link = `${this.link}/anime/${anime.name}-${Number.parseInt(anime.season) > 1 ? anime.season : ''}${anime.language === 'vf' ? '-vf' : ''}`;
         
         // const $ = await getCherrioText(link);
         

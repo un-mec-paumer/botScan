@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { WorkServiceError } from '@errors/WorkServiceError';
+import { MangaServiceError } from '@errors/MangaServiceError';
 
 export abstract class WorkService {
     protected selection: object = {
@@ -22,7 +22,7 @@ export abstract class WorkService {
         });
 
         if (!work) {
-            throw new WorkServiceError('Work not found.', 404);
+            throw new MangaServiceError('Work not found.', 404);
         }
 
         return work;
@@ -43,7 +43,7 @@ export abstract class WorkService {
         });
 
         if (!manga) {
-            throw new WorkServiceError('Work not found.', 404);
+            throw new MangaServiceError('Work not found.', 404);
         }
 
         return manga;

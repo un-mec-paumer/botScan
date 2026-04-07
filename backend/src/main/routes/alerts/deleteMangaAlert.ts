@@ -1,15 +1,15 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import { z } from 'zod';
-import { AlertService } from '@services/AlertService';
-import { AlertServiceError } from '@errors/AlertServiceError';
+import { MangaAlertService } from '@services/MangaAlertService';
+import { MangaAlertServiceError } from '@errors/MangaAlertServiceError';
 import { ErrorDto } from '@dtos/ErrorDto';
 
-const deleteAlertRoute: FastifyPluginAsync = async (fastify) => {
-    const alertService = new AlertService(fastify.prisma);
+const deleteMangaAlertRoute: FastifyPluginAsync = async (fastify) => {
+    const mangaAlertService = new MangaAlertService(fastify.prisma);
 
     const schema: FastifySchema = {
-        summary: 'Hard delete alert by work and user ids',
-        description: 'Hard delete alert by work and user ids',
+        summary: 'Hard delete alert by manga and user ids',
+        description: 'Hard delete alert by manga and user ids',
         tags: ['alerts'],
         security: [{ bearerAuth: [] }],
         response: {
@@ -19,22 +19,22 @@ const deleteAlertRoute: FastifyPluginAsync = async (fastify) => {
     };
 
     fastify.delete(
-        '/:userId/:workId',
+        '/:userId/:mangaId',
         {
             schema,
         },
         async (request, reply) => {
             try {
-                const { userId, workId } = request.body as {
+                const { userId, mangaId } = request.body as {
                     userId: string;
-                    workId: number;
+                    mangaId: number;
                 };
 
-                await alertService.deleteAlert(userId, workId);
+                await mangaAlertService.deleteAlert(userId, mangaId);
 
                 return reply.code(200);
             } catch (err) {
-                if (err instanceof AlertServiceError) {
+                if (err instanceof MangaAlertServiceError) {
                     return reply
                         .code(err.statusCode)
                         .send({ error: err.message });
@@ -45,4 +45,4 @@ const deleteAlertRoute: FastifyPluginAsync = async (fastify) => {
     );
 };
 
-export default deleteAlertRoute;
+export default deleteMangaAlertRoute;

@@ -1,36 +1,38 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import { MangaService } from '@services/MangaService';
-import { WorkServiceError } from '@errors/WorkServiceError';
+import { MangaServiceError } from '@errors/MangaServiceError';
+import { AddMangaDto, AddMangaDtoType } from '@dtos/mangas/AddMangaDto';
 import { DisplayMangaDto } from '@dtos/mangas/DisplayMangaDto';
 import { ErrorDto } from '@dtos/ErrorDto';
 
-const getMangaByNameRoute: FastifyPluginAsync = async (fastify) => {
+const addMangaRoute: FastifyPluginAsync = async (fastify) => {
     const mangaService = new MangaService(fastify.prisma);
 
     const schema: FastifySchema = {
-        summary: 'Get the manga associated with the name',
-        description: 'Get the manga associated with the name',
+        summary: 'Add manga',
+        description:
+            'Add the manga.',
         tags: ['mangas'],
+        body: AddMangaDto,
         response: {
-            200: DisplayMangaDto,
+            201: DisplayMangaDto,
             401: ErrorDto,
         },
     };
 
-    fastify.get(
-        '/name/:name',
+    fastify.post<{ Body: AddMangaDtoType }>(
+        '/',
         {
             schema,
         },
         async (request, reply) => {
             try {
-                const { name } = request.params as { name: string };
-
-                const manga = await mangaService.getMangaByName(name);
+                const body = request.body as AddMangaDtoType;
+                const manga = await mangaService.getMangas();
 
                 return reply.code(200).send(manga);
             } catch (err) {
-                if (err instanceof WorkServiceError) {
+                if (err instanceof MangaServiceError) {
                     return reply
                         .code(err.statusCode)
                         .send({ error: err.message });
@@ -41,4 +43,4 @@ const getMangaByNameRoute: FastifyPluginAsync = async (fastify) => {
     );
 };
 
-export default getMangaByNameRoute;
+export default addMangaRoute;

@@ -1,15 +1,15 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import { MangaService } from '@services/MangaService';
-import { WorkServiceError } from '@errors/WorkServiceError';
+import { MangaServiceError } from '@errors/MangaServiceError';
 import { DisplayMangaDto } from '@dtos/mangas/DisplayMangaDto';
 import { ErrorDto } from '@dtos/ErrorDto';
 
-const getMangaByIdRoute: FastifyPluginAsync = async (fastify) => {
+const getMangaByNameRoute: FastifyPluginAsync = async (fastify) => {
     const mangaService = new MangaService(fastify.prisma);
 
     const schema: FastifySchema = {
-        summary: 'Get the manga associated with the id',
-        description: 'Get the manga associated with the id',
+        summary: 'Get the manga associated with the name',
+        description: 'Get the manga associated with the name',
         tags: ['mangas'],
         response: {
             200: DisplayMangaDto,
@@ -18,18 +18,19 @@ const getMangaByIdRoute: FastifyPluginAsync = async (fastify) => {
     };
 
     fastify.get(
-        '/id/:id',
+        '/name/:name',
         {
             schema,
         },
         async (request, reply) => {
             try {
-                const { id } = request.params as { id: string };
-                const manga = await mangaService.getMangaById(Number.parseInt(id));
+                const { name } = request.params as { name: string };
+
+                const manga = await mangaService.getMangaByName(name);
 
                 return reply.code(200).send(manga);
             } catch (err) {
-                if (err instanceof WorkServiceError) {
+                if (err instanceof MangaServiceError) {
                     return reply
                         .code(err.statusCode)
                         .send({ error: err.message });
@@ -40,4 +41,4 @@ const getMangaByIdRoute: FastifyPluginAsync = async (fastify) => {
     );
 };
 
-export default getMangaByIdRoute;
+export default getMangaByNameRoute;

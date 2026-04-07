@@ -1,36 +1,25 @@
 import { convertAnytoManga } from "../function"
 import Manga from "../model/manga"
 import { API_URL } from "../variables"
-import { deleteFetch, getFetch, patchFetch, postFetch } from "./fetch"
+import { deleteFetch, getFetch, postFetch } from "./fetch"
 const ALERT_BASE_URL = `${API_URL}/alerts`
 
 export async function addMangaAlert(id_manga: number, id_user: string) {
     return await postFetch(ALERT_BASE_URL, {
         userId: id_user,
-        workId: id_manga,
-        mangaAlert: true,
+        mangaId: id_manga,
     });
 }
 
-export async function addAnimeAlert(id_manga: number, id_user: string) {
+export async function addAnimeAlert(id_anime: number, id_user: string) {
     return await postFetch(ALERT_BASE_URL, {
         userId: id_user,
-        workId: id_manga,
-        animeAlert: true,
+        animeId: id_anime,
     });
 }
 
-export async function updateAlert(id_manga: number, id_user: string, mangaAlert: boolean | null, animeAlert: boolean | null) {
-    return await patchFetch(ALERT_BASE_URL, {
-        userId: id_user,
-        workId: id_manga,
-        mangaAlert,
-        animeAlert,
-    });
-}
-
-export async function getAlertsByWorkId(id_manga: number) {
-    const alerts = await getFetch(`${ALERT_BASE_URL}/work-id/${id_manga}`)
+export async function getAlertsByMangaId(id_manga: number) {
+    const alerts = await getFetch(`${ALERT_BASE_URL}/manga-id/${id_manga}`)
 
     return alerts?.map((e: any) => convertAnytoManga(e)) || null;
 }
