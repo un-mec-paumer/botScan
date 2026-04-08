@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { MangaServiceError } from '@errors/MangaServiceError';
 import { ModelManga } from '@models/manga';
+import { AddMangaDtoType } from '@dtos/mangas/AddMangaDto';
 
 export class MangaService {
     private readonly selection: object = {
@@ -66,20 +67,19 @@ export class MangaService {
      */
     async getMangas(): Promise<ModelManga[]> {
         const mangas = await this.prisma.Manga.findMany({ select: this.selection });
-        const mangasWithChapter = mangas.map(new ModelManga) as ModelManga[];
-        return mangasWithChapter;
+        return mangas.map(new ModelManga) as ModelManga[];
     }
 
     /**
      * Récupère un manga.
      * @param id L'id du manga.
      */
-    async addManga() {
+    async addManga(data: AddMangaDtoType) {
         const manga = await this.prisma.Manga.create({
         });
 
         if (!manga) {
-        throw new MangaServiceError('Manga already exists.', 409);
+            throw new MangaServiceError('Manga already exists.', 409);
         }
 
         return manga;
@@ -88,7 +88,7 @@ export class MangaService {
     async updateChapter(id: number, chapter: string): Promise<ModelManga> {
         const manga = await this.prisma.Manga.update({
             data: {
-                mangaChapter: chapter,
+                chapter: chapter,
             },
             where: {
                 id: id,

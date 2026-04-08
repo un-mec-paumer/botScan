@@ -23,7 +23,8 @@
     "prisma": "prisma",
     "db:migrate": "prisma migrate dev",
     "db:generate": "npx prisma generate",
-    "generate-jwt-keys": "tsx scripts/generateJwtKeys.ts"
+    "generate-jwt-keys": "tsx scripts/generateJwtKeys.ts",
+    "db:seed": "tsx scripts/seedDatabase.ts"
   },
   "keywords": [],
   "author": "",

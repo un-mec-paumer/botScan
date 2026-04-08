@@ -43,4 +43,3 @@ export default function generateJwtKeys(forceGeneration: boolean = false): void 
 }
 
 generateJwtKeys(force);
-

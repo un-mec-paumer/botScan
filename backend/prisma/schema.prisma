@@ -91,16 +91,18 @@ model AnimeAlert {
 }
 
 model GlobalMangaSource {
-    id    Int    @id @default(autoincrement())
-    name  String
+    id           Int    @id @default(autoincrement())
+    name         String
+    domainUrl    String
 
     mangaSources MangaSource[]
     @@map("global_manga_sources")
 }
 
 model GlobalAnimeSource {
-    id    Int    @id @default(autoincrement())
-    name  String
+    id           Int    @id @default(autoincrement())
+    name         String
+    domainUrl    String
 
     animeSources AnimeSource[]
     @@map("global_anime_sources")
