@@ -21,13 +21,13 @@ INSERT INTO "public"."auth_tokens" ("id", "userId", "refreshToken", "refreshExpi
 ('tok_def456', 'usr_22222bbbbb', 'refresh_token_frieren_456', CURRENT_TIMESTAMP + INTERVAL '7 days', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', '10.0.0.42');
 
 -- 4. Insertion des Mangas
-INSERT INTO "public"."manga" ("id", "name", "synopsis", "imgUrl", "mangaChapter") VALUES 
+INSERT INTO "public"."mangas" ("id", "name", "synopsis", "imgUrl", "chapter") VALUES 
 (1, 'One Piece', 'L''histoire de Monkey D. Luffy qui veut devenir le roi des pirates.', 'https://example.com/manga/op.jpg', '1111'),
 (2, 'Berserk', 'Guts, le guerrier noir, erre dans un monde cauchemardesque.', 'https://example.com/manga/berserk.jpg', '375'),
 (3, 'Jujutsu Kaisen', 'Yuji Itadori rejoint une organisation secrète d''exorcistes.', 'https://example.com/manga/jjk.jpg', '255');
 
 -- 5. Insertion des Animes
-INSERT INTO "public"."anime" ("id", "name", "synopsis", "imgUrl", "animeSeason", "animeEpisode") VALUES 
+INSERT INTO "public"."animes" ("id", "name", "synopsis", "imgUrl", "season", "episode") VALUES 
 (1, 'One Piece', 'L''histoire de Monkey D. Luffy qui veut devenir le roi des pirates.', 'https://example.com/anime/op.jpg', 'Season 21', '1095'),
 (2, 'Frieren', 'Le voyage de l''elfe Frieren après la défaite du roi des démons.', 'https://example.com/anime/frieren.jpg', 'Season 1', '28'),
 (3, 'L''Attaque des Titans', 'L''humanité vit retranchée dans une ville entourée d''immenses murs.', 'https://example.com/anime/aot.jpg', 'Season 4', '89');
@@ -58,5 +58,5 @@ INSERT INTO "public"."anime_alerts" ("userId", "animeId") VALUES
 ('usr_33333ccccc', 3); -- Guts suit l'anime AOT
 
 -- 10. Mise à jour des séquences (Important pour les colonnes SERIAL)
-SELECT setval('manga_id_seq', (SELECT MAX(id) FROM "public"."manga"));
-SELECT setval('anime_id_seq', (SELECT MAX(id) FROM "public"."anime"));
+--SELECT setval('manga_id_seq', (SELECT MAX(id) FROM "public"."mangas"));
+--SELECT setval('anime_id_seq', (SELECT MAX(id) FROM "public"."animes"));
