@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { MangaServiceError } from '@errors/MangaServiceError';
 import { ModelManga } from '@models/manga';
 import { AddMangaDtoType } from '@dtos/mangas/AddMangaDto';
+import { DisplayMangaDtoType } from '@dtos/mangas/DisplayMangaDto';
 
 export class MangaService {
     private readonly selection: object = {
@@ -29,10 +30,10 @@ export class MangaService {
      * @param id L'id du manga.
      */
     async getMangaById(id: number): Promise<ModelManga> {
-        const manga = await this.prisma.Manga.findUnique({
+        const manga = await this.prisma.manga.findUnique({
             select: this.selection,
             where: { id },
-        });
+        }) as DisplayMangaDtoType;
 
         if (!manga) {
             throw new MangaServiceError('Manga not found.', 404);
@@ -46,14 +47,14 @@ export class MangaService {
      * @param id L'id du manga.
      */
     async getMangaByName(name: string): Promise<ModelManga> {
-        const manga = await this.prisma.Manga.findFirst({
+        const manga = await this.prisma.manga.findFirst({
             select: this.selection,
             where: {
                 name: {
                     contains: name,
                 },
             },
-        });
+        }) as DisplayMangaDtoType;
 
         if (!manga) {
             throw new MangaServiceError('Manga not found.', 404);
@@ -66,8 +67,8 @@ export class MangaService {
      * Récupère les mangas
      */
     async getMangas(): Promise<ModelManga[]> {
-        const mangas = await this.prisma.Manga.findMany({ select: this.selection });
-        return mangas.map(new ModelManga) as ModelManga[];
+        const mangas = await this.prisma.manga.findMany({ select: this.selection }) as DisplayMangaDtoType[];
+        return mangas.map((manga) => new ModelManga(manga));
     }
 
     /**
@@ -75,7 +76,8 @@ export class MangaService {
      * @param id L'id du manga.
      */
     async addManga(data: AddMangaDtoType) {
-        const manga = await this.prisma.Manga.create({
+        const manga = await this.prisma.manga.create({
+            data: data,
         });
 
         if (!manga) {
@@ -86,14 +88,14 @@ export class MangaService {
     }
 
     async updateChapter(id: number, chapter: string): Promise<ModelManga> {
-        const manga = await this.prisma.Manga.update({
+        const manga = await this.prisma.manga.update({
             data: {
                 chapter: chapter,
             },
             where: {
                 id: id,
             },
-        });
+        }) as DisplayMangaDtoType;
 
         if (!manga) {
             throw new MangaServiceError('Manga not found.', 404);

@@ -1,15 +1,13 @@
-import { ModelSourceAnime } from "../source";
+import { AnimeSourceDtoType } from "@dtos/animes/sources/AnimeSourceDto";
+import { ModelSourceAnime, ModelSourceManga } from "../source";
 import { ModelAnime } from "@models/anime";
 
 
 export default class VoirAnime implements ModelSourceAnime {
-    id: number;
-    name: string;
-    link = "https://voiranime.com";
-
-    constructor(data: {id: number, name: string}) {
-        this.id = data.id;
-        this.name = data.name;
+    public link = "https://voiranime.com";
+    public mangaSource: {id: number, name: string};
+    constructor(data: AnimeSourceDtoType) { // a modifier avec les DTO
+        this.mangaSource = data;
     }
 
     async visitSiteAnime(anime: ModelAnime): Promise<{ tabChap: number[]; linkManga: string; }> {

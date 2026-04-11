@@ -1,14 +1,13 @@
+import { MangaSourceDtoType } from "@dtos/mangas/sources/MangaSourceDto";
 import { ModelSourceManga } from "../source";
 import { ModelManga } from "@models/manga";
 
 export default class MangaMoins implements ModelSourceManga {
-    id: number;
-    name: string;
-    link = "https://mangamoins.com/"; // TODO in DB
-
-    constructor(data: {id: number, name: string}) {
-        this.id = data.id;
-        this.name = data.name;
+    public link = "https://mangamoins.com/"; // TODO in DB
+    public mangaSource: {id: number, name: string};
+    
+    constructor(data: MangaSourceDtoType) {
+        this.mangaSource = data.mangaSource;
     }
     
     async visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}> {

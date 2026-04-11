@@ -7,7 +7,7 @@ export const DisplayMangaDto = z.object({
     synopsis: z.string(),
     imgUrl: z.string(),
     chapter: z.string(),
-    sources: z.array(MangaSourceDto),
+    mangaSources: z.array(MangaSourceDto),
 });
 
 export type DisplayMangaDtoType = z.infer<typeof DisplayMangaDto>;

@@ -20,7 +20,7 @@ export class ModelManga {
         this.synopsis = data.synopsis;
         this.imgUrl = data.imgUrl;
         this.chapter = data.chapter;
-        this.mangaSources = data.sources.map(this.mangaSourcesFactory);
+        this.mangaSources = data.mangaSources.map((source) => this.mangaSourcesFactory(source));
     }
 
     public async visiteAllSite() : Promise<{tabChap: number[], linkManga: string}> {
@@ -34,7 +34,7 @@ export class ModelManga {
     }
 
     private mangaSourcesFactory(source: MangaSourceDtoType): ModelSourceManga {
-        switch (source.name) {
+        switch (source.mangaSource.name) {
             case "AnimeSama":
                 return new AnimeSama(source);
             case "MangaMoins":

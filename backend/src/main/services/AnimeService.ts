@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { AnimeServiceError } from '@errors/AnimeServiceError';
 import { ModelAnime } from '@models/anime';
 import { AddAnimeDtoType } from '@dtos/animes/AddAnimeDto';
+import { DisplayAnimeDtoType } from '@dtos/animes/DisplayAnimeDto';
 
 export class AnimeService {
     private readonly selection: object = {
@@ -30,10 +31,10 @@ export class AnimeService {
      * @param id L'id du anime.
      */
     async getAnimeById(id: number): Promise<ModelAnime> {
-        const anime = await this.prisma.Anime.findUnique({
+        const anime = await this.prisma.anime.findUnique({
             select: this.selection,
             where: { id },
-        });
+        }) as DisplayAnimeDtoType;
 
         if (!anime) {
             throw new AnimeServiceError('Anime not found.', 404);
@@ -47,14 +48,14 @@ export class AnimeService {
      * @param id L'id du anime.
      */
     async getAnimeByName(name: string): Promise<ModelAnime> {
-        const anime = await this.prisma.Anime.findFirst({
+        const anime = await this.prisma.anime.findFirst({
             select: this.selection,
             where: {
                 name: {
                     contains: name,
                 },
             },
-        });
+        }) as DisplayAnimeDtoType;
 
         if (!anime) {
             throw new AnimeServiceError('Anime not found.', 404);
@@ -67,8 +68,8 @@ export class AnimeService {
      * Récupère les animes
      */
     async getAnimes(): Promise<ModelAnime[]> {
-        const animes = await this.prisma.Anime.findMany({ select: this.selection });
-        return animes.map(new ModelAnime) as ModelAnime[];
+        const animes = await this.prisma.anime.findMany({ select: this.selection }) as DisplayAnimeDtoType[];
+        return animes.map((anime) => new ModelAnime(anime));
     }
 
     /**
@@ -76,9 +77,12 @@ export class AnimeService {
      * @param id L'id du anime.
      */
     async addAnime(data: AddAnimeDtoType) {
-        const anime = await this.prisma.Anime.create({
-            data: data
-        });
+        const anime = await this.prisma.anime.create({
+            data: {
+                ...data,
+                season: String(data.season),
+            }
+        }) ;
 
         if (!anime) {
             throw new AnimeServiceError('Anime already exists.', 409);
@@ -88,14 +92,14 @@ export class AnimeService {
     }
 
     async updateSeason(id: number, season: string): Promise<ModelAnime> {
-        const anime = await this.prisma.Anime.update({
+        const anime = await this.prisma.anime.update({
             data: {
                 season: season,
             },
             where: {
                 id: id,
             },
-        });
+        }) as DisplayAnimeDtoType;
 
         if (!anime) {
             throw new AnimeServiceError('Anime not found.', 404);
@@ -105,14 +109,14 @@ export class AnimeService {
     }
 
     async updateEpisode(id: number, episode: string): Promise<ModelAnime> {
-        const anime = await this.prisma.Anime.update({
+        const anime = await this.prisma.anime.update({
             data: {
                 episode: episode,
             },
             where: {
                 id: id,
             },
-        });
+        }) as DisplayAnimeDtoType;
 
         if (!anime) {
             throw new AnimeServiceError('Anime not found.', 404);

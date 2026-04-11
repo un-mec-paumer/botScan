@@ -1,15 +1,15 @@
 import { ModelSourceManga, ModelSourceAnime } from "../source";
 import { ModelManga } from "@models/manga";
 import { ModelAnime } from "@models/anime";
+import { MangaSourceDtoType } from "@dtos/mangas/sources/MangaSourceDto";
 
 export default class AnimeSama implements ModelSourceManga, ModelSourceAnime {
-    id: number;
-    name: string;
-    link = "https://anime-sama.to/"; // TODO in DB
+    public link = "https://anime-sama.to/"; // TODO in DB
+    public mangaSource: {id: number, name: string};
 
-    constructor(data: {id: number, name: string}) {
-        this.id = data.id;
-        this.name = data.name;
+    
+    constructor(data: MangaSourceDtoType) {
+        this.mangaSource = data.mangaSource;
     }
 
 
