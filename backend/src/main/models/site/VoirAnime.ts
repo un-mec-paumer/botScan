@@ -1,12 +1,12 @@
-import { AnimeSourceDtoType } from "@dtos/animes/sources/AnimeSourceDto";
-import { ModelSourceAnime, ModelSourceManga } from "../source";
-import { ModelAnime } from "@models/anime";
+import { GlobalAnimeSourceDtoType } from "@dtos/animes/sources/GlobalAnimeSourceDto";
+import { ModelSourceAnime, ModelSourceManga } from "./source";
+import { ModelAnime } from "@models/Anime";
 
 
 export default class VoirAnime implements ModelSourceAnime {
     public link = "https://voiranime.com";
     public mangaSource: {id: number, name: string};
-    constructor(data: AnimeSourceDtoType) { // a modifier avec les DTO
+    constructor(data: GlobalAnimeSourceDtoType) { // a modifier avec les DTO
         this.mangaSource = data;
     }
 

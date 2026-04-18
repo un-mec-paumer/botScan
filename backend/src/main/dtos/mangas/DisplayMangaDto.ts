@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { MangaSourceDto } from '@dtos/mangas/sources/MangaSourceDto';
+import { GlobalMangaSourceDto } from '@dtos/mangas/sources/GlobalMangaSourceDto';
 
 export const DisplayMangaDto = z.object({
     id: z.number().int(),
@@ -7,7 +7,7 @@ export const DisplayMangaDto = z.object({
     synopsis: z.string(),
     imgUrl: z.string(),
     chapter: z.string(),
-    mangaSources: z.array(MangaSourceDto),
+    sources: z.array(GlobalMangaSourceDto),
 });
 
 export type DisplayMangaDtoType = z.infer<typeof DisplayMangaDto>;

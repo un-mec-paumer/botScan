@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { Anime, PrismaClient } from '@prisma/client';
 import { AnimeServiceError } from '@errors/AnimeServiceError';
-import { ModelAnime } from '@models/anime';
+import { ModelAnime } from '@models/Anime';
 import { AddAnimeDtoType } from '@dtos/animes/AddAnimeDto';
-import { DisplayAnimeDtoType } from '@dtos/animes/DisplayAnimeDto';
 
 export class AnimeService {
     private readonly selection: object = {
@@ -14,12 +13,7 @@ export class AnimeService {
         episode: true,
         animeSources: {
             select: {
-                animeSource: {
-                    select: {
-                        id: true,
-                        name: true,
-                    },
-                },
+                animeSource: true
             },
         },
     };
@@ -34,7 +28,7 @@ export class AnimeService {
         const anime = await this.prisma.anime.findUnique({
             select: this.selection,
             where: { id },
-        }) as DisplayAnimeDtoType;
+        }) as Anime;
 
         if (!anime) {
             throw new AnimeServiceError('Anime not found.', 404);
@@ -55,7 +49,7 @@ export class AnimeService {
                     contains: name,
                 },
             },
-        }) as DisplayAnimeDtoType;
+        }) as Anime;
 
         if (!anime) {
             throw new AnimeServiceError('Anime not found.', 404);
@@ -68,7 +62,7 @@ export class AnimeService {
      * Récupère les animes
      */
     async getAnimes(): Promise<ModelAnime[]> {
-        const animes = await this.prisma.anime.findMany({ select: this.selection }) as DisplayAnimeDtoType[];
+        const animes = await this.prisma.anime.findMany({ select: this.selection }) as Anime[];
         return animes.map((anime) => new ModelAnime(anime));
     }
 
@@ -99,7 +93,7 @@ export class AnimeService {
             where: {
                 id: id,
             },
-        }) as DisplayAnimeDtoType;
+        });
 
         if (!anime) {
             throw new AnimeServiceError('Anime not found.', 404);
@@ -116,7 +110,7 @@ export class AnimeService {
             where: {
                 id: id,
             },
-        }) as DisplayAnimeDtoType;
+        });
 
         if (!anime) {
             throw new AnimeServiceError('Anime not found.', 404);

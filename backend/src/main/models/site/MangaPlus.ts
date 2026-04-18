@@ -1,12 +1,12 @@
-import { MangaSourceDtoType } from "@dtos/mangas/sources/MangaSourceDto";
-import { ModelSourceManga } from "../source";
-import { ModelManga } from "@models/manga";
+import { GlobalMangaSourceDtoType } from "@dtos/mangas/sources/GlobalMangaSourceDto";
+import { ModelSourceManga } from "./source";
+import { ModelManga } from "@models/Manga";
 
 export default class MangaPlus implements ModelSourceManga {
     public link = "https://mangaplus.shueisha.co.jp"; // TODO in DB
     public mangaSource: {id: number, name: string};
 
-    constructor(data: MangaSourceDtoType) {
+    constructor(data: GlobalMangaSourceDtoType) {
         this.mangaSource = data.mangaSource;
     }
 

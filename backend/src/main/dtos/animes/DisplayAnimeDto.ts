@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AnimeSourceDto } from './sources/AnimeSourceDto';
+import { GlobalAnimeSourceDto } from './sources/GlobalAnimeSourceDto';
 
 export const DisplayAnimeDto = z.object({
     id: z.number().int(),
@@ -9,7 +9,7 @@ export const DisplayAnimeDto = z.object({
     season: z.string(),
     language: z.string(), // TODO: peut-être ajouter des langues dans le futur
     episode: z.string(),
-    sources: z.array(AnimeSourceDto),
+    sources: z.array(GlobalAnimeSourceDto),
 });
 
 export type DisplayAnimeDtoType = z.infer<typeof DisplayAnimeDto>;

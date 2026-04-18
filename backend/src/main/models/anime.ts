@@ -1,41 +1,24 @@
-import { DisplayAnimeDtoType } from "@dtos/animes/DisplayAnimeDto";
-import { AnimeSourceDtoType } from "@dtos/animes/sources/AnimeSourceDto";
-
-import { ModelSourceAnime } from "@models/source/source";
-import AnimeSama from "@models/source/site/AnimeSama";
-import MangaMoins from "@models/source/site/MangaMoins";
-import MangaPlus from "@models/source/site/MangaPlus";
-
+import { Anime } from "@prisma/client";
+import { ModelSourceAnime } from "@models/site/source";
 
 export class ModelAnime {
     id: number;
     name: string;
-    synospis: string;
-    imgUrl: string;
+    synospis: string | null;
+    imgUrl: string | null;
+    season: string | null;
+    // language: string | null; //TODO: peut-être ajouter des langues dans le futur
+    episode: string | null;
     sources: ModelSourceAnime[];
-    season: string;
-    language: string; //TODO: peut-être ajouter des langues dans le futur
-    episode: string;
 
-    constructor(data: DisplayAnimeDtoType) {
+    constructor(data: Anime, sources: ModelSourceAnime[] = []) {
         this.id = data.id;
         this.name = data.name;
-        this.synospis = data.synospis;
+        this.synospis = data.synopsis;
         this.imgUrl = data.imgUrl;
         this.season = data.season;
-        this.language = data.language;
+        // this.language = data.language;
         this.episode = data.episode;
-
-        // TODO: pour le moment on a que AnimeSama, mais il faudra ajouter les autres sources et faire une factory propre
-        this.sources =  [{id: 1, name: "AnimeSama"}].map(this.animeSourcesFactory);
-    }
-
-    private animeSourcesFactory(source: AnimeSourceDtoType): ModelSourceAnime {
-        switch (source.name) {
-            case "AnimeSama":
-                return new AnimeSama(source);
-            default:
-                return new AnimeSama(source); // TODO: throw an error or return a default source instead of AnimeSama
-        }
+        this.sources = sources;
     }
 }

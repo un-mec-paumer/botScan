@@ -91,41 +91,43 @@ model AnimeAlert {
 }
 
 model GlobalMangaSource {
-    id           Int    @id @default(autoincrement())
-    name         String
-    domainUrl    String
+  id           Int    @id @default(autoincrement())
+  name         String
+  domainUrl    String
 
-    mangaSources MangaSource[]
-    @@map("global_manga_sources")
+  mangaSources MangaSource[]
+  @@map("global_manga_sources")
 }
 
 model GlobalAnimeSource {
-    id           Int    @id @default(autoincrement())
-    name         String
-    domainUrl    String
+  id           Int    @id @default(autoincrement())
+  name         String
+  domainUrl    String
 
-    animeSources AnimeSource[]
-    @@map("global_anime_sources")
+  animeSources AnimeSource[]
+  @@map("global_anime_sources")
 }
 
 model MangaSource {
-    globalAnimeSourceId Int
-    mangaId             Int
+  link                String
+  globalAnimeSourceId Int
+  mangaId             Int
 
-    mangaSource         GlobalMangaSource @relation(fields: [globalAnimeSourceId], references: [id])
-    Manga               Manga             @relation(fields: [mangaId], references: [id])
+  mangaSource         GlobalMangaSource @relation(fields: [globalAnimeSourceId], references: [id])
+  Manga               Manga             @relation(fields: [mangaId], references: [id])
 
-    @@id([globalAnimeSourceId, mangaId])
-    @@map("manga_sources")
+  @@id([globalAnimeSourceId, mangaId])
+  @@map("manga_sources")
 }
 
 model AnimeSource {
-    globalAnimeSourceId Int
-    animeId             Int
+  link                String
+  globalAnimeSourceId Int
+  animeId             Int
 
-    animeSource         GlobalAnimeSource @relation(fields: [globalAnimeSourceId], references: [id])
-    Anime               Anime             @relation(fields: [animeId], references: [id])
+  animeSource         GlobalAnimeSource @relation(fields: [globalAnimeSourceId], references: [id])
+  Anime               Anime             @relation(fields: [animeId], references: [id])
 
-    @@id([globalAnimeSourceId, animeId])
-    @@map("anime_sources")
+  @@id([globalAnimeSourceId, animeId])
+  @@map("anime_sources")
 }

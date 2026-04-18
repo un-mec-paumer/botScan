@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { Manga, PrismaClient } from '@prisma/client';
 import { MangaServiceError } from '@errors/MangaServiceError';
-import { ModelManga } from '@models/manga';
+import { ModelManga } from '@models/Manga';
 import { AddMangaDtoType } from '@dtos/mangas/AddMangaDto';
-import { DisplayMangaDtoType } from '@dtos/mangas/DisplayMangaDto';
 
 export class MangaService {
     private readonly selection: object = {
@@ -13,12 +12,7 @@ export class MangaService {
         chapter: true,
         mangaSources: {
             select: {
-                mangaSource: {
-                    select: {
-                        id: true,
-                        name: true,
-                    },
-                },
+                mangaSource: true,
             },
         },
     };
@@ -33,7 +27,7 @@ export class MangaService {
         const manga = await this.prisma.manga.findUnique({
             select: this.selection,
             where: { id },
-        }) as DisplayMangaDtoType;
+        }) as Manga;
 
         if (!manga) {
             throw new MangaServiceError('Manga not found.', 404);
@@ -54,7 +48,7 @@ export class MangaService {
                     contains: name,
                 },
             },
-        }) as DisplayMangaDtoType;
+        }) as Manga;
 
         if (!manga) {
             throw new MangaServiceError('Manga not found.', 404);
@@ -67,7 +61,7 @@ export class MangaService {
      * Récupère les mangas
      */
     async getMangas(): Promise<ModelManga[]> {
-        const mangas = await this.prisma.manga.findMany({ select: this.selection }) as DisplayMangaDtoType[];
+        const mangas = await this.prisma.manga.findMany({ select: this.selection }) as Manga[];
         return mangas.map((manga) => new ModelManga(manga));
     }
 
@@ -95,7 +89,7 @@ export class MangaService {
             where: {
                 id: id,
             },
-        }) as DisplayMangaDtoType;
+        });
 
         if (!manga) {
             throw new MangaServiceError('Manga not found.', 404);
