@@ -4,19 +4,6 @@ import { ModelManga } from '@models/Manga';
 import { AddMangaDtoType } from '@dtos/mangas/AddMangaDto';
 
 export class MangaService {
-    private readonly selection: object = {
-        id: true,
-        name: true,
-        synopsis: true,
-        imgUrl: true,
-        chapter: true,
-        mangaSources: {
-            select: {
-                mangaSource: true,
-            },
-        },
-    };
-
     constructor(protected readonly prisma: PrismaClient) {}
 
     /**
@@ -25,7 +12,6 @@ export class MangaService {
      */
     async getMangaById(id: number): Promise<ModelManga> {
         const manga = await this.prisma.manga.findUnique({
-            select: this.selection,
             where: { id },
         }) as Manga;
 
@@ -42,7 +28,6 @@ export class MangaService {
      */
     async getMangaByName(name: string): Promise<ModelManga> {
         const manga = await this.prisma.manga.findFirst({
-            select: this.selection,
             where: {
                 name: {
                     contains: name,
@@ -61,7 +46,7 @@ export class MangaService {
      * Récupère les mangas
      */
     async getMangas(): Promise<ModelManga[]> {
-        const mangas = await this.prisma.manga.findMany({ select: this.selection }) as Manga[];
+        const mangas = await this.prisma.manga.findMany();
         return mangas.map((manga) => new ModelManga(manga));
     }
 
@@ -69,7 +54,7 @@ export class MangaService {
      * Récupère un manga.
      * @param id L'id du manga.
      */
-    async addManga(data: AddMangaDtoType) {
+    async addManga(data: AddMangaDtoType): Promise<ModelManga> {
         const manga = await this.prisma.manga.create({
             data: data,
         });
@@ -78,7 +63,7 @@ export class MangaService {
             throw new MangaServiceError('Manga already exists.', 409);
         }
 
-        return manga;
+        return new ModelManga(manga);
     }
 
     async updateChapter(id: number, chapter: string): Promise<ModelManga> {

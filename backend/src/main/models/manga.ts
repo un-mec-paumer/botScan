@@ -1,5 +1,6 @@
 import { Manga } from "@prisma/client";
-import { ModelMangaSource } from "./source/MangaSource";
+import { ModelMangaSource } from "./MangaSource";
+import { DisplayMangaDtoType } from "@dtos/mangas/DisplayMangaDto";
 
 export class ModelManga {
     id: number;
@@ -16,6 +17,17 @@ export class ModelManga {
         this.imgUrl = data.imgUrl;
         this.chapter = data.chapter;
         this.sources = sources;
+    }
+
+    display(): DisplayMangaDtoType {
+        return {
+            id: this.id,
+            name: this.name,
+            synopsis: this.synopsis ?? "",
+            imgUrl: this.imgUrl ?? "",
+            chapter: this.chapter ?? "",
+            sources: this.sources.map(source => source.display())
+        };
     }
 
     // public async visiteAllSite() : Promise<{tabChap: number[], linkManga: string}> {

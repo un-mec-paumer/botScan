@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import { AnimeAlert, PrismaClient } from '@prisma/client';
 import { AnimeAlertServiceError } from '@errors/AnimeAlertServiceError';
 
 export class AnimeAlertService {
     constructor(private readonly prisma: PrismaClient) {}
 
-    async getAlert(userId: string, animeId: number) {
-        const alert = await this.prisma.AnimeAlert.findUnique({
+    async getAlert(userId: string, animeId: number): Promise<AnimeAlert> {
+        const alert = await this.prisma.animeAlert.findUnique({
             where: {
                 userId_animeId: {
                     userId,
@@ -25,11 +25,8 @@ export class AnimeAlertService {
         return alert;
     }
 
-    async addAlert(
-        userId: string,
-        animeId: number
-    ) {
-        const alert = await this.prisma.AnimeAlert.create({
+    async addAlert(userId: string, animeId: number): Promise<AnimeAlert> {
+        const alert = await this.prisma.animeAlert.create({
             data: {
                 userId,
                 animeId
@@ -43,8 +40,8 @@ export class AnimeAlertService {
         return alert;
     }
 
-    async deleteAlert(userId: string, animeId: number) {
-        const alert = await this.prisma.AnimeAlert.delete({
+    async deleteAlert(userId: string, animeId: number): Promise<AnimeAlert> {
+        const alert = await this.prisma.animeAlert.delete({
             where: {
                 userId_animeId: {
                     userId,
@@ -64,8 +61,8 @@ export class AnimeAlertService {
      * Récupère la liste d'alerte d'un utilisateur.
      * @param id L'ID de l'utilisateur.
      */
-    async getAlertsByUserId(userId: string) {
-        return await this.prisma.AnimeAlert.findMany({
+    async getAlertsByUserId(userId: string): Promise<AnimeAlert[]> {
+        return await this.prisma.animeAlert.findMany({
             where: { userId: userId },
             include: {
                 Anime: true,
@@ -78,8 +75,8 @@ export class AnimeAlertService {
      * Récupère la liste d'alerte d'une oeuvre.
      * @param id L'ID de l'utilisateur.
      */
-    async getAlertsByAnimeId(animeId: number) {
-        return await this.prisma.AnimeAlert.findMany({
+    async getAlertsByAnimeId(animeId: number): Promise<AnimeAlert[]> {
+        return await this.prisma.animeAlert.findMany({
             where: { animeId: animeId },
             include: {
                 Anime: true,

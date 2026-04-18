@@ -1,5 +1,6 @@
 import { GlobalAnimeSource } from "@prisma/client";
 import { ModelAnimeSource } from "./AnimeSource";
+import { DisplayGlobalAnimeSourceDtoType } from "@dtos/animes/sources/DisplayGlobalAnimeSourceDto";
 import AnimeSama from '@models/site/AnimeSama';
 
 export class ModelGlobalAnimeSource {
@@ -13,6 +14,14 @@ export class ModelGlobalAnimeSource {
         this.name = data.name;
         this.domainUrl = data.domainUrl;
         this.sources = sources;
+    }
+    
+    display(): DisplayGlobalAnimeSourceDtoType {
+        return {
+            id: this.id,
+            name: this.name,
+            domainUrl: this.domainUrl
+        }
     }
 
     // private animeSourcesFactory(source: ModelAnimeSource): ModelAnimeSource {

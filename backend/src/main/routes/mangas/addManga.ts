@@ -27,10 +27,10 @@ const addMangaRoute: FastifyPluginAsync = async (fastify) => {
         },
         async (request, reply) => {
             try {
-                const body = request.body as AddMangaDtoType;
-                const manga = await mangaService.getMangas();
+                const body = request.body;
+                const manga = await mangaService.addManga(body);
 
-                return reply.code(200).send(manga);
+                return reply.code(200).send(manga.display());
             } catch (err) {
                 if (err instanceof MangaServiceError) {
                     return reply

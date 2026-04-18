@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import { MangaAlert, PrismaClient } from '@prisma/client';
 import { MangaAlertServiceError } from '@errors/MangaAlertServiceError';
 
 export class MangaAlertService {
     constructor(private readonly prisma: PrismaClient) {}
 
-    async getAlert(userId: string, mangaId: number) {
-        const alert = await this.prisma.MangaAlert.findUnique({
+    async getAlert(userId: string, mangaId: number): Promise<MangaAlert> {
+        const alert = await this.prisma.mangaAlert.findUnique({
             where: {
                 userId_mangaId: {
                     userId,
@@ -25,11 +25,8 @@ export class MangaAlertService {
         return alert;
     }
 
-    async addAlert(
-        userId: string,
-        mangaId: number
-    ) {
-        const alert = await this.prisma.MangaAlert.create({
+    async addAlert(userId: string, mangaId: number): Promise<MangaAlert> {
+        const alert = await this.prisma.mangaAlert.create({
             data: {
                 userId,
                 mangaId
@@ -43,8 +40,8 @@ export class MangaAlertService {
         return alert;
     }
 
-    async deleteAlert(userId: string, mangaId: number) {
-        const alert = await this.prisma.MangaAlert.delete({
+    async deleteAlert(userId: string, mangaId: number): Promise<MangaAlert> {
+        const alert = await this.prisma.mangaAlert.delete({
             where: {
                 userId_mangaId: {
                     userId,
@@ -64,8 +61,8 @@ export class MangaAlertService {
      * Récupère la liste d'alerte d'un utilisateur.
      * @param id L'ID de l'utilisateur.
      */
-    async getAlertsByUserId(userId: string) {
-        return await this.prisma.MangaAlert.findMany({
+    async getAlertsByUserId(userId: string): Promise<MangaAlert[]> {
+        return await this.prisma.mangaAlert.findMany({
             where: { userId: userId },
             include: {
                 Manga: true,
@@ -78,8 +75,8 @@ export class MangaAlertService {
      * Récupère la liste d'alerte d'une oeuvre.
      * @param id L'ID de l'utilisateur.
      */
-    async getAlertsByMangaId(mangaId: number) {
-        return await this.prisma.MangaAlert.findMany({
+    async getAlertsByMangaId(mangaId: number): Promise<MangaAlert[]> {
+        return await this.prisma.mangaAlert.findMany({
             where: { mangaId: mangaId },
             include: {
                 Manga: true,

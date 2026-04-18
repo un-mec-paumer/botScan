@@ -1,5 +1,6 @@
 import { GlobalMangaSource } from "@prisma/client";
 import { ModelMangaSource } from "./MangaSource";
+import { DisplayGlobalMangaSourceDtoType } from "@dtos/mangas/sources/DisplayGlobalMangaSourceDto";
 import AnimeSama from '@models/site/AnimeSama';
 import MangaMoins from '@models/site/MangaMoins';
 import MangaPlus from '@models/site/MangaPlus';
@@ -15,6 +16,14 @@ export class ModelGlobalMangaSource {
         this.name = data.name;
         this.domainUrl = data.domainUrl;
         this.sources = sources;
+    }
+
+    display(): DisplayGlobalMangaSourceDtoType {
+        return {
+            id: this.id,
+            name: this.name,
+            domainUrl: this.domainUrl
+        }
     }
 
     // private mangaSourcesFactory(source: ModelMangaSource): ModelMangaSource {

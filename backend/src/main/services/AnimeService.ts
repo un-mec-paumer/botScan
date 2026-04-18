@@ -4,21 +4,7 @@ import { ModelAnime } from '@models/Anime';
 import { AddAnimeDtoType } from '@dtos/animes/AddAnimeDto';
 
 export class AnimeService {
-    private readonly selection: object = {
-        id: true,
-        name: true,
-        synopsis: true,
-        imgUrl: true,
-        season: true,
-        episode: true,
-        animeSources: {
-            select: {
-                animeSource: true
-            },
-        },
-    };
-
-    constructor(protected readonly prisma: PrismaClient) { }
+    constructor(protected readonly prisma: PrismaClient) {}
 
     /**
      * Récupère un anime.
@@ -26,7 +12,6 @@ export class AnimeService {
      */
     async getAnimeById(id: number): Promise<ModelAnime> {
         const anime = await this.prisma.anime.findUnique({
-            select: this.selection,
             where: { id },
         }) as Anime;
 
@@ -43,7 +28,6 @@ export class AnimeService {
      */
     async getAnimeByName(name: string): Promise<ModelAnime> {
         const anime = await this.prisma.anime.findFirst({
-            select: this.selection,
             where: {
                 name: {
                     contains: name,
@@ -62,7 +46,7 @@ export class AnimeService {
      * Récupère les animes
      */
     async getAnimes(): Promise<ModelAnime[]> {
-        const animes = await this.prisma.anime.findMany({ select: this.selection }) as Anime[];
+        const animes = await this.prisma.anime.findMany();
         return animes.map((anime) => new ModelAnime(anime));
     }
 

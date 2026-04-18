@@ -1,6 +1,7 @@
 import { MangaSource } from "@prisma/client";
 import { ModelManga } from "@models/Manga";
 import { ModelGlobalMangaSource } from "./GlobalMangaSource";
+import { DisplayMangaSourceDtoType } from "@dtos/mangas/sources/DisplayMangaSourceDto";
 
 export class ModelMangaSource {
     link: string;
@@ -11,5 +12,13 @@ export class ModelMangaSource {
         this.link = data.link;
         this.manga = manga;
         this.globalSource = globalSource;
+    }
+
+    display(): DisplayMangaSourceDtoType {
+        return {
+            link: this.link,
+            manga: this.manga?.display(),
+            globalSource: this.globalSource?.display()
+        }
     }
 }

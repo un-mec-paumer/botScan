@@ -110,13 +110,13 @@ model GlobalAnimeSource {
 
 model MangaSource {
   link                String
-  globalAnimeSourceId Int
+  globalMangaSourceId Int
   mangaId             Int
 
-  mangaSource         GlobalMangaSource @relation(fields: [globalAnimeSourceId], references: [id])
+  mangaSource         GlobalMangaSource @relation(fields: [globalMangaSourceId], references: [id])
   Manga               Manga             @relation(fields: [mangaId], references: [id])
 
-  @@id([globalAnimeSourceId, mangaId])
+  @@id([globalMangaSourceId, mangaId])
   @@map("manga_sources")
 }
 

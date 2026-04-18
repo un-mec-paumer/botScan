@@ -28,7 +28,7 @@ const getMangaByNameRoute: FastifyPluginAsync = async (fastify) => {
 
                 const manga = await mangaService.getMangaByName(name);
 
-                return reply.code(200).send(manga);
+                return reply.code(200).send(manga.display());
             } catch (err) {
                 if (err instanceof MangaServiceError) {
                     return reply

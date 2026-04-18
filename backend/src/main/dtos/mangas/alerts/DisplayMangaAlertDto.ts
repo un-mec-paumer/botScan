@@ -3,8 +3,8 @@ import { DisplayMangaDto } from '../DisplayMangaDto';
 import { DisplayUserDto } from '../../users/DisplayUserDto';
 
 export const DisplayMangaAlertDto = z.object({
-    manga: DisplayMangaDto,
-    user: DisplayUserDto,
+    manga: DisplayMangaDto.optional(),
+    user: DisplayUserDto.optional(),
 });
 
 export type DisplayMangaAlertDtoType = z.infer<typeof DisplayMangaAlertDto>;

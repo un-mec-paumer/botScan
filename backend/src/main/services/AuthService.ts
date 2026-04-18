@@ -4,7 +4,7 @@ import { AuthServiceError } from '@errors/AuthServiceError';
 import type { FastifyInstance } from 'fastify';
 
 export class AuthService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private readonly prisma: PrismaClient) {}
 
     async verifyAndRefreshToken(
         refreshToken: string,

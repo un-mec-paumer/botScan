@@ -37,16 +37,4 @@ export class UserService {
 
         return user;
     }
-
-    /**
-     * Récupère la liste d'alerte d'un utilisateur.
-     * @param id L'ID de l'utilisateur.
-     */
-    async getUserAlerts(id: string) {
-        const mangas = await this.prisma.alert.findMany({
-            where: { userId: id },
-        });
-
-        return mangas;
-    }
 }

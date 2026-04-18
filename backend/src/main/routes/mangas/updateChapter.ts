@@ -30,7 +30,7 @@ const updateChapterRoute: FastifyPluginAsync = async (fastify) => {
 
                 const manga = await mangaService.updateChapter(id, chapter);
 
-                return reply.code(200).send(manga);
+                return reply.code(200).send(manga.display());
             } catch (err) {
                 if (err instanceof MangaServiceError) {
                     return reply
