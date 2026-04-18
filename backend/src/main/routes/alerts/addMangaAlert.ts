@@ -40,7 +40,7 @@ const addMangaAlertRoute: FastifyPluginAsync = async (fastify) => {
 
                 const alert = await mangaAlertService.addAlert(userId, mangaId);
 
-                return reply.code(201).send(alert);
+                return reply.code(201).send(alert.display());
             } catch (err) {
                 if (err instanceof MangaAlertServiceError) {
                     return reply
