@@ -28,9 +28,9 @@ INSERT INTO "public"."mangas" ("id", "name", "synopsis", "imgUrl", "chapter") VA
 
 -- 5. Insertion des Animes
 INSERT INTO "public"."animes" ("id", "name", "synopsis", "imgUrl", "season", "episode") VALUES 
-(1, 'One Piece', 'L''histoire de Monkey D. Luffy qui veut devenir le roi des pirates.', 'https://example.com/anime/op.jpg', 'Season 21', '1095'),
-(2, 'Frieren', 'Le voyage de l''elfe Frieren après la défaite du roi des démons.', 'https://example.com/anime/frieren.jpg', 'Season 1', '28'),
-(3, 'L''Attaque des Titans', 'L''humanité vit retranchée dans une ville entourée d''immenses murs.', 'https://example.com/anime/aot.jpg', 'Season 4', '89');
+(1, 'One Piece', 'L''histoire de Monkey D. Luffy qui veut devenir le roi des pirates.', 'https://example.com/anime/op.jpg', '21', '1095'),
+(2, 'Frieren', 'Le voyage de l''elfe Frieren après la défaite du roi des démons.', 'https://example.com/anime/frieren.jpg', '1', '28'),
+(3, 'L''Attaque des Titans', 'L''humanité vit retranchée dans une ville entourée d''immenses murs.', 'https://example.com/anime/aot.jpg', '4', '89');
 
 -- 6. Lier les mangas à leurs sources
 INSERT INTO "public"."manga_sources" ("globalMangaSourceId", "mangaId") VALUES 
