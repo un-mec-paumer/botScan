@@ -1,7 +1,7 @@
 import { Command } from "../Command";
 import { Client, ChatInputCommandInteraction } from "discord.js";
-import { BDD } from "../supabase";
 import { getEmbedListeMangas } from "../function";
+import { getMangas } from "../service/mangasApi";
 
 export const Liste: Command = {
     name: "liste",
@@ -12,7 +12,7 @@ export const Liste: Command = {
 
     run: async (client: Client, interaction: ChatInputCommandInteraction) => {
         // interaction.followUp({ content: "Voici la liste de tous les mangas disponibles avec le bot actuellement" });
-        const mangas = await BDD.getMangas();
+        const mangas = await getMangas();
         
         await getEmbedListeMangas(mangas!, interaction);
     }

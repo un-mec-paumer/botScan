@@ -23,14 +23,14 @@ export async function getMangaById(id: number): Promise<Manga | null> {
 }
 
 // TODO : later
-/*export async function supprimerManga(name: string) {
-    deleteFetch()
-    const { data, error } = await this.client
-        .from('mangas')
-        .delete()
-        .match({ name_manga: name })
-    return data
-}*/
+export async function deleteManga(name: string) {
+    // deleteFetch(`${MANGA_BASE_URL}/${name}`)
+    // const { data, error } = await this.client
+    //     .from('mangas')
+    //     .delete()
+    //     .match({ name_manga: name })
+    // return data
+}
 
 export async function addManga(name: string, chapter: number, page: boolean, image: string, synopsis: string): Promise<boolean> {
     const response = await postFetch(MANGA_BASE_URL, {

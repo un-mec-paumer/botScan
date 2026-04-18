@@ -1,6 +1,7 @@
 import { Command } from "../Command";
 import { Client, ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
-import { BDD } from "../supabase";
+import { getMangaByName } from "../service/mangasApi";
+import { deleteAlert } from "../service/alertsApi";
 
 export const SupAlerte: Command = {
     name: "supalerte",
@@ -25,9 +26,9 @@ export const SupAlerte: Command = {
         const name = interaction.options.getString("name", true)
                     ?.toString().toLowerCase().replaceAll(" ", "-");
 
-        const manga = await BDD.getMangaByName(name!);
+        const manga = await getMangaByName(name);
 
-        if(manga!.length === 0){
+        if(!manga){
             interaction.followUp({
                 ephemeral: true,
                 content: "Manga non trouvé"
@@ -35,19 +36,19 @@ export const SupAlerte: Command = {
             return;
         }
 
-        const error = await BDD.deleteAlert(manga![0].id, interaction.user.id);
+        const error = await deleteAlert(manga.id, interaction.user.id);
 
         if(error){
             interaction.followUp({
                 ephemeral: true,
-                content: `Vous n'êtes pas dans la liste des personnes à prévenir de ${manga![0].name.replaceAll("-", " ")}`
+                content: `Vous n'êtes pas dans la liste des personnes à prévenir de ${manga.name.replaceAll("-", " ")}`
             });
             return;
         }
 
         interaction.followUp({
             ephemeral: true,
-            content: `Vous avez été supprimé de la liste des personnes à prévenir de ${manga![0].name.replaceAll("-", " ")}`
+            content: `Vous avez été supprimé de la liste des personnes à prévenir de ${manga.name.replaceAll("-", " ")}`
         });
     }
 };

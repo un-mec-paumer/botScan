@@ -30,6 +30,7 @@ export async function getAlertsByUserId(id: string): Promise<Manga[] | null> {
     return alerts?.map((e: any) => convertAnytoManga(e)) || null;
 }
 
+// Unused
 export async function verifyAlert(id_user: string, id_manga: number) {
     return await getFetch(`${ALERT_BASE_URL}/${id_user}/${id_manga}`);
 }

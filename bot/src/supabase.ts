@@ -1,14 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { randomInt } from 'crypto'
-import Manga from './model/manga';
-import MangaRelou from './model/manga/mangaRelou';
-
-import AnimeSama from './model/site/AnimeSama';
-import MangaMoins from './model/site/MangaMoins';
-import MangaPlus from './model/site/MangaPlus';
 
 import { SUPABASE_EMAIL, SUPABASE_KEY, SUPABASE_PASSWORD, SUPABASE_URL } from './variables';
-import { convertAnytoManga } from './function';
 
 
 export function randomString() {
@@ -47,158 +40,6 @@ class Supabase {
             email: SUPABASE_EMAIL!,
             password: SUPABASE_PASSWORD!
         })
-    }
-
-    async getMangas(): Promise<Manga[] | null> {
-        const { data, error } = await this.client
-            .from('mangas')
-            .select('*')
-
-        if (error) console.error(error)
-        return data?.map((e) => convertAnytoManga(e)) || null;
-    }
-
-    async getMangaByName(name: string): Promise<Manga[] | null> {
-        const { data, error } = await this.client
-            .from('mangas')
-            .select('*')
-            .match({ name_manga: name })
-
-        if (error || data.length === 0) console.error(error)
-        //console.log(data)
-        // data?.forEach((e) => {
-        //     e.img = this.client.storage.from('mangas').createSignedUrl(e.img, 60 * 60 * 24)
-        // })
-        //console.log(data)
-        return data?.map((e) => convertAnytoManga(e)) || null;
-    }
-
-    async getMangaById(id: number): Promise<Manga[] | null> {
-        const { data, error } = await this.client
-            .from('mangas')
-            .select('*')
-            .match({ id_manga: id })
-        return data?.map((e) => convertAnytoManga(e)) || null;
-    }
-
-    async getAlertsByUserId(id: string) : Promise<Manga[] | null> {
-        const res = await this.client
-            .from('alerte')
-            .select('id_manga')
-            .match({ id_user: id })
-
-        if (res.data?.length == 0) return null;
-        const { data, error } = await this.client
-            .from('mangas')
-            .select('*')
-
-        let mangas = data?.filter((e) => {
-            return res.data?.find((f) => {
-                return f.id_manga == e.id_manga
-            })
-        })
-
-        // console.log(mangas)
-        return mangas?.map((e) => convertAnytoManga(e)) || null;
-    }
-
-    async supprimerManga(name: string) {
-        const { data, error } = await this.client
-            .from('mangas')
-            .delete()
-            .match({ name_manga: name })
-        return data
-    }
-
-    async addManga(name: string, chap: number, page: boolean, image: string, synopsis: string) {
-        const { data, error } = await this.client
-            .from('mangas')
-            .insert([
-                { name_manga: name, chapitre_manga: chap, page: page, img: image, synopsis: synopsis }
-            ])
-        return data
-    }
-
-    async updateChapter(id_manga: number, chap: number) {
-        const { data, error } = await this.client
-            .from('mangas')
-            .update({ chapitre_manga: chap })
-            .match({ id_manga: id_manga })
-        return data
-    }
-
-    async addUser(id: string, name: string, img: string) {
-        const { data, error } = await this.client
-            .from('users')
-            .insert([
-                { id_user: id, name_user: name, pp: img }
-            ])
-        return data
-    }
-
-    async getUsers() {
-        const { data, error } = await this.client
-            .from('users')
-            .select('*')
-        return data
-    }
-
-    async getUser(id_user: string) {
-        const { data, error } = await this.client
-            .from('users')
-            .select('*')
-            .match({ id_user: id_user })
-        return data
-    }
-
-    async getUserByName(name_user: string) {
-        const { data, error } = await this.client
-            .from('users')
-            .select('*')
-            .match({ name_user: name_user })
-        return data
-    }
-
-    async supprimerUser(id: string) {
-        const { data, error } = await this.client
-            .from('users')
-            .delete()
-            .match({ id_user: id })
-        return data
-    }
-
-    async addMangaAlert(id_manga: number, id_user: string) {
-        const { data, error } = await this.client
-            .from('alerte')
-            .insert([
-                { id_manga: id_manga, id_user: id_user }
-            ])
-        return { data, error }
-
-    }
-
-    async getAlertsByWorkId(id_manga: number) {
-        const { data, error } = await this.client
-            .from('alerte')
-            .select('id_user')
-            .match({ id_manga: id_manga })
-        return data
-    }
-
-    async verifyAlert(id_user: string, id_manga: number) {
-        const { data, error } = await this.client
-            .from('alerte')
-            .select('*')
-            .match({ id_user: id_user, id_manga: id_manga })
-        return data
-    }
-
-    async deleteAlert(id_manga: number, id_user: string) {
-        const { data, error } = await this.client
-            .from('alerte')
-            .delete()
-            .match({ id_manga: id_manga, id_user: id_user })
-        return data
     }
 
     async addToken(id_user: string): Promise<string> {
@@ -258,8 +99,6 @@ class Supabase {
         if (error) console.error(error)
         return data
     }
-
-
 }
 
 export const BDD = Supabase.instance

@@ -1,6 +1,8 @@
 import { Command } from "../Command";
 import { ChatInputCommandInteraction, Client, ApplicationCommandOptionType } from "discord.js";
-import { BDD } from "../supabase";
+import { getMangaByName } from "../service/mangasApi";
+import { addUser, getUser } from "../service/usersApi";
+import { addMangaAlert, getAlertsByMangaId } from "../service/alertsApi";
 
 export const AddAlerte: Command = {
     name: "addalerte",
@@ -26,9 +28,9 @@ export const AddAlerte: Command = {
         const nameRaw = interaction.options.getString("name", true);
         const name = nameRaw.toLowerCase().replaceAll(" ", "-");
 
-        const manga = await BDD.getMangaByName(name!)
+        const manga = await getMangaByName(name)
         // console.log(manga);
-        if (manga!.length == 0) {
+        if (!manga) {
             interaction.followUp({
                 ephemeral: true,
                 content: "Manga non trouvé"
@@ -37,7 +39,7 @@ export const AddAlerte: Command = {
         }
 
         //* nom de variable car bancale (précédemment user) et en conflit avec la déclaration du dessus qui empêche d'en faire une constante
-        const userTest = await BDD.getAlertsByWorkId(manga![0].id);
+        const userTest = await getAlertsByMangaId(manga.id);
         // console.log(user, interaction.user.id);
         if(userTest!.find(id_user => id_user.id_user == interaction.user.id) !== undefined){
             interaction.followUp({
@@ -47,16 +49,16 @@ export const AddAlerte: Command = {
             return;
         }
 
-        const userBDD = await BDD.getUser(interaction.user.id);
-        if(userBDD?.length === 0) {
+        const userBDD = await getUser(interaction.user.id);
+        if(!userBDD) {
             const useravatar = interaction.user.avatarURL();
-            await BDD.addUser(interaction.user.id, interaction.user.username, useravatar!);
+            await addUser(interaction.user.id, interaction.user.username, useravatar!);
         }
 
-        await BDD.addMangaAlert(manga![0].id, interaction.user.id)
+        await addMangaAlert(manga.id, interaction.user.id)
         interaction.followUp({
             ephemeral: true,
-            content: `Vous avez été ajouté à la liste des personnes à prévenir de ${manga![0].name.replaceAll("-", " ")}`
+            content: `Vous avez été ajouté à la liste des personnes à prévenir de ${manga.name.replaceAll("-", " ")}`
         });
     }
 };

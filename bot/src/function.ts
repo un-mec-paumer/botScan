@@ -9,6 +9,8 @@ import MangaRelou from "./model/manga/mangaRelou";
 import AnimeSama from "./model/site/AnimeSama";
 import MangaMoins from "./model/site/MangaMoins";
 import MangaPlus from "./model/site/MangaPlus";
+import { getMangas, updateChapter } from "./service/mangasApi";
+import { getAlertsByMangaId } from "./service/alertsApi";
 
 
 // export async function initBrowser() {
@@ -31,13 +33,13 @@ import MangaPlus from "./model/site/MangaPlus";
 // }
 
 async function finder(manga: Manga, client: Client): Promise<boolean> {
-    // if (![XX, XX].includes(manga.id)) return false;
+
     try {
         const { tabChap: newChap, linkManga } = await manga.visiteAllSite();
         if (newChap.length === 0) return false;
 
-        await BDD.updateChapter(manga.id, newChap[newChap.length - 1]);
-        const userBDD = await BDD.getAlertsByWorkId(manga.id);
+        await updateChapter(manga.id, newChap[newChap.length - 1]);
+        const userBDD = await getAlertsByMangaId(manga.id);
 
         const img = (await BDD.getImgFromTest(manga.name)).publicUrl ?? null;
 
@@ -90,7 +92,7 @@ export async function finderAll(client: Client): Promise<boolean> {
     const time = new Date();
     console.log("temps: ", (time.getHours().toString().split("").length === 1 ? "0" : "") + time.getHours() + "h" + (time.getMinutes().toString().split("").length === 1 ? "0" : "") + time.getMinutes() + "min");
     //const userID = "452370867758956554";
-    const mangas = await BDD.getMangas() ?? [];
+    const mangas = await getMangas() ?? [];
 
     const resultRes = await Promise.all(mangas.map(async (manga) => {
         const res = await finder(manga, client);
@@ -398,7 +400,7 @@ export function convertAnytoManga(data: any): Manga {
 
 
 // (async () => {
-//     // const manga = await BDD.getMangas() ?? [];
+//     // const manga = await getMangas() ?? [];
 //     // for (let i = 0; i < manga.length; i++) {
 //     //     try { await getImgToPdf(manga[i], manga[i].chapitre!);}
             

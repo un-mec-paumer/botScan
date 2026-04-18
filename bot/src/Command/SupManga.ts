@@ -3,6 +3,7 @@ import { Client, ApplicationCommandOptionType, ChatInputCommandInteraction } fro
 import { BDD } from "../supabase";
 import dotenv from "dotenv";
 import { DEV } from "../variables";
+import { deleteManga, getMangaByName } from "../service/mangasApi";
 
 export const SupManga: Command = {
     name: "supmanga",
@@ -40,9 +41,9 @@ export const SupManga: Command = {
             return;
         }
 
-        const manga = await BDD.getMangaByName(nom as string);
+        const manga = await getMangaByName(nom);
         // console.log(manga);
-        if(manga!.length === 0){
+        if(!manga){
             interaction.followUp({
                 ephemeral: true,
                 content: "Le manga n'existe pas"
@@ -50,8 +51,8 @@ export const SupManga: Command = {
             return;
         }
 
-        await BDD.supprimerManga(manga![0].name);
-        await BDD.supImgFromTest(manga![0].name);
+        await deleteManga(manga.name);
+        await BDD.supImgFromTest(manga.name);
 
         interaction.followUp({
             ephemeral: true,

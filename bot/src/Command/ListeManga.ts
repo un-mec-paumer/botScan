@@ -1,7 +1,7 @@
 import { Command } from "../Command";
 import { Client, ChatInputCommandInteraction } from "discord.js";
-import { BDD } from "../supabase";
 import { getEmbedListeMangas } from "../function";
+import { getAlertsByUserId } from "../service/usersApi";
 
 
 export const ListeManga: Command = {
@@ -16,7 +16,7 @@ export const ListeManga: Command = {
         // console.log("Hello world!");
         // console.log(interaction.user.id);
 
-        const mangas = await BDD.getAlertsByUserId(interaction.user.id);
+        const mangas = await getAlertsByUserId(interaction.user.id);
         
         // console.log("mangas", mangas);
         // interaction.followUp({ content: "Voici la liste des mangas que tu suis" });
