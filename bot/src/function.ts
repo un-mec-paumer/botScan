@@ -384,7 +384,8 @@ function getImageSize(buffer: Uint8Array): { width: number, height: number, type
     return null;
 }
 
-export function convertAnytoManga(data: any): Manga {
+// TODO : remove because this is backend's job to provide sources and specific cases
+export function convertObjectToManga(data: object): Manga {
     switch (data.id_manga) {
         case 52: // c'est pour one piece
             return new MangaRelou(data, [new AnimeSama(), new MangaMoins(), new MangaPlus()], '_noir-et-blanc');

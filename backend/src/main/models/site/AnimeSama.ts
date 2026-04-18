@@ -4,6 +4,7 @@ import { ModelAnime } from "@models/Anime";
 import { DisplayGlobalMangaSourceDtoType } from "@dtos/mangas/sources/DisplayGlobalMangaSourceDto";
 
 export default class AnimeSama implements ModelSourceManga, ModelSourceAnime {
+    public link = "https://anime-sama.to/"; // TODO in DB
     public mangaSource: {id: number, name: string};
 
     

@@ -1,7 +1,8 @@
+import Manga from "../model/manga";
 import { API_URL } from "../variables";
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-type FetchReturn = object[] | object | null;
+type FetchReturn = object[] | object | null | Manga | Manga[];
 
 async function handleFetch(endpoint: string, method: Method, body: object = {}, object: object = {}): Promise<FetchReturn> {
     try {

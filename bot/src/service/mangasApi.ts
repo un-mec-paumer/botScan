@@ -1,25 +1,26 @@
-import { convertAnytoManga } from "../function";
+import { convertObjectToManga } from "../function";
 import Manga from "../model/manga";
+import Source from "../model/source";
 import { API_URL } from "../variables";
 import { deleteFetch, getFetch, patchFetch, postFetch } from "./fetch";
 const MANGA_BASE_URL = `${API_URL}/mangas`
 
 export async function getMangas(): Promise<Manga[] | null> {
-    const mangas = await getFetch(MANGA_BASE_URL);
+    const mangas = await getFetch(MANGA_BASE_URL) as object[];
 
-    return mangas!.map((manga: object) => convertAnytoManga(manga)) || null;
+    return mangas.map((manga) => convertObjectToManga(manga)) || null;
 }
 
 export async function getMangaByName(name: string): Promise<Manga | null> {
     const manga = await getFetch(`${MANGA_BASE_URL}/name/${name}`);
 
-    return convertAnytoManga(manga);
+    return convertObjectToManga(manga);
 }
 
 export async function getMangaById(id: number): Promise<Manga | null> {
     const manga = await getFetch(`${MANGA_BASE_URL}/id/${id}`);
 
-    return convertAnytoManga(manga);
+    return convertObjectToManga(manga);
 }
 
 // TODO : later
@@ -48,4 +49,8 @@ export async function updateChapter(id_manga: number, chapter: number): Promise<
     const response = await patchFetch(`${MANGA_BASE_URL}/update-chapter/${id_manga}`, { chapter })
 
     return Boolean(response);
+}
+
+export async function getMangaSources(): Promise<Source[]> {
+    return await getFetch(`${MANGA_BASE_URL}/sources`) as Source[];
 }

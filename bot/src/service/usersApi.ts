@@ -1,4 +1,4 @@
-import { convertAnytoManga } from "../function"
+import { convertObjectToManga } from "../function"
 import Manga from "../model/manga"
 import { API_URL } from "../variables"
 import { getFetch, postFetch } from "./fetch"
@@ -13,7 +13,7 @@ export async function getUser(id: string) {
 }
 
 export async function getAlertsByUserId(id: string) : Promise<Manga[] | null> {
-    const mangas = await getFetch(`${USER_BASE_URL}/manga-alerts`, { id })
+    const mangas = await getFetch(`${USER_BASE_URL}/manga-alerts`, { id }) as object[];
 
-    return mangas?.map((e: any) => convertAnytoManga(e)) || null;
+    return mangas.map((e: object) => convertObjectToManga(e)) || null;
 }

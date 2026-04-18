@@ -1,4 +1,4 @@
-import { convertAnytoManga } from "../function"
+import { convertObjectToManga } from "../function"
 import Manga from "../model/manga"
 import { API_URL } from "../variables"
 import { deleteFetch, getFetch, postFetch } from "./fetch"
@@ -11,23 +11,23 @@ export async function addMangaAlert(id_manga: number, id_user: string) {
     });
 }
 
-export async function addAnimeAlert(id_anime: number, id_user: string) {
-    return await postFetch(ALERT_BASE_URL, {
-        userId: id_user,
-        animeId: id_anime,
-    });
+// export async function addAnimeAlert(id_anime: number, id_user: string) {
+//     return await postFetch(ALERT_BASE_URL, {
+//         userId: id_user,
+//         animeId: id_anime,
+//     });
+// }
+
+export async function getAlertsByMangaId(id_manga: number): Promise<Manga[]> {
+    const alerts = await getFetch(`${ALERT_BASE_URL}/manga-id/${id_manga}`) as object[];
+
+    return alerts.map((e: object) => convertObjectToManga(e));
 }
 
-export async function getAlertsByMangaId(id_manga: number) {
-    const alerts = await getFetch(`${ALERT_BASE_URL}/manga-id/${id_manga}`)
+export async function getAlertsByUserId(id: string): Promise<Manga[]> {
+    const alerts = await getFetch(`${ALERT_BASE_URL}/user-id/${id}`) as object[];
 
-    return alerts?.map((e: any) => convertAnytoManga(e)) || null;
-}
-
-export async function getAlertsByUserId(id: string): Promise<Manga[] | null> {
-    const alerts = await getFetch(`${ALERT_BASE_URL}/user-id/${id}`)
-
-    return alerts?.map((e: any) => convertAnytoManga(e)) || null;
+    return alerts.map((e: object) => convertObjectToManga(e));
 }
 
 // Unused

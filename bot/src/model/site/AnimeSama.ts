@@ -7,7 +7,7 @@ import { animeSamaUrl } from "../../variables";
 
 export default class AnimeSama implements SiteManga, SiteAnime {
     name = "Anime-Sama";
-    link = animeSamaUrl!;
+    link = animeSamaUrl;
 
 
     async visitSiteManga(manga: Manga): Promise<{tabChap: number[], linkManga: string}> {
