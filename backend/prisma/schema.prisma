@@ -109,7 +109,7 @@ model GlobalAnimeSource {
 }
 
 model MangaSource {
-  link                String
+  link                String            @default("")
   globalMangaSourceId Int
   mangaId             Int
 
@@ -121,7 +121,7 @@ model MangaSource {
 }
 
 model AnimeSource {
-  link                String
+  link                String            @default("")
   globalAnimeSourceId Int
   animeId             Int
 

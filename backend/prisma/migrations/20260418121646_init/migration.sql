@@ -86,14 +86,16 @@ CREATE TABLE "public"."global_anime_sources" (
 
 -- CreateTable
 CREATE TABLE "public"."manga_sources" (
-    "globalAnimeSourceId" INTEGER NOT NULL,
+    "link" TEXT NOT NULL DEFAULT '',
+    "globalMangaSourceId" INTEGER NOT NULL,
     "mangaId" INTEGER NOT NULL,
 
-    CONSTRAINT "manga_sources_pkey" PRIMARY KEY ("globalAnimeSourceId","mangaId")
+    CONSTRAINT "manga_sources_pkey" PRIMARY KEY ("globalMangaSourceId","mangaId")
 );
 
 -- CreateTable
 CREATE TABLE "public"."anime_sources" (
+    "link" TEXT NOT NULL DEFAULT '',
     "globalAnimeSourceId" INTEGER NOT NULL,
     "animeId" INTEGER NOT NULL,
 
@@ -125,7 +127,7 @@ ALTER TABLE "public"."anime_alerts" ADD CONSTRAINT "anime_alerts_userId_fkey" FO
 ALTER TABLE "public"."anime_alerts" ADD CONSTRAINT "anime_alerts_animeId_fkey" FOREIGN KEY ("animeId") REFERENCES "public"."animes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."manga_sources" ADD CONSTRAINT "manga_sources_globalAnimeSourceId_fkey" FOREIGN KEY ("globalAnimeSourceId") REFERENCES "public"."global_manga_sources"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."manga_sources" ADD CONSTRAINT "manga_sources_globalMangaSourceId_fkey" FOREIGN KEY ("globalMangaSourceId") REFERENCES "public"."global_manga_sources"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."manga_sources" ADD CONSTRAINT "manga_sources_mangaId_fkey" FOREIGN KEY ("mangaId") REFERENCES "public"."mangas"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

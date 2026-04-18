@@ -33,7 +33,7 @@ INSERT INTO "public"."animes" ("id", "name", "synopsis", "imgUrl", "season", "ep
 (3, 'L''Attaque des Titans', 'L''humanité vit retranchée dans une ville entourée d''immenses murs.', 'https://example.com/anime/aot.jpg', 'Season 4', '89');
 
 -- 6. Lier les mangas à leurs sources
-INSERT INTO "public"."manga_sources" ("globalAnimeSourceId", "mangaId") VALUES 
+INSERT INTO "public"."manga_sources" ("globalMangaSourceId", "mangaId") VALUES 
 (1, 1), -- One Piece sur MangaDex
 (2, 1), -- One Piece sur Shonen Jump+
 (3, 2), -- Berserk sur Scantrad France
