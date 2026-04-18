@@ -247,7 +247,7 @@ export async function getEmbedListeMangas(mangas: Manga[], interaction: CommandI
 
         const value = i.values[0];
 
-        const manga = mangas.find((manga) => manga.id === parseInt(value));
+        const manga = mangas.find((manga) => manga.id === Number.parseInt(value));
         if (!manga) return;
         const img = (await BDD.getImgFromTest(manga.name))?.publicUrl ?? null;
         // console.log(img)

@@ -2,7 +2,6 @@ import { Command } from "../Command";
 import { Client, ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { downloadImg, getCherrioText } from "../function";
 import { animeSamaUrl } from "../variables";
-import * as cheerio from 'cheerio';
 import { addManga, getMangaByName } from "../service/mangasApi";
 import { addUser, getUser } from "../service/usersApi";
 import { addMangaAlert, getAlertsByMangaId } from "../service/alertsApi";
