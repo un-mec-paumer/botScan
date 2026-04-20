@@ -2,6 +2,7 @@ import { Manga, PrismaClient } from '@prisma/client';
 import { MangaServiceError } from '@errors/MangaServiceError';
 import { ModelManga } from '@models/Manga';
 import { AddMangaDtoType } from '@dtos/mangas/AddMangaDto';
+import { MangaSourceService } from './MangaSourceService';
 
 export class MangaService {
     constructor(protected readonly prisma: PrismaClient) {}
@@ -62,6 +63,9 @@ export class MangaService {
         if (!manga) {
             throw new MangaServiceError('Manga already exists.', 409);
         }
+
+        const sourceService = new MangaSourceService(this.prisma);
+        sourceService.addSource(data.link ?? "", data.globalSourceId, manga.id);
 
         return new ModelManga(manga);
     }

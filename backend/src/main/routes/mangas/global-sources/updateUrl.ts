@@ -1,11 +1,11 @@
 import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import { GlobalMangaSourceService } from '@services/GlobalMangaSourceService';
 import { GlobalMangaSourceServiceError } from '@errors/GlobalMangaSourceServiceError';
-import { DisplayMangaDto } from '@dtos/mangas/DisplayMangaDto';
+import { DisplayGlobalMangaSourceDto } from '@dtos/mangas/sources/DisplayGlobalMangaSourceDto';
 import { ErrorDto } from '@dtos/ErrorDto';
 
 const updateUrlRoute: FastifyPluginAsync = async (fastify) => {
-    const globalMangaSourceService = new GlobalMangaSourceService(fastify.prisma);
+    const globalSourceService = new GlobalMangaSourceService(fastify.prisma);
 
     const schema: FastifySchema = {
         summary: 'Updates the url of the source',
@@ -13,7 +13,7 @@ const updateUrlRoute: FastifyPluginAsync = async (fastify) => {
         tags: ['mangas', 'global-sources'],
         security: [{ bearerAuth: [] }],
         response: {
-            201: DisplayMangaDto,
+            201: DisplayGlobalMangaSourceDto,
             401: ErrorDto,
         },
     };
@@ -28,9 +28,9 @@ const updateUrlRoute: FastifyPluginAsync = async (fastify) => {
                 const { id } = request.params as { id: number };
                 const { url } = request.body as { url: string };
 
-                const globalMangaSource = await globalMangaSourceService.updateUrl(id, url);
+                const globalSource = await globalSourceService.updateUrl(id, url);
 
-                return reply.code(200).send(globalMangaSource.display());
+                return reply.code(200).send(globalSource.display());
             } catch (err) {
                 if (err instanceof GlobalMangaSourceServiceError) {
                     return reply

@@ -6,6 +6,7 @@ import addMangaRoute from './addManga';
 import updateChapterRoute from './updateChapter';
 import getMangaSourcesRoute from './getMangaSources';
 import globalMangaSourceRoutes from './global-sources';
+import mangaSourceRoutes from './sources';
 
 const mangaRoutes: FastifyPluginAsync = async (fastify) => {
     await fastify.register(addMangaRoute);
@@ -15,6 +16,7 @@ const mangaRoutes: FastifyPluginAsync = async (fastify) => {
     await fastify.register(updateChapterRoute);
     await fastify.register(getMangaSourcesRoute);
     await fastify.register(globalMangaSourceRoutes, '/global-sources')
+    await fastify.register(mangaSourceRoutes, '/sources')
 };
 
 export default mangaRoutes;

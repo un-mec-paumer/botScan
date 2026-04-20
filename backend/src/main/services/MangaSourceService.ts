@@ -25,12 +25,13 @@ export class MangaSourceService {
             throw new MangaSourceServiceError('Source not found.', 404);
         }
 
-        return new ModelMangaSource(new ModelGlobalMangaSource(source.GlobalMangaSource), new ModelManga(source.Manga));
+        return new ModelMangaSource(source, new ModelManga(source.Manga), new ModelGlobalMangaSource(source.GlobalMangaSource));
     }
 
-    async addSource(globalMangaSourceId: number, mangaId: number): Promise<ModelMangaSource> {
+    async addSource(link: string, globalMangaSourceId: number, mangaId: number): Promise<ModelMangaSource> {
         const source = await this.prisma.mangaSource.create({
             data: {
+                link: link,
                 globalMangaSourceId,
                 mangaId
             },
@@ -44,7 +45,31 @@ export class MangaSourceService {
             throw new MangaSourceServiceError('Source already exists.', 409);
         }
 
-        return new ModelMangaSource(new ModelGlobalMangaSource(source.GlobalMangaSource), new ModelManga(source.Manga));
+        return new ModelMangaSource(source, new ModelManga(source.Manga), new ModelGlobalMangaSource(source.GlobalMangaSource));
+    }
+
+    async updateLink(link: string, globalMangaSourceId: number, mangaId: number): Promise<ModelMangaSource> {
+        const source = await this.prisma.mangaSource.update({
+            data: {
+                link: link,
+            },
+            where: {
+                globalMangaSourceId_mangaId: {
+                    globalMangaSourceId,
+                    mangaId,
+                },
+            },
+            include: {
+                Manga: true,
+                GlobalMangaSource: true,
+            },
+        });
+
+        if (!source) {
+            throw new MangaSourceServiceError('Source already exists.', 409);
+        }
+
+        return new ModelMangaSource(source, new ModelManga(source.Manga), new ModelGlobalMangaSource(source.GlobalMangaSource));
     }
 
     async deleteSource(globalMangaSourceId: number, mangaId: number): Promise<boolean> {
@@ -73,7 +98,7 @@ export class MangaSourceService {
             },
         });
 
-        return sources.map(source => new ModelMangaSource(new ModelGlobalMangaSource(source.GlobalMangaSource), new ModelManga(source.Manga)));
+        return sources.map(source => new ModelMangaSource(source, new ModelManga(source.Manga), new ModelGlobalMangaSource(source.GlobalMangaSource)));
     }
 
     async getSourcesByMangaId(mangaId: number): Promise<ModelMangaSource[]> {
@@ -85,6 +110,6 @@ export class MangaSourceService {
             },
         });
 
-        return sources.map(source => new ModelMangaSource(new ModelGlobalMangaSource(source.GlobalMangaSource), new ModelManga(source.Manga)));
+        return sources.map(source => new ModelMangaSource(source, new ModelManga(source.Manga), new ModelGlobalMangaSource(source.GlobalMangaSource)));
     }
 }
