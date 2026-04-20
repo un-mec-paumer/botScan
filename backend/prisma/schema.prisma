@@ -113,7 +113,7 @@ model MangaSource {
   globalMangaSourceId Int
   mangaId             Int
 
-  mangaSource         GlobalMangaSource @relation(fields: [globalMangaSourceId], references: [id])
+  GlobalMangaSource   GlobalMangaSource @relation(fields: [globalMangaSourceId], references: [id])
   Manga               Manga             @relation(fields: [mangaId], references: [id])
 
   @@id([globalMangaSourceId, mangaId])
@@ -125,7 +125,7 @@ model AnimeSource {
   globalAnimeSourceId Int
   animeId             Int
 
-  animeSource         GlobalAnimeSource @relation(fields: [globalAnimeSourceId], references: [id])
+  GlobalAnimeSource   GlobalAnimeSource @relation(fields: [globalAnimeSourceId], references: [id])
   Anime               Anime             @relation(fields: [animeId], references: [id])
 
   @@id([globalAnimeSourceId, animeId])

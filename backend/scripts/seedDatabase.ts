@@ -22,6 +22,8 @@ export default async function seedDatabase() {
             await prisma.$executeRawUnsafe(query);
         }
         await prisma.$executeRawUnsafe(`COMMIT`);
+
+        console.log("Database seeded.");
     } catch (error) {
         await prisma.$executeRawUnsafe(`ROLLBACK`);
         console.error(error);
