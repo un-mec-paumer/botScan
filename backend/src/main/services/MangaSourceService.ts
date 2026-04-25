@@ -31,7 +31,7 @@ export class MangaSourceService {
     async addSource(link: string, globalMangaSourceId: number, mangaId: number): Promise<ModelMangaSource> {
         const source = await this.prisma.mangaSource.create({
             data: {
-                link: link,
+                link,
                 globalMangaSourceId,
                 mangaId
             },
@@ -51,7 +51,7 @@ export class MangaSourceService {
     async updateLink(link: string, globalMangaSourceId: number, mangaId: number): Promise<ModelMangaSource> {
         const source = await this.prisma.mangaSource.update({
             data: {
-                link: link,
+                link,
             },
             where: {
                 globalMangaSourceId_mangaId: {
@@ -103,7 +103,7 @@ export class MangaSourceService {
 
     async getSourcesByMangaId(mangaId: number): Promise<ModelMangaSource[]> {
         const sources = await this.prisma.mangaSource.findMany({
-            where: { mangaId: mangaId },
+            where: { mangaId },
             include: {
                 Manga: true,
                 GlobalMangaSource: true,

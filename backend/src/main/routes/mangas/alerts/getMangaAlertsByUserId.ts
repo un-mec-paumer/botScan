@@ -5,13 +5,13 @@ import { MangaAlertServiceError } from '@errors/MangaAlertServiceError';
 import { DisplayMangaAlertDto } from '@dtos/mangas/alerts/DisplayMangaAlertDto';
 import { ErrorDto } from '@dtos/ErrorDto';
 
-const getMangaAlertsByMangaIdRoute: FastifyPluginAsync = async (fastify) => {
+const getMangaAlertsByUserIdRoute: FastifyPluginAsync = async (fastify) => {
     const mangaAlertService = new MangaAlertService(fastify.prisma);
 
     const schema: FastifySchema = {
-        summary: 'Get alerts by manga id',
-        description: 'Get alerts by manga id',
-        tags: ['alerts'],
+        summary: 'Get alerts by user id',
+        description: 'Get alerts by user id',
+        tags: ['alerts', 'mangas'],
         security: [{ bearerAuth: [] }],
         response: {
             200: z.array(DisplayMangaAlertDto),
@@ -20,15 +20,15 @@ const getMangaAlertsByMangaIdRoute: FastifyPluginAsync = async (fastify) => {
     };
 
     fastify.get(
-        '/manga-id/:mangaId',
+        '/user-id/:userId',
         {
             schema,
         },
         async (request, reply) => {
             try {
-                const { mangaId } = request.params as { mangaId: number };
+                const { userId } = request.params as { userId: string };
 
-                const alerts = await mangaAlertService.getAlertsByMangaId(mangaId);
+                const alerts = await mangaAlertService.getAlertsByUserId(userId);
 
                 return reply.code(200).send(alerts.map(alert => alert.display()));
             } catch (err) {
@@ -43,4 +43,4 @@ const getMangaAlertsByMangaIdRoute: FastifyPluginAsync = async (fastify) => {
     );
 };
 
-export default getMangaAlertsByMangaIdRoute;
+export default getMangaAlertsByUserIdRoute;

@@ -35,7 +35,7 @@ const addSourceRoute: FastifyPluginAsync = async (fastify) => {
                     globalMangaSourceId: number
                 };
 
-                const mangaSource = await mangaSourceService.addSource(link, mangaId, globalMangaSourceId);
+                const mangaSource = await mangaSourceService.addSource(link, globalMangaSourceId, mangaId);
 
                 return reply.code(200).send(mangaSource.display());
             } catch (err) {

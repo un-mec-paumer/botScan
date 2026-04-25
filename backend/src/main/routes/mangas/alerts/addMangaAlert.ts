@@ -16,7 +16,7 @@ const addMangaAlertRoute: FastifyPluginAsync = async (fastify) => {
         summary: 'Add alert with manga and user ids',
         description:
             'Add alert with manga and user ids. Non-specified params keeps the current value, false otherwise',
-        tags: ['alerts'],
+        tags: ['alerts', 'mangas'],
         security: [{ bearerAuth: [] }],
         body: AddMangaAlertDto,
         response: {

@@ -54,7 +54,7 @@ export class AnimeService {
      * Récupère un anime.
      * @param id L'id du anime.
      */
-    async addAnime(data: AddAnimeDtoType) {
+    async addAnime(data: AddAnimeDtoType): Promise<ModelAnime> {
         const anime = await this.prisma.anime.create({
             data: {
                 ...data,
@@ -66,7 +66,7 @@ export class AnimeService {
             throw new AnimeServiceError('Anime already exists.', 409);
         }
 
-        return anime;
+        return new ModelAnime(anime);
     }
 
     async updateSeason(id: number, season: string): Promise<ModelAnime> {

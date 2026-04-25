@@ -11,7 +11,7 @@ const getMangaAlertRoute: FastifyPluginAsync = async (fastify) => {
     const schema: FastifySchema = {
         summary: 'Get alert by manga and user ids',
         description: 'Get alert by manga and user ids',
-        tags: ['alerts'],
+        tags: ['alerts', 'mangas'],
         security: [{ bearerAuth: [] }],
         response: {
             200: z.array(DisplayMangaAlertDto),

@@ -2,35 +2,37 @@ import type { FastifyPluginAsync, FastifySchema } from 'fastify';
 import { z } from 'zod';
 import { MangaAlertService } from '@services/MangaAlertService';
 import { MangaAlertServiceError } from '@errors/MangaAlertServiceError';
-import { DisplayMangaAlertDto } from '@dtos/mangas/alerts/DisplayMangaAlertDto';
 import { ErrorDto } from '@dtos/ErrorDto';
 
-const getMangaAlertsByUserIdRoute: FastifyPluginAsync = async (fastify) => {
+const deleteMangaAlertRoute: FastifyPluginAsync = async (fastify) => {
     const mangaAlertService = new MangaAlertService(fastify.prisma);
 
     const schema: FastifySchema = {
-        summary: 'Get alerts by user id',
-        description: 'Get alerts by user id',
-        tags: ['alerts'],
+        summary: 'Hard delete alert by manga and user ids',
+        description: 'Hard delete alert by manga and user ids',
+        tags: ['alerts', 'mangas'],
         security: [{ bearerAuth: [] }],
         response: {
-            200: z.array(DisplayMangaAlertDto),
-            401: ErrorDto,
+            200: z.null(),
+            404: ErrorDto,
         },
     };
 
-    fastify.get(
-        '/user-id/:userId',
+    fastify.delete(
+        '/:userId/:mangaId',
         {
             schema,
         },
         async (request, reply) => {
             try {
-                const { userId } = request.params as { userId: string };
+                const { userId, mangaId } = request.body as {
+                    userId: string;
+                    mangaId: number;
+                };
 
-                const alerts = await mangaAlertService.getAlertsByUserId(userId);
+                await mangaAlertService.deleteAlert(userId, mangaId);
 
-                return reply.code(200).send(alerts.map(alert => alert.display()));
+                return reply.code(200);
             } catch (err) {
                 if (err instanceof MangaAlertServiceError) {
                     return reply
@@ -43,4 +45,4 @@ const getMangaAlertsByUserIdRoute: FastifyPluginAsync = async (fastify) => {
     );
 };
 
-export default getMangaAlertsByUserIdRoute;
+export default deleteMangaAlertRoute;
