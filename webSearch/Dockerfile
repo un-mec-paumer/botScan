@@ -1,27 +1,15 @@
-# Stage 1: Modules caching
-FROM golang:1.25.7 AS modules
-COPY go.mod go.sum /modules/
-WORKDIR /modules
+FROM golang:1.26.9-alpine3.23 AS builder
+WORKDIR /app
+
+COPY go.mod go.sum ./
 RUN go mod download
+COPY ./*.go .
+RUN go build -o main .
 
-# Stage 2: Build
-FROM golang:1.25.7 AS builder
-COPY --from=modules /go/pkg /go/pkg
-COPY . /workdir
-WORKDIR /workdir
 
-# Install playwright cli with right version for later use
-RUN PWGO_VER=$(grep -oE "playwright-go v\S+" /workdir/go.mod | sed 's/playwright-go //g') \
-    && go install github.com/playwright-community/playwright-go/cmd/playwright@${PWGO_VER}
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/main .
+RUN apk add --no-cache chromium
 
-    # Build your app
-RUN GOOS=linux GOARCH=amd64 go build -o /bin/myapp
-
-# Stage 3: Final
-FROM debian:bookworm-slim
-COPY --from=builder /go/bin/playwright /bin/myapp /
-RUN apt-get update && apt-get install -y ca-certificates tzdata \
-    # Install dependencies and all browsers (or specify one)
-    && /playwright install chromium --with-deps \
-    && rm -rf /var/lib/apt/lists/*
-CMD ["/myapp"]
+CMD ["./main"]
