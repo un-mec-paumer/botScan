@@ -2,6 +2,8 @@ services:
   postgres:
     image: postgres:17
     restart: always
+    entrypoint: ["/entrypoint-postgres.sh"]
+    stop_grace_period: 30s
     environment:
       POSTGRES_USER: botscan
       POSTGRES_PASSWORD: botscan_pass
@@ -9,8 +11,10 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./backend/prisma/migrations/20260420094544_init:/docker-entrypoint-initdb.d
-      - postgres_data:/var/lib/postgresql/data
+      - ./entrypoint-postgres.sh:/entrypoint-postgres.sh:ro
+      - ./:/backup
+      # - ./backend/prisma/migrations/20260420094544_init:/docker-entrypoint-initdb.d
+      - ./postgres_data:/var/lib/postgresql/data
 
   adminer:
     image: adminer:latest
@@ -56,6 +60,3 @@ services:
     #   - ./scraper:/app
     ports:
       - "3004:3000"
-
-volumes:
-  postgres_data:

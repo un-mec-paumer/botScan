@@ -8,9 +8,9 @@ COPY prisma ./prisma
 
 RUN apt-get update \
     && apt-get install -y libssl-dev openssl \
-    && npm install \
+    && npm install 
     # && npm run db:migrate \
-    && npm run db:generate
+    # && npm run db:generate
 
 # COPY . .
 
