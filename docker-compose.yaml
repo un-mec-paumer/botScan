@@ -52,8 +52,8 @@ services:
     build:
       context: ./scraper
       dockerfile: Dockerfile
-    volumes:
-      - ./scraper:/app
+    # volumes:
+    #   - ./scraper:/app
     ports:
       - "3004:3000"
 
