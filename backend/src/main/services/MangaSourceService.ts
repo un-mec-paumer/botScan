@@ -2,10 +2,21 @@ import { PrismaClient } from '@prisma/client';
 import { MangaSourceServiceError } from '@errors/MangaSourceServiceError';
 import { ModelMangaSource } from '@models/MangaSource';
 import { ModelGlobalMangaSource } from '@models/GlobalMangaSource';
-import { ModelManga } from '@models/Manga';
+import { ModelManga } from '@models/manga';
 
 export class MangaSourceService {
     constructor(private readonly prisma: PrismaClient) {}
+
+    async getSources(): Promise<ModelMangaSource[]> {
+        const sources = await this.prisma.mangaSource.findMany({
+            include: {
+                Manga: true,
+                GlobalMangaSource: true,
+            },
+        });
+
+        return sources.map(source => new ModelMangaSource(source, new ModelManga(source.Manga), new ModelGlobalMangaSource(source.GlobalMangaSource)));
+    }
 
     async getSource(globalMangaSourceId: number, mangaId: number): Promise<ModelMangaSource> {
         const source = await this.prisma.mangaSource.findUnique({

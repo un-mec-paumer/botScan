@@ -38,7 +38,7 @@ const loginRoute: FastifyPluginAsync = async (fastify) => {
                 const user = await authService.loginUser(request.body);
 
                 const accessToken = fastify.jwt.sign(
-                    { sub: user.id, role: user.role },
+                    { sub: user.id, /*role: user.role*/ }, // todo: peut etre a voir
                     { expiresIn: '15m' }
                 );
 

@@ -1,5 +1,5 @@
 import { AnimeSource } from "@prisma/client";
-import { ModelAnime } from "@models/Anime";
+import { ModelAnime } from "@models/anime";
 import { ModelGlobalAnimeSource } from "./GlobalAnimeSource";
 import { DisplayAnimeSourceDtoType } from "@dtos/animes/sources/DisplayAnimeSourceDto";
 

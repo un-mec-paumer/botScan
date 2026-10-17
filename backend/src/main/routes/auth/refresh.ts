@@ -38,7 +38,7 @@ const refreshRoute: FastifyPluginAsync = async (fastify) => {
                 );
 
                 const accessToken = fastify.jwt.sign(
-                    { sub: user.id, role: user.role },
+                    { sub: user.id, /*role: user.role*/ }, // TODO: peut etre a voir
                     { expiresIn: '15m' }
                 );
 

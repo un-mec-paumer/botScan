@@ -1,17 +1,17 @@
 import { DisplayGlobalAnimeSourceDtoType } from "@dtos/animes/sources/DisplayGlobalAnimeSourceDto";
 import { ModelSourceAnime, ModelSourceManga } from "./source";
-import { ModelAnime } from "@models/Anime";
+import { ModelAnime } from "@models/anime";
 
 
 export default class VoirAnime implements ModelSourceAnime {
     public link = "https://voiranime.com";
-    public mangaSource: {id: number, name: string};
+    public mangaSource: {id: number, name: string, domainUrl: string};
     constructor(data: DisplayGlobalAnimeSourceDtoType) { // a modifier avec les DTO
-        this.mangaSource = data;
+        this.mangaSource = data as {id: number, name: string, domainUrl: string};
     }
 
     async visitSiteAnime(anime: ModelAnime): Promise<{ tabChap: number[]; linkManga: string; }> {
-        const link = `${this.link}/anime/${anime.name}-${Number.parseInt(anime.season) > 1 ? anime.season : ''}${anime.language === 'vf' ? '-vf' : ''}`;
+        // const link = `${this.link}/anime/${anime.name}-${Number.parseInt(anime.season) > 1 ? anime.season : ''}${anime.language === 'vf' ? '-vf' : ''}`;
         
         // const $ = await getCherrioText(link);
         
@@ -25,6 +25,6 @@ export default class VoirAnime implements ModelSourceAnime {
         // })
         // console.log(`${this.name}: Found new episodes for ${anime.name}: ${newEp}`);
 
-        return {tabChap: [0], linkManga: link};
+        return {tabChap: [0], linkManga: "²"};
     }
 }

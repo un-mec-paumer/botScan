@@ -30,13 +30,13 @@ export class ModelManga {
         };
     }
 
-    // public async visiteAllSite() : Promise<{tabChap: number[], linkManga: string}> {
-    //     const results = await Promise.all(this.mangaSources.map((mangaSource) => mangaSource.visitSiteManga(this)));
+    public async visiteAllSite() : Promise<{tabChap: number[], linkManga: string}> {
+        const results = await Promise.all(this.sources.map((mangaSource: ModelMangaSource) => mangaSource.globalSource!.mangaSourcesFactory().visitSiteManga(this, mangaSource.link) ?? Promise.resolve({tabChap: [], linkManga: ""})));
         
-    //     const resultFinal = results.filter((result) => result.tabChap.length > 0).sort((a, b) => b.tabChap[b.tabChap.length - 1] - a.tabChap[a.tabChap.length - 1]);
+        const resultFinal = results.filter((result:{tabChap: number[], linkManga: string}) => result.tabChap.length > 0).sort((a:{tabChap: number[], linkManga: string}, b:{tabChap: number[], linkManga: string}) => b.tabChap[b.tabChap.length - 1] - a.tabChap[a.tabChap.length - 1]);
         
-    //     if (resultFinal.length > 0) return resultFinal[0];
+        if (resultFinal.length > 0) return resultFinal[0];
         
-    //     else return {tabChap: [], linkManga: ""};
-    // }
+        else return {tabChap: [], linkManga: ""};
+    }
 }

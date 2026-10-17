@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { MangaAlertServiceError } from '@errors/MangaAlertServiceError';
 import { ModelMangaAlert } from '@models/MangaAlert';
 import { ModelUser } from '@models/User';
-import { ModelManga } from '@models/Manga';
+import { ModelManga } from '@models/manga';
 
 export class MangaAlertService {
     constructor(private readonly prisma: PrismaClient) {}

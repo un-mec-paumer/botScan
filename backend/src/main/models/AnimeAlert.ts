@@ -1,4 +1,4 @@
-import { ModelAnime } from "./Anime";
+import { ModelAnime } from "./anime";
 import { ModelUser } from "./User";
 import { DisplayAnimeAlertDtoType } from "@dtos/animes/alerts/DisplayAnimeAlertDto";
 

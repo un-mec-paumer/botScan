@@ -1,13 +1,13 @@
 import { DisplayGlobalMangaSourceDtoType } from "@dtos/mangas/sources/DisplayGlobalMangaSourceDto";
 import { ModelSourceManga } from "./source";
-import { ModelManga } from "@models/Manga";
+import { ModelManga } from "@models/manga";
 
 export default class MangaPlus implements ModelSourceManga {
     public link = "https://mangaplus.shueisha.co.jp"; // TODO in DB
-    public mangaSource: {id: number, name: string};
+    public mangaSource: {id: number, name: string, domainUrl: string};
 
     constructor(data: DisplayGlobalMangaSourceDtoType) {
-        this.mangaSource = data.mangaSource;
+        this.mangaSource = data;
     }
 
     idMangaPlus: { [key: number]: string } = {
@@ -16,7 +16,7 @@ export default class MangaPlus implements ModelSourceManga {
         70: '700036'
     }
 
-    async visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(manga: ModelManga, link: string): Promise<{tabChap: number[], linkManga: string}> {
         const url = `${this.link}/titles/${this.idMangaPlus[manga.id]}`
         // const $ = await getCherrioText(url, browser);
 

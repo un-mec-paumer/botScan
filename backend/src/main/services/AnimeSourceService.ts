@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { AnimeSourceServiceError } from '@errors/AnimeSourceServiceError';
 import { ModelAnimeSource } from '@models/AnimeSource';
 import { ModelGlobalAnimeSource } from '@models/GlobalAnimeSource';
-import { ModelAnime } from '@models/Anime';
+import { ModelAnime } from '@models/anime';
 
 export class AnimeSourceService {
     constructor(private readonly prisma: PrismaClient) {}

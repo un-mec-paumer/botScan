@@ -1,6 +1,6 @@
 import { Anime, PrismaClient } from '@prisma/client';
 import { AnimeServiceError } from '@errors/AnimeServiceError';
-import { ModelAnime } from '@models/Anime';
+import { ModelAnime } from '@models/anime';
 import { AddAnimeDtoType } from '@dtos/animes/AddAnimeDto';
 
 export class AnimeService {

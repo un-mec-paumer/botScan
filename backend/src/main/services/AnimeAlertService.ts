@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { AnimeAlertServiceError } from '@errors/AnimeAlertServiceError';
 import { ModelAnimeAlert } from '@models/AnimeAlert';
 import { ModelUser } from '@models/User';
-import { ModelAnime } from '@models/Anime';
+import { ModelAnime } from '@models/anime';
 
 export class AnimeAlertService {
     constructor(private readonly prisma: PrismaClient) { }

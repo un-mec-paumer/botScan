@@ -1,19 +1,19 @@
 import { ModelSourceManga, ModelSourceAnime } from "./source";
-import { ModelManga } from "@models/Manga";
-import { ModelAnime } from "@models/Anime";
+import { ModelManga } from "@models/manga";
+import { ModelAnime } from "@models/anime";
 import { DisplayGlobalMangaSourceDtoType } from "@dtos/mangas/sources/DisplayGlobalMangaSourceDto";
 
 export default class AnimeSama implements ModelSourceManga, ModelSourceAnime {
     public link = "https://anime-sama.to/"; // TODO in DB
-    public mangaSource: {id: number, name: string};
+    public mangaSource: {id: number, name: string, domainUrl: string};
 
     
     constructor(data: DisplayGlobalMangaSourceDtoType) {
-        this.mangaSource = data.mangaSource;
+        this.mangaSource = data;
     }
 
 
-    async visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(manga: ModelManga, link: string): Promise<{tabChap: number[], linkManga: string}> {
 
         // const $ = await getCherrioText(manga.getLink(), browser);
 
@@ -27,7 +27,7 @@ export default class AnimeSama implements ModelSourceManga, ModelSourceAnime {
         return {tabChap: [0], linkManga: this.link}; // TODO: mock a change plus tard
     }
 
-    async visitSiteAnime(anime: ModelAnime): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteAnime(anime: ModelAnime, link: string): Promise<{tabChap: number[], linkManga: string}> {
         // const $ = await getCherrioText(anime.getLink(), browser);
 
         // const newEp = $("#selectEpisodes option").toArray().map((element) => { return $(element).attr("value") }).filter((element) => {

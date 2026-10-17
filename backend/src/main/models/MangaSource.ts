@@ -1,5 +1,5 @@
 import { MangaSource } from "@prisma/client";
-import { ModelManga } from "@models/Manga";
+import { ModelManga } from "@models/manga";
 import { ModelGlobalMangaSource } from "./GlobalMangaSource";
 import { DisplayMangaSourceDtoType } from "@dtos/mangas/sources/DisplayMangaSourceDto";
 

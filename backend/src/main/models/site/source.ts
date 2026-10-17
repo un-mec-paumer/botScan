@@ -1,15 +1,15 @@
-import { ModelManga } from "@models/Manga";
-import { ModelAnime } from "@models/Anime";
+import { ModelAnime } from "@models/anime";
+import { ModelManga } from "@models/manga";
 
 // TODO: ne plus utiliser, restent ici pour garder la logique avec les autres fichiers à cet endroit
 interface ModelSource {
-    mangaSource: {id: number, name: string}
+    mangaSource: {id: number, name: string, domainUrl: string};
 }
 
 export interface ModelSourceManga extends ModelSource {
-    visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}>;
+    visitSiteManga(manga: ModelManga, link: string): Promise<{tabChap: number[], linkManga: string}>;
 }
 
 export interface ModelSourceAnime extends ModelSource {
-    visitSiteAnime(anime: ModelAnime): Promise<{tabChap: number[], linkManga: string}>;
+    visitSiteAnime(anime: ModelAnime, link: string): Promise<{tabChap: number[], linkManga: string}>;
 }

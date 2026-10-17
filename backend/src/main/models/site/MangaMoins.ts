@@ -1,16 +1,16 @@
 import { DisplayGlobalMangaSourceDtoType } from "@dtos/mangas/sources/DisplayGlobalMangaSourceDto";
 import { ModelSourceManga } from "./source";
-import { ModelManga } from "@models/Manga";
+import { ModelManga } from "@models/manga";
 
 export default class MangaMoins implements ModelSourceManga {
     public link = "https://mangamoins.com/"; // TODO in DB
-    public mangaSource: {id: number, name: string};
+    public mangaSource: {id: number, name: string, domainUrl: string};
     
     constructor(data: DisplayGlobalMangaSourceDtoType) {
-        this.mangaSource = data.mangaSource;
+        this.mangaSource = data;
     }
     
-    async visitSiteManga(manga: ModelManga): Promise<{tabChap: number[], linkManga: string}> {
+    async visitSiteManga(manga: ModelManga, link: string): Promise<{tabChap: number[], linkManga: string}> {
         
             // const $ = await getCherrioText(this.link, browser);
 

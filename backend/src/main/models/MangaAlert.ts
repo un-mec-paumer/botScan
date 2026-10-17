@@ -1,4 +1,4 @@
-import { ModelManga } from "./Manga";
+import { ModelManga } from "./manga";
 import { ModelUser } from "./User";
 import { DisplayMangaAlertDtoType } from "@dtos/mangas/alerts/DisplayMangaAlertDto";
 
